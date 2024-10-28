@@ -1,0 +1,64 @@
+Here are some common HTTP status codes that are widely used:
+
+**Success Status Codes**
+
+* `200 OK`: The request was successful and the response body contains the requested data.
+* `201 Created`: The request was successful and a new resource was created.
+* `202 Accepted`: The request was accepted for processing, but the processing has not been completed.
+
+**Redirection Status Codes**
+
+* `301 Moved Permanently`: The requested resource has been permanently moved to a new location.
+* `302 Found`: The requested resource has been temporarily moved to a new location.
+* `303 See Other`: The requested resource can be found at a different location.
+* `307 Temporary Redirect`: The requested resource has been temporarily moved to a new location.
+
+**Client Error Status Codes**
+
+* `400 Bad Request`: The request was invalid or cannot be processed.
+* `401 Unauthorized`: The client is not authenticated or does not have permission to access the requested resource.
+* `402 Payment Required`: The client needs to make a payment to access the requested resource.
+* `403 Forbidden`: The client is not allowed to access the requested resource.
+* `404 Not Found`: The requested resource cannot be found.
+* `405 Method Not Allowed`: The requested method is not allowed for the requested resource.
+* `406 Not Acceptable`: The requested resource cannot be provided in the requested format.
+* `407 Proxy Authentication Required`: The client needs to authenticate with a proxy server to access the requested resource.
+* `408 Request Timeout`: The client did not send a request within the expected time.
+* `409 Conflict`: The request conflicts with the current state of the resource.
+* `410 Gone`: The requested resource is no longer available.
+* `411 Length Required`: The client needs to provide the length of the request body.
+* `412 Precondition Failed`: The client's request did not meet the preconditions.
+* `413 Payload Too Large`: The request body is too large.
+* `414 URI Too Long`: The requested URI is too long.
+* `415 Unsupported Media Type`: The requested media type is not supported.
+* `416 Range Not Satisfiable`: The requested range cannot be satisfied.
+* `417 Expectation Failed`: The client's expectations were not met.
+* `418 I'm a teapot`: The server is a teapot and cannot brew coffee.
+* `421 Misdirected Request`: The request was sent to the wrong server.
+* `422 Unprocessable Entity`: The request was well-formed but cannot be processed.
+* `423 Locked`: The requested resource is locked.
+* `424 Failed Dependency`: The request failed due to a dependency.
+* `425 Too Early`: The request was sent too early.
+* `426 Upgrade Required`: The client needs to upgrade to a different protocol.
+* `428 Precondition Required`: The client needs to provide preconditions.
+* `429 Too Many Requests`: The client has sent too many requests.
+* `431 Request Header Fields Too Large`: The request header fields are too large.
+* `451 Unavailable For Legal Reasons`: The requested resource is unavailable due to legal reasons.
+
+**Server Error Status Codes**
+
+* `500 Internal Server Error`: The server encountered an unexpected error.
+* `501 Not Implemented`: The server does not support the requested method.
+* `502 Bad Gateway`: The server received an invalid response from an upstream server.
+* `503 Service Unavailable`: The server is currently unavailable.
+* `504 Gateway Timeout`: The server did not receive a response from an upstream server within the expected time.
+* `505 HTTP Version Not Supported`: The server does not support the requested HTTP version.
+* `506 Variant Also Negotiates`: The server has a variant that can negotiate the requested resource.
+* `507 Insufficient Storage`: The server does not have enough storage to complete the request.
+* `508 Loop Detected`: The server detected a loop in the request.
+* `509 Bandwidth Limit Exceeded`: The server has exceeded its bandwidth limit.
+* `510 Not Extended`: The server does not support the requested extension.
+* `511 Network Authentication Required`: The client needs to authenticate with the network.
+
+Note that this is not an exhaustive list, and there are many other HTTP status codes that are used in specific situations.
+

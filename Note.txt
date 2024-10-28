@@ -1,0 +1,190 @@
+#### Register methods :
+
+M1 : this registion just for explain use M2 or M3
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        // $data = $request->validated();//just validate columns (radi yjib ghi columns ldrnalhom validation fl rules)
+
+        // return response()->json($data);
+
+
+        //! if you want to user service container : 
+        // $user = $this->userservices->createUser($data);
+
+        try{
+            DB::beginTransaction();
+
+            if($request->hasFile('image')){
+
+                $imageName = $this->uploadImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+                User::create([
+                    'image' => $imageName,
+                ]);
+            }
+    
+            return response()->json($request->all());
+    
+    
+            // $user = User::create([
+            //     'name' => $data['name'],
+            //     'password' => Hash::make($data['password']),
+            //     'username' => strstr($data['email'], '@', true),
+            //     // 'image' => $data[''],
+            //     'phone' => $data['phone'],
+            //     'email' => $data['email'],
+                
+            // ]);
+    
+            $user = User::create([
+                'name' => $request->name,
+                'password' => Hash::make($request->password),
+                'username' => strstr($request->email, '@', true),
+                // 'image' => $request->,
+                'phone' => $request->phone,
+                'email' => $request->email,
+            ]);
+    
+    
+    
+            $token = $user->createToken(User::USER_TOKEN);
+    
+            /**  M1 : */
+            // return $this->sendResponse([
+            //     'userData'=>$user,
+            //    'token'=> $token->plainTextToken,
+            // ],'sucess','User has been register successfully.',self::SUCCESS_CODE);
+    
+            /**  M2 :  This better  */
+    
+            DB::commit();
+            return response()->json([
+                'userData'=>$user,
+                'token'=> $token->plainTextToken,
+                'message' => 'User has been register successfully.',
+            ], self::SUCCESS_CODE);
+
+        }catch(\Exception $ex){
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $ex->getMessage(),
+                // 'message' => 'Something wrong !',
+            ], self::ERROR_CODE);
+        }
+    }
+
+
+-------------------------
+M2 : Basic & simple 
+
+   public function register(RegisterRequest $request): JsonResponse{
+
+        try{
+            DB::beginTransaction();
+
+            if($request->hasFile('image')){
+
+                $imageName = $this->uploadImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+                User::create([
+                    'image' => $imageName,
+                ]);
+            }
+    
+
+    
+            $user = User::create([
+                'name' => $request->name,
+                'password' => Hash::make($request->password),
+                'username' => strstr($request->email, '@', true),
+                // 'image' => $request->,
+                'phone' => $request->phone,
+                'email' => $request->email,
+            ]);
+    
+    
+    
+            $token = $user->createToken(User::USER_TOKEN);
+    
+    
+            DB::commit();
+            return response()->json([
+                'userData'=>$user,
+                'token'=> $token->plainTextToken,
+                'message' => 'User has been register successfully.',
+            ], self::SUCCESS_CODE);
+
+        }catch(\Exception $ex){
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $ex->getMessage(),
+                // 'message' => 'Something wrong !',
+            ], self::ERROR_CODE);
+        }
+
+    }
+
+-------------------------
+
+M3 : More profissional ,optimazable , faster , modern , easy to understand and read
+
+    public function register(RegisterRequest $request){
+        try {
+            DB::beginTransaction();
+
+            $user = User::create($this->getUserData($request));
+
+            if ($request->hasFile('image')) {
+                $imageName = $this->uploadImage_Trait($request, 'image', self::FOLDER_PATH, self::FOLDER_NAME);
+                $user->update(['image' => $imageName]);
+            }
+
+            $token = $user->createToken(User::USER_TOKEN);
+
+            DB::commit();
+
+            return response()->json([
+                'userData' => $user,
+                'token' => $token->plainTextToken,
+                'message' => 'User has been registered successfully.',
+            ], self::SUCCESS_CODE);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $ex->getMessage(),
+            ], self::ERROR_CODE);
+        }
+    }
+
+    private function getUserData(RegisterRequest $request){
+        return [
+            'name' => $request->name,
+            'password' => Hash::make($request->password),
+            'username' => strstr($request->email, '@', true),
+            'phone' => $request->phone,
+            'email' => $request->email,
+        ];
+    }
+
+
+
+
+####################################################################################
+
+
+sendResponse or response()->json() or response : all the same but for laravel the seconde one is better .
+
+####################################################################################
+
+
+
+
+when you want to reset password : (i talk when link to reset is send to email and you want to reset the password )
+when you click to the link they redirect you to page not work but you need just the token from the url (you found it in the url)
+
+
+
+
+
+
