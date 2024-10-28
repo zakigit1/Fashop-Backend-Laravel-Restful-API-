@@ -17,31 +17,37 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
+
         $guards = empty($guards) ? [null] : $guards;
 
-        foreach ($guards as $guard) {
-
+        ########## M1 : 
+        foreach ($guards as $guard) {//guard : auth
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                if($request->user()->role == 'admin'){
+                    return redirect(RouteServiceProvider::ADMIN);
+                }elseif($request->user()->role == 'user'){
+                    return redirect(RouteServiceProvider::HOME);
+                }
             }
         }
 
+        // return $next($request);
+        
+        
+        ########## M2 : if you add guard use this method 
 
-        // if (Auth::check()) {
-        //     $user = Auth::user();
-
-        //     // Redirect based on role
-        //     if ($user->role === 'admin') {
-        //         return redirect()->route('admin.dashboard');
-        //     } elseif ($user->role === 'user') {
-        //         return redirect()->route('user.dashboard');
-        //     }
+        // foreach ($guards as $guard) {//guard : auth
+        //     if (Auth::guard($guard)->check()) {
+        //         if ($guard == 'admin'){
+        //             return redirect(RouteServiceProvider::ADMIN);
+        //         }
+        //         else{// $guard == 'Web'
+        //             return redirect(RouteServiceProvider::HOME);
+        //         } 
+        //     }  
         // }
 
-
-
-
-
         return $next($request);
+
     }
 }

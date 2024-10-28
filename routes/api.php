@@ -85,6 +85,16 @@ Route::group([],function () {
         Route::delete('/{id}', [CategoryController::class, 'destroy'])
             ->name('categories.destroy');
     });
+
 });
 
 
+// test of redirect middleware : 
+
+// Route::get('admin/dashboard',function(){
+//     dd('You Are in Admin Dashboard');
+// })->middleware('auth');//after add auth:admin
+
+// Route::get('/dashboard',function(){
+//     dd('You Are in User Dashboard');
+// })->middleware('auth');

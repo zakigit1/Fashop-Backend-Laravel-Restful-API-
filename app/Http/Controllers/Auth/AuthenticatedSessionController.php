@@ -18,10 +18,12 @@ class AuthenticatedSessionController extends Controller
     {
         
         $credentials = $request->only('email', 'password');
-
+        
         if (Auth::attempt($credentials)) {
+            
             $user = Auth::user();
-            if($user->role != 'admin'){
+
+            if($user->role == 'user'){
                 if (!$user->hasVerifiedEmail()) {
                     Auth::logout();
                     return response()->json(['message' => 'Your email address is not verified. Please check your email.'], 403);
@@ -40,9 +42,7 @@ class AuthenticatedSessionController extends Controller
             return response()->json([
                 'userData' => $user,
                 'token' => $token->plainTextToken,
-            ]);
-
-
+            ],200);
         }else{
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -56,10 +56,9 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-        $request->user()->tokens()->delete();
 
         return response()->json([
             'message' => 'Logged out successfully.',
-        ]);
+        ],200);
     }
 }
