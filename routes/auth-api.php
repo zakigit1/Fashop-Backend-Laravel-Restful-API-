@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Auth;
             ->middleware('auth:api')
             // ->middleware('auth:sanctum')
             ->name('logout');
-
         });
 
 

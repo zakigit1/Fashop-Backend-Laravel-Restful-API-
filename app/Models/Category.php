@@ -16,7 +16,7 @@ class Category extends Model implements TranslatableContract
 
     protected $table = 'categories';
 
-    protected $fillable = ['parent_id','status'];
+    protected $fillable = ['parent_id','status','icon'];
 
     protected $hidden = [
         'created_at',
@@ -26,15 +26,47 @@ class Category extends Model implements TranslatableContract
     public $translatedAttributes = ['name','slug'];
 
 
-    public function perant():BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
 
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id');
-    }
+    /**###################################################Scopes Start################################################## */
+        public function scopeParent($query){
+            return $query -> whereNull('parent_id');
+        }
+
+        public function scopeChild($query){
+            return $query -> whereNotNull('parent_id');
+        }
+        public function scopeActive($query){
+            return $query -> where('is_active', 1) ;
+        }
+    /**###################################################Scopes End#################################################### */
+
+
+
+
+
+    /**###################################################Relations End#################################################### */
+        public function _parent():BelongsTo
+        {
+            return $this->belongsTo(Category::class, 'parent_id');
+        }
+
+        public function children(): HasMany
+        {
+            return $this->hasMany(Category::class, 'parent_id');
+        }
+    /**###################################################Relations End#################################################### */
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

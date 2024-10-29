@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\Dashboard;
 
 
 use App\Http\Requests\BrandRequest;
-
+use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
@@ -23,18 +23,52 @@ class BrandController extends Controller
     public function index(){
         try{
 
-            $brands = Brand::where('status',1)->orderBy('id','DESC')->paginate(20);
+            $brands = Brand::with(['translations' => function($query){
+                        $query->where('locale',config('translatable.locale'));// this is work 100%
+                        //  $query->where('locale',config('app.locale'));
+                    }])
+                ->where('status',1)
+                ->orderBy('id','DESC')
+                ->paginate(1);
+
+
+                // $brands = Brand::paginate(10); // Adjust the number as needed
+                return response()->json([
+                    'status'=>'success',
+                    'message'=>'All Brands',
+                    'pagination'=> [
+                        'current_page' => $brands->currentPage(),
+                        'total_page' => $brands->total(),
+                        'per_page' => $brands->perPage(),
+                        'last_page' => $brands->lastPage(),
+                        'has_next' => $brands->hasMorePages(),
+                        'has_previous' => $brands->currentPage() > 1,
+                    ],
+                    'data' => $brands->items(),
+                ]);
+
+
+
+
+
+
+
             return $this->success($brands,'All Brands',SUCCESS_CODE);
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
+            
         }
     }
 
 
     public function show(string $id){
         try{
-            $brand = Brand::find($id);
+            $brand = Brand::with(['translations' => function($query){
+                        $query->where('locale',config('translatable.locale'));// this is work 100%
+                        //  $query->where('locale',config('app.locale'));
+                    }])->find($id);
+
             if(!$brand){
                 return $this->error('Brand Is Not Found!',ERROR_CODE);
             }
@@ -62,7 +96,7 @@ class BrandController extends Controller
 
             $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
 
-            ## M1
+        
             $brand = Brand::create([
                 "logo" => $logo_name,
                "status" => $request->status,
@@ -99,7 +133,7 @@ class BrandController extends Controller
 
     public function update(BrandRequest $request,string $id){
         try{
-            // return $request->all();
+
             DB::beginTransaction();
 
             
@@ -116,18 +150,23 @@ class BrandController extends Controller
                 $logo_name = $this->updateImage_Trait($request,'logo',BrandController::FOLDER_PATH,BrandController::FOLDER_NAME,$old_logo);
                 $brand->update(['logo'=>$logo_name]);
             }
-            if($request->has('status')){
-                $brand->update(["status" => $request->status]);
-            }
+
+            /**  if you use postman */
+            // if($request->has('status')){
+            //     $brand->update(["status" => $request->status]);
+            // }
             
+            $brand->update(["status" => $request->status]);
 
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
-               
-                if($request->input("name.$keyLang") != null){
+                /** if u use post man  */
+                // if($request->input("name.$keyLang") != null){
+                //     $brand->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
+                //     $brand->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
+                // }
 
-                    $brand->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
-                    $brand->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
-                }
+                $brand->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
+                $brand->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
             }
     
             $brand->save();
@@ -149,7 +188,6 @@ class BrandController extends Controller
                 return $this->error('Brand Is Not Found!',ERROR_CODE);
             }
 
-            
             
             # Check if the brand have product(s): [without using relation]
             // if(Product::where('brand_id',$brand->id)->count() > 0){

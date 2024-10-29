@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 
 class setLanguage
@@ -16,13 +17,29 @@ class setLanguage
     public function handle(Request $request, Closure $next): Response
     {
 
-        $locale = $request->header('Lang');
-        if (!$locale || !in_array($locale, config('translatable.locales'))) {
+        $locale = $request->header('lang');
+        // $locale = $request->lang;
+
+
+        // Ensure the locale is supported
+        if (!$locale || !array_key_exists($locale, config('translatable.locales.'.config('translatable.locale')))){
+
             $locale = config('translatable.fallback_locale');
+            // $locale = config('app.fallback_locale');
         }
-        app()->setLocale($locale);
+
+
+        ######### M 1 :
+        Config::set('translatable.locale',$locale);
+        // Config::set('app.locale',$locale);
+        
+        ######### M 2 :
+        // config(['translatable.locale' => $locale]);
+        // app()->setLocale($locale);
+
         return $next($request);
         
-
     }
 }
+
+
