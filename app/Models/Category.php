@@ -18,10 +18,10 @@ class Category extends Model implements TranslatableContract
 
     protected $fillable = ['parent_id','status','icon'];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
+    // protected $hidden = [
+    //     'created_at',
+    //     'updated_at'
+    // ];
 
     public $translatedAttributes = ['name','slug'];
 

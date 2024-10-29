@@ -18,10 +18,10 @@ class Brand extends Model implements TranslatableContract
 
     protected $fillable = ['logo','status'];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
+    // protected $hidden = [
+    //     'created_at',
+    //     'updated_at'
+    // ];
 
     public $translatedAttributes = ['name','slug'];
 

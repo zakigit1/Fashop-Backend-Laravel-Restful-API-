@@ -24,10 +24,12 @@ class CategoryController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->success($categories,'All Categories',SUCCESS_CODE);
+            return $this->paginationResponse($categories,'categories','All Categories',SUCCESS_CODE);
+
         }catch(\Exception $ex){ 
-            // return $this->error($ex->getMessage(),ERROR_CODE);
-            return $this->error('error from catch',ERROR_CODE);
+            
+            return $this->error($ex->getMessage(),ERROR_CODE);
+          
         }
 
     }

@@ -10,4 +10,5 @@ class BrandTranslation extends Model
   
     public $timestamps = false;
     protected $fillable = ['name','slug'];
+    protected $hidden = ['id','brand_id'];
 }

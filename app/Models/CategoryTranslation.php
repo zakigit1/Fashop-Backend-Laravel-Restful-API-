@@ -12,4 +12,5 @@ class CategoryTranslation extends Model
 
     public $timestamps = false;
     protected $fillable = ['name','slug'];
+    protected $hidden = ['id','category_id'];
 }

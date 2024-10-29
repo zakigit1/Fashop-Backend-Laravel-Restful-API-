@@ -32,22 +32,24 @@ class BrandController extends Controller
                 ->paginate(1);
 
 
-                // $brands = Brand::paginate(10); // Adjust the number as needed
-                return response()->json([
-                    'status'=>'success',
-                    'message'=>'All Brands',
-                    'pagination'=> [
-                        'current_page' => $brands->currentPage(),
-                        'total_page' => $brands->total(),
-                        'per_page' => $brands->perPage(),
-                        'last_page' => $brands->lastPage(),
-                        'has_next' => $brands->hasMorePages(),
-                        'has_previous' => $brands->currentPage() > 1,
-                    ],
-                    'brands' => $brands->items(),
-                ]);
 
-            // return $this->success($brands,'All Brands',SUCCESS_CODE);
+            // return response()->json([
+            //     'status'=>'success',
+            //     'message'=>'All Brands',
+            //     'pagination'=> [
+            //         'current_page' => $brands->currentPage(),
+            //         'total_page' => $brands->total(),
+            //         'per_page' => $brands->perPage(),
+            //         'last_page' => $brands->lastPage(),
+            //         'has_next' => $brands->hasMorePages(),
+            //         'has_previous' => $brands->currentPage() > 1,
+            //     ],
+            //     'brands' => $brands->items(),
+            // ]);
+
+                
+            return $this->paginationResponse($brands,'brands','All Brands',SUCCESS_CODE);
+           
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
