@@ -12,6 +12,6 @@ class EncryptCookies extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // 'sanctum_token', // exclude the Sanctum authentication cookie from encryption
     ];
 }

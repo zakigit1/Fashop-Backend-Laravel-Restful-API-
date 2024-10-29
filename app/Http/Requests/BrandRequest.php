@@ -43,33 +43,33 @@ class BrandRequest extends FormRequest
 
 
         ### Method 2 : this is more Effective 
-        $rules = [
-            'logo' => $id ? 'nullable|image' : 'required|image',
-            'name' =>  $id ? 'array' : 'required|array',
-            'status' =>  $id ? 'boolean' : 'required|boolean',
-           
-        ];
-
-        // Add rules for each locale
-        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id' : 'required|string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id';
-        }
-        return $rules;
-
-
-        ### Method 2 : this is more Effective [For Ramy] perfect
         // $rules = [
         //     'logo' => $id ? 'nullable|image' : 'required|image',
-        //     'name' => 'required|array',
-        //     'status' => 'required|boolean',
+        //     'name' =>  $id ? 'array' : 'required|array',
+        //     'status' =>  $id ? 'boolean' : 'required|boolean',
            
         // ];
 
         // // Add rules for each locale
         // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-        //     $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id';
+        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id' : 'required|string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id';
         // }
         // return $rules;
+
+
+        ### Method 3 : this is more Effective [For Ramy] perfect
+        $rules = [
+            'logo' => $id ? 'nullable|image' : 'required|image',
+            'name' => 'required|array',
+            'status' => 'required|boolean',
+        
+        ];
+
+        // Add rules for each locale
+        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
+            $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id';
+        }
+        return $rules;
     }
 
 

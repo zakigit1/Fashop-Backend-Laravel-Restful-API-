@@ -16,36 +16,39 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): JsonResponse
     {
-        
-        $credentials = $request->only('email', 'password');
-        
-        if (Auth::attempt($credentials)) {
-            
-            $user = Auth::user();
+        try{
 
+            $request->authenticate();// this is like Auth::attemp 
+    
+            $user = $request->user();
+        
             if($user->role == 'user'){
                 if (!$user->hasVerifiedEmail()) {
                     Auth::logout();
                     return response()->json(['message' => 'Your email address is not verified. Please check your email.'], 403);
                 }
             }
-
-            $request->authenticate();
-    
-            $user = $request->user();
     
             $user->tokens()->delete();
-    
+        
             $token = $user->createToken('api-token-login');
-    
-           
+        
+               
             return response()->json([
                 'userData' => $user,
                 'token' => $token->plainTextToken,
             ],200);
-        }else{
-            return response()->json(['error' => 'Unauthorized'], 401);
+            
+        }catch(\Exception $ex){
+            
+            return response()->json(['error' => $ex->getMessage()], 500);
+
         }
+        
+
+        
+        // return response()->json(['error' => 'Unauthorized'], 401);
+        
 
     }
 

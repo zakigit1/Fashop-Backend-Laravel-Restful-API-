@@ -45,7 +45,7 @@ Route::group(['prefix'=>'user','middleware'=>'checkPassword'],function(){
 
 
 // Route::middleware(['api', 'setLang'])->group(function () {
-Route::group([],function () {
+Route::group(['prefix'=>'admin','middleware'=>'auth:api','as'=>'admin.'],function () {
 
     // Brand Routes
     Route::prefix('brands')->group(function () {

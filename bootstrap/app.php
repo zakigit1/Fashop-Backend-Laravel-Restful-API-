@@ -52,4 +52,7 @@ $app->singleton(
 |
 */
 
+// new update zdtha nhar ldert guard api 
+// $app->make(Illuminate\Contracts\Http\Kernel::class)->pushMiddleware('api');
+
 return $app;
