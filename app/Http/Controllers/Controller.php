@@ -53,6 +53,12 @@ class Controller extends BaseController
     {
         return $this->sendResponse(null, 'error', $message, $statusCode);
     }
+
+
+    public function paginationResponse(){
+        
+    }
+
 }
 
 

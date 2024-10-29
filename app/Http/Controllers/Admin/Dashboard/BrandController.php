@@ -44,16 +44,10 @@ class BrandController extends Controller
                         'has_next' => $brands->hasMorePages(),
                         'has_previous' => $brands->currentPage() > 1,
                     ],
-                    'data' => $brands->items(),
+                    'brands' => $brands->items(),
                 ]);
 
-
-
-
-
-
-
-            return $this->success($brands,'All Brands',SUCCESS_CODE);
+            // return $this->success($brands,'All Brands',SUCCESS_CODE);
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
