@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+// ? auth:sunctum or auth:api  the same .
+
 
 Route::middleware(['auth:sanctum','checkPassword'])->get('/user', function (Request $request) {
     return $request->user();

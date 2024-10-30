@@ -76,5 +76,10 @@ class Kernel extends HttpKernel
             'setLang' => \App\Http\Middleware\setLanguage::class,
             // 'role.redirect' => \App\Http\Middleware\RedirectIfAuthenticatedByRole::class,
             // 'role' => \App\Http\Middleware\RoleMiddleware::class,
+
+            'admin-api' => \App\Http\Middleware\GeneralGuard::class,
+
+
+
     ];
 }

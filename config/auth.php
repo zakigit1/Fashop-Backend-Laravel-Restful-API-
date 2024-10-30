@@ -44,6 +44,10 @@ return [
             'driver' => 'sanctum', // Use Sanctum as the driver for API-based authentication
             'provider' => 'users',
         ], 
+        // 'admin-api' => [
+        //     'driver' => 'sanctum', // Use Sanctum as the driver for API-based authentication
+        //     'provider' => 'users',
+        // ], 
     ],
 
     /*
@@ -68,6 +72,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        // 'admins' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\Admin::class,
+        // ],
+        
 
         // 'users' => [
         //     'driver' => 'database',

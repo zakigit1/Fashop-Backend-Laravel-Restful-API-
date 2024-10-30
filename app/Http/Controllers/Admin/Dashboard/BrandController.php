@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Dashboard;
 
 use App\Http\Requests\BrandRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Brand;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
@@ -22,7 +23,6 @@ class BrandController extends Controller
 
     public function index(){
         try{
-
             $brands = Brand::with(['translations' => function($query){
                         $query->where('locale',config('translatable.locale'));// this is work 100%
                         //  $query->where('locale',config('app.locale'));

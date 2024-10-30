@@ -5,6 +5,9 @@ namespace App\Http\Middleware;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 
+
+
+
 class Authenticate extends Middleware
 {
     /**
@@ -12,21 +15,9 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        return $request->expectsJson() ? null : route('login'); //default of laravel
 
-
-        // if(!($request->expectsJson())){
-
-        //     if($request->is('admin*')){
-        //         return route('get.login');
-        //     }else{
-        //         return route('login');
-        //     }
-        // }else{
-        //     return null;
-        // }
-
-
+        // return  $request->is('api/v1/admin*') ? route('admin.login') : route('login');
 
     }
 }

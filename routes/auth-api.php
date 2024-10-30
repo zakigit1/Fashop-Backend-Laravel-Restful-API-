@@ -22,12 +22,11 @@ use Illuminate\Support\Facades\Auth;
 
             Route::post('/login', [AdminAuthController::class, 'store'])
                         // ->middleware(['guest'])
-                        ->middleware(['guest:api'])
+                        ->middleware(['guest:admin-api'])
                         ->name('login');
 
             Route::post('/logout', [AdminAuthController::class, 'destroy'])
-            ->middleware('auth:api')
-            // ->middleware('auth:sanctum')
+            ->middleware('admin-api:api')
             ->name('logout');
         });
 
@@ -57,9 +56,9 @@ use Illuminate\Support\Facades\Auth;
                         ->name('password.store');
 
 
-        Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-                        ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
-                        ->name('verification.verify');
+        // Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+        //                 ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
+        //                 ->name('verification.verify');
 
         Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
                         ->middleware(['auth:sanctum', 'throttle:6,1'])
@@ -72,6 +71,7 @@ use Illuminate\Support\Facades\Auth;
         
         // for email verfication
         Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+            // ->middleware(['signed', 'throttle:6,1'])
             ->name('verification.verify');
     /************************************** APP AUTH End ***************************************************************/
 

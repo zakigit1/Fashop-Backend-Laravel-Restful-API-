@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 
 // when you modify middleware guard auth:api-admin add it in routeserviceprovider
-Route::group(['middleware'=>'auth:api','as'=>'admin.'],function () {
+
+Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
 
     // Brand Routes
     Route::prefix('brands')->group(function () {
