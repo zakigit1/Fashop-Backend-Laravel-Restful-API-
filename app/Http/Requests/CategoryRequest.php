@@ -26,35 +26,35 @@ class CategoryRequest extends FormRequest
     {
         $id = $this->id;
         
-        ### Method 2 : this is more Effective 
-        $rules = [
-            'icon' => $id ? 'string' : 'required|string',
-            'name' =>  $id ? 'array' : 'required|array',
-            'status' =>  $id ? 'boolean' : 'required|boolean',
-            'parent_id' => 'nullable|numeric|exists:categories,id'
-        ];
-
-        // Add rules for each locale
-        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-        }
-        return $rules;
-
-
-        ### Method 3 : this is more Effective [For Ramy] perfect
+        // ### Method 2 : this is more Effective [testing with post man]
         // $rules = [
-        //     'icon' => 'required|string',
-        //     'name' => 'required|array',
-        //     'status' => 'required|boolean',
+        //     'icon' => $id ? 'string' : 'required|string',
+        //     'name' =>  $id ? 'array' : 'required|array',
+        //     'status' =>  $id ? 'boolean' : 'required|boolean',
         //     'parent_id' => 'nullable|numeric|exists:categories,id'
-        
         // ];
 
         // // Add rules for each locale
         // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-        //     $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
         // }
         // return $rules;
+
+
+        ### Method 3 : this is more Effective [For Ramy] perfect
+        $rules = [
+            'icon' => 'required|string',
+            'name' => 'required|array',
+            'status' => 'required|boolean',
+            'parent_id' => 'nullable|numeric|exists:categories,id'
+        
+        ];
+
+        // Add rules for each locale
+        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
+            $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+        }
+        return $rules;
         
     }
 

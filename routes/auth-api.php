@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 
             Route::post('/login', [AdminAuthController::class, 'store'])
                         // ->middleware(['guest'])
-                        ->middleware(['guest:admin-api'])
+                        ->middleware(['guest:api'])
                         ->name('login');
 
             Route::post('/logout', [AdminAuthController::class, 'destroy'])
