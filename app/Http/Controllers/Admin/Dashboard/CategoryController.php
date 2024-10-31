@@ -92,7 +92,7 @@ class CategoryController extends Controller
 
 
             if(!$category){
-                return $this->error('Category Is Not Found!',ERROR_CODE);
+                return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
             
@@ -118,7 +118,7 @@ class CategoryController extends Controller
             $category = Category::find($id);
 
             if(!$category){
-                return $this->error('Category Is Not Found!',ERROR_CODE);
+                return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
             $category->update([
@@ -154,7 +154,7 @@ class CategoryController extends Controller
             $category = Category::find($id);
 
             if(!$category){
-                return $this->error('Category Is Not Found!',ERROR_CODE);
+                return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
             

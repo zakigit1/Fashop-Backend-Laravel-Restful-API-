@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BrandTranslation extends Model
+class ProductTranslation extends Model
 {
     use HasFactory;
+
+    
     public $timestamps = false;
-    protected $fillable = ['name','slug'];
-    protected $hidden = ['id','brand_id'];
+    protected $fillable = ['name','slug','description','product_type'];
+    protected $hidden = ['id','product_id'];
+
 }

@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('icon');
-            $table->bigInteger('parent_id',false,true)->nullable();
-            $table->boolean('status');
+            
+            $table->unsignedBigInteger('parent_id')->nullable();  // Changed from bigInteger to unsignedBigInteger
+
+            $table->boolean('status')->default(1);
             $table->timestamps();
 
             $table->foreign('parent_id')

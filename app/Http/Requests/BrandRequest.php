@@ -67,7 +67,7 @@ class BrandRequest extends FormRequest
 
         // Add rules for each locale
         foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:brand_translations,name,'.$id.',brand_id';
+            $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:brand_translations,name,'.$id.',brand_id';
         }
         return $rules;
     }

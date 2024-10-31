@@ -2,17 +2,14 @@
 
 use App\Http\Controllers\Admin\Dashboard\BrandController;
 use App\Http\Controllers\Admin\Dashboard\CategoryController;
+use App\Http\Controllers\Admin\Dashboard\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+|                   API Routes (-*- JUST FOR ADMIN -*-)
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
 |
 */
 
@@ -34,7 +31,7 @@ Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
         // in update problem to us put method 
         // Route::put('/{id}', [BrandController::class, 'update'])
         //     ->name('brands.update');
-        Route::post('/{id}', [BrandController::class, 'update'])
+        Route::post('/{id}/update', [BrandController::class, 'update'])
             ->name('brands.update');
         
         Route::delete('/{id}', [BrandController::class, 'destroy'])
@@ -53,11 +50,34 @@ Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
         Route::post('/', [CategoryController::class, 'store'])
             ->name('categories.store');
         
-        Route::post('/{id}', [CategoryController::class, 'update'])
+        // Route::put('/{id}', [CategoryController::class, 'update'])
+        //     ->name('categories.update');
+        Route::post('/{id}/update', [CategoryController::class, 'update'])
             ->name('categories.update');
         
         Route::delete('/{id}', [CategoryController::class, 'destroy'])
             ->name('categories.destroy');
+    });
+
+
+    // Product Routes
+    Route::prefix('products')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->middleware('setLang')
+            ->name('products.index');
+        
+        Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang')
+            ->name('products.show');
+        
+        Route::post('/', [ProductController::class, 'store'])
+            ->name('products.store');
+        
+        // Route::put('/{id}/update', [ProductController::class, 'update'])
+        //     ->name('products.update');
+        Route::post('/{id}/update', [ProductController::class, 'update'])
+            ->name('products.update');
+        
+        Route::delete('/{id}', [ProductController::class, 'destroy'])
+            ->name('products.destroy');
     });
 
 });

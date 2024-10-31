@@ -66,7 +66,7 @@ class BrandController extends Controller
                     }])->find($id);
 
             if(!$brand){
-                return $this->error('Brand Is Not Found!',ERROR_CODE);
+                return $this->error('Brand Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
             
             // $brand->load('translations');
@@ -127,6 +127,7 @@ class BrandController extends Controller
 
     }
 
+
     public function update(BrandRequest $request,string $id){
         try{
 
@@ -136,7 +137,7 @@ class BrandController extends Controller
             $brand = Brand::find($id);
 
             if(!$brand){
-                return $this->error('Brand Is Not Found!',ERROR_CODE);
+                return $this->error('Brand Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
 
@@ -176,12 +177,13 @@ class BrandController extends Controller
         }
     }
 
+    
     public function destroy(string $id){
         try{
             $brand = Brand::find($id);
 
             if(!$brand){
-                return $this->error('Brand Is Not Found!',ERROR_CODE);
+                return $this->error('Brand Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
             

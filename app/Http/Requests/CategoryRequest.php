@@ -52,7 +52,7 @@ class CategoryRequest extends FormRequest
 
         // Add rules for each locale
         foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+            $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:category_translations,name,'.$id.',category_id';
         }
         return $rules;
         
