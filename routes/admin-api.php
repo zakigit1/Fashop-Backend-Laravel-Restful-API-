@@ -34,7 +34,7 @@ Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
         Route::post('/{id}/update', [BrandController::class, 'update'])
             ->name('brands.update');
         
-        Route::delete('/{id}', [BrandController::class, 'destroy'])
+        Route::delete('/{id}/delete', [BrandController::class, 'destroy'])
             ->name('brands.destroy');
     });
 
@@ -55,7 +55,7 @@ Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
         Route::post('/{id}/update', [CategoryController::class, 'update'])
             ->name('categories.update');
         
-        Route::delete('/{id}', [CategoryController::class, 'destroy'])
+        Route::delete('/{id}/delete', [CategoryController::class, 'destroy'])
             ->name('categories.destroy');
     });
 
@@ -76,7 +76,7 @@ Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
         Route::post('/{id}/update', [ProductController::class, 'update'])
             ->name('products.update');
         
-        Route::delete('/{id}', [ProductController::class, 'destroy'])
+        Route::delete('/{id}/delete', [ProductController::class, 'destroy'])
             ->name('products.destroy');
     });
 

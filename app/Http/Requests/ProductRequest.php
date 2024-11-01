@@ -28,36 +28,36 @@ class ProductRequest extends FormRequest
     // {
     //     $id = $this->id;
         
-    //     // ### Method 2 : this is more Effective [testing with post man]
-    //     // $rules = [
+        // ### Method 2 : this is more Effective [testing with post man]
+        // $rules = [
 
-    //     // 'thumb_image' => $id ? 'nullable' : 'required',
+        // 'thumb_image' => $id ? 'nullable' : 'required',
 
-    //     // 'qty'=> $id ? 'numeric|integer|min:0|max:100000' : 'required|numeric|integer|min:0|max:100000',
-    //     // 'price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
-    //     // 'offer_price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
-    //     // 'status' => $id ? 'boolean' : 'required|boolean',
+        // 'qty'=> $id ? 'numeric|integer|min:0|max:100000' : 'required|numeric|integer|min:0|max:100000',
+        // 'price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
+        // 'offer_price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
+        // 'status' => $id ? 'boolean' : 'required|boolean',
 
-    //     // 'offer_start_date'=> 'nullable|date|after_or_equal:today',
-    //     // 'offer_end_date'=> 'nullable|date|after:offer_start_date',
-    //     // 'sku'=> 'nullable|string|min:10|max:50',
-    //     // 'video_link'=> 'nullable|url',
+        // 'offer_start_date'=> 'nullable|date|after_or_equal:today',
+        // 'offer_end_date'=> 'nullable|date|after:offer_start_date',
+        // 'sku'=> 'nullable|string|min:10|max:50',
+        // 'video_link'=> 'nullable|url',
 
-    //     // 'brand_id' => 'nullable|numeric|exists:brands,id',
+        // 'brand_id' => 'nullable|numeric|exists:brands,id',
         
-    //     // 'name' =>  $id ? 'array' : 'required|array',
-    //     // 'description' => $id ? 'array' : 'required|array',
-    //     // 'product_type' => 'nullable|array',
+        // 'name' =>  $id ? 'array' : 'required|array',
+        // 'description' => $id ? 'array' : 'required|array',
+        // 'product_type' => 'nullable|array',
 
-    //     // ];
+        // ];
 
-    //     // // Add rules for each locale
-    //     // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-    //     //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-    //     //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-    //     //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-    //     // }
-    //     // return $rules;
+        // // Add rules for each locale
+        // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
+        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
+        // }
+        // return $rules;
 
 
     //     ### Method 2 : this is more Effective [For Ramy] perfect
@@ -81,7 +81,7 @@ class ProductRequest extends FormRequest
     //         'product_type' => 'nullable|array',
     //     ];
 
-    //     // Add rules for each locale
+        // // Add rules for each locale
     //     foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
     //         $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:product_translations,name,'.$id.',product_id';
     //         $rules["description.$keyLang"] = 'required|string|unique:product_translations,description,'.$id.',product_id';
@@ -92,17 +92,22 @@ class ProductRequest extends FormRequest
 
 
     ### Method 2 : this is Perfectooooo [For Ramy] 
-    public function rules($id = null)
+    public function rules()
     {
-        $maxFileSize = 5000; // 5MB
-        $maxPrice = 100000000; // 100 million
+        $id = $this->id;
+
+        $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes (programmer common use)
+        $maxPrice = 1000000; // 100 million
         $maxQty = 100000;
+        $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
+
+
 
         $rules = [
             // Image validation
             'thumb_image' => [
                 $id ? 'nullable' : 'required',
-                // 'image',
+                'image',
                 'max:' . $maxFileSize,
                 'mimes:jpeg,png,jpg,webp', // Add supported formats
             ],
@@ -121,7 +126,6 @@ class ProductRequest extends FormRequest
                 'numeric',
                 'min:0',
                 'max:' . $maxPrice,
-                'gt:offer_price',
                 'decimal:0,2', // Allow up to 2 decimal places
             ],
 
@@ -174,47 +178,67 @@ class ProductRequest extends FormRequest
             ],
 
             // Translation arrays
-            'name' => 'required|array',
-            'description' => 'required|array',
-            'product_type' => 'nullable|array',
+
+            'name' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+            ],
+            'description' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+                
+            ],
+            'product_type' => [
+                'nullable',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+
+            ],
         ];
 
         // Add translation rules for each locale
-        foreach (config('translatable.locales.' . config('translatable.locale')) as $keyLang => $lang) {
-            $rules["name.$keyLang"] = [
-                'required',
-                'string',
-                'min:2',
-                'max:200',
-                Rule::unique('product_translations', 'name')
-                    ->ignore($id, 'product_id')
-                    ->where(function ($query) use ($keyLang) {
-                        return $query->where('locale', $keyLang);
-                    })
-            ];
+        if($lang_number > 0){ 
+            foreach (config('translatable.locales.' . config('translatable.locale')) as $keyLang => $lang) {
+                $rules["name.$keyLang"] = [
+                    'required',
+                    'string',
+                    'min:2',
+                    'max:200',
+                    Rule::unique('product_translations', 'name')
+                        ->ignore($id, 'product_id')
+                        ->where(function ($query) use ($keyLang) {
+                            return $query->where('locale', $keyLang);
+                        })
+                ];
 
-            $rules["description.$keyLang"] = [
-                'required',
-                'string',
-                Rule::unique('product_translations', 'description')
-                    ->ignore($id, 'product_id')
-                    ->where(function ($query) use ($keyLang) {
-                        return $query->where('locale', $keyLang);
-                    })
-            ];
+                $rules["description.$keyLang"] = [
+                    'required',
+                    'string',
+                    Rule::unique('product_translations', 'description')
+                        ->ignore($id, 'product_id')
+                        ->where(function ($query) use ($keyLang) {
+                            return $query->where('locale', $keyLang);
+                        })
+                ];
 
-            $rules["product_type.$keyLang"] = [
-                'nullable', // Changed from string to nullable since array is nullable
-                'string',
-                'min:2',
-                'max:100',
-                Rule::unique('product_translations', 'product_type')
-                    ->ignore($id, 'product_id')
-                    ->where(function ($query) use ($keyLang) {
-                        return $query->where('locale', $keyLang);
-                    })
-            ];
-    }
+                $rules["product_type.$keyLang"] = [
+                    'nullable', // Changed from string to nullable since array is nullable
+                    'string',
+                    'min:2',
+                    'max:100',
+                    Rule::unique('product_translations', 'product_type')
+                        ->ignore($id, 'product_id')
+                        ->where(function ($query) use ($keyLang) {
+                            return $query->where('locale', $keyLang);
+                        })
+                ];
+            }
+        }
 
     return $rules;
 }

@@ -130,10 +130,8 @@ class BrandController extends Controller
 
     public function update(BrandRequest $request,string $id){
         try{
-
             DB::beginTransaction();
 
-            
             $brand = Brand::find($id);
 
             if(!$brand){

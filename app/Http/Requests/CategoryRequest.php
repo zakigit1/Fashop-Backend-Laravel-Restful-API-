@@ -25,6 +25,8 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         $id = $this->id;
+
+        $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
         
         // ### Method 2 : this is more Effective [testing with post man]
         // $rules = [
@@ -43,16 +45,23 @@ class CategoryRequest extends FormRequest
 
         ### Method 3 : this is more Effective [For Ramy] perfect
         $rules = [
-            'icon' => 'required|string',
-            'name' => 'required|array',
+            'icon' => 'required|string|min:2|max:255',//you can add unique but i want to be the user able to duplacate normaly the icons
+            'name' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+            ],
             'status' => 'required|boolean',
             'parent_id' => 'nullable|numeric|exists:categories,id'
         
         ];
 
         // Add rules for each locale
-        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:category_translations,name,'.$id.',category_id';
+        if($lang_number > 0){ 
+            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
+                $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:category_translations,name,'.$id.',category_id';
+            }
         }
         return $rules;
         

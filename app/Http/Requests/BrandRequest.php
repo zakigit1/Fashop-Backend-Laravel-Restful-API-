@@ -25,8 +25,13 @@ class BrandRequest extends FormRequest
     public function rules(): array
     { 
         // $id = $this->route('id');
-        // $id = $this->id;
+  
         $id = $this->id;
+
+        $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes (programmer common use)
+        $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
+
+
     
         ### Method 1 : 
         // return [
@@ -42,7 +47,7 @@ class BrandRequest extends FormRequest
         // ];
 
 
-        ### Method 2 : this is more Effective 
+        ### Method 2 : this is more Effective [using post man for testing]
         // $rules = [
         //     'logo' => $id ? 'nullable|image' : 'required|image',
         //     'name' =>  $id ? 'array' : 'required|array',
@@ -57,18 +62,33 @@ class BrandRequest extends FormRequest
         // return $rules;
 
 
+
         ### Method 3 : this is more Effective [For Ramy] perfect
         $rules = [
-            'logo' => $id ? 'nullable|image' : 'required|image',
-            'name' => 'required|array',
-            'status' => 'required|boolean',
+            'logo'=>[
+                $id ? 'nullable' : 'required',
+                'image',
+                'max:' . $maxFileSize,
+                'mimes:jpeg,png,jpg,webp', // Add supported formats
+            ],
         
+            'name' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+            ],
+
+            'status' => 'required|boolean',
         ];
 
         // Add rules for each locale
-        foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-            $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:brand_translations,name,'.$id.',brand_id';
+        if($lang_number > 0){ // new update
+            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
+                $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:brand_translations,name,'.$id.',brand_id';
+            }
         }
+
         return $rules;
     }
 
