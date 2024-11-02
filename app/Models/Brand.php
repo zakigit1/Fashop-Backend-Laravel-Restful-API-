@@ -35,11 +35,11 @@ class Brand extends Model implements TranslatableContract
 
 
     /*                                                 Begin GET                                          */
-    public function getLogoAttribute($value)
-    {
-        $base_url = env('BASE_URL_API','http://localhost:8000');
-        return ($value !== NULL) ? asset( $base_url.'/storage/uploads/images/brands/'.$value) : " ";
-    }
+    // public function getLogoAttribute($value)
+    // {
+    //     $base_url = env('BASE_URL_API','http://localhost:8000');
+    //     return ($value !== NULL) ? asset( $base_url.'/storage/uploads/images/brands/'.$value) : " ";
+    // }
 /*                                                 End GET                                            */
 }
 
