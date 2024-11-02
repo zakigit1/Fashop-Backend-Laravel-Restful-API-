@@ -90,11 +90,18 @@ class BrandController extends Controller
      
             /** Save logo  */
 
-            $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
+            // $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
 
         
+            $path = $request->file('logo')->store('brand-logos', 'public');
+            $url = asset('storage/' . $path);
+
+
+
+
             $brand = Brand::create([
-                "logo" => $logo_name,
+                "logo" => $url,
+                // "logo" => $logo_name,
                "status" => $request->status,
             ]);
 
