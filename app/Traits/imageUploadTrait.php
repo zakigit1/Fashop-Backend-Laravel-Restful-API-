@@ -21,12 +21,16 @@ trait imageUploadTrait{
         //name of the image : 
         $imageName = basename($imageStore);
         
+        // $base_url = env('BASE_URL_API','http://127.0.0.1:8000');
+        // dd($base_url);
+
+        // return $base_url.$imageName;
         return $imageName;
     }
 
     function deleteImage_Trait($old_image):void
     {
-        
+        // dd(public_path($old_image));
         if(file_exists(public_path($old_image))){
             File::delete(public_path($old_image));   
         }

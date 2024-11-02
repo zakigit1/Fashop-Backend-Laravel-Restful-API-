@@ -56,19 +56,26 @@ class Product extends Model implements TranslatableContract
 
     /*                                                  Begin Relation                                  */
 
-        public function category(){
-            return $this->belongsTo(Category::class,'category_id','id','id');
-        }
+    public function categories(){
+        return $this->belongsToMany(
+            Category::class,
+            'product_categories',
+            'product_id',
+            'category_id',
+            'id',
+            'id'
+        );
+    }
         public function brand(){
             return $this->belongsTo(Brand::class,'brand_id','id','id');
         }
 
-        // public function gallery(){
-        //     return $this->hasMany(ProductImageGallery::class,'product_id','id');
-        // }
+        public function gallery(){
+            return $this->hasMany(ProductImageGallery::class,'product_id','id');
+        }
 
 
-        // public function variants(){
+        // public function attributes(){
 
         //     return $this->hasMany(ProductVariant::class,'product_id','id');
         // }

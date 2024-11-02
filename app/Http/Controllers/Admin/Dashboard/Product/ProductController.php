@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Dashboard;
+namespace App\Http\Controllers\Admin\Dashboard\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
@@ -25,10 +25,45 @@ class ProductController extends Controller
     {
         try{
 
-            $products = Product::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])
+            $products = Product::with([
+                    'translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
+                            //  $query->where('locale',config('app.locale'));
+                        },
+                    'categories',
+                    // 'categories' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    'brand',
+                    // 'brand' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    'gallery',
+                    // 'attributes',
+                    // 'attributes' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    // 'attribute_values',
+                    // 'attribute_values' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // }
+                ])    
                 ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
@@ -40,6 +75,13 @@ class ProductController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);
           
         }
+    }
+
+    /**
+     * Adding category(ies) for product.
+    */
+
+    public function addCategory(Request $request,string $id){
     }
 
 
@@ -70,6 +112,9 @@ class ProductController extends Controller
                 "status" => $request->status,
             ]);
 
+            $product->categories()->syncWithoutDetaching($request->categories);
+            // // $product->categories()->attach($request->categories);
+
             /** Store translations for each locale */
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
@@ -80,8 +125,16 @@ class ProductController extends Controller
 
             $product->save() ;
 
+            $product->load('categories');
+
             DB::commit();
             return $this->success($product,'Created Successfully!',SUCCESS_CODE);
+            
+// return $this->success([
+            //     'product' => $product,
+            //     'categories' => $product->categories],
+            //     'Created Successfully!',
+            //     SUCCESS_CODE);
 
         }catch(\Exception $ex){
             DB::rollBack();  

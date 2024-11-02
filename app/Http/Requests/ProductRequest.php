@@ -199,6 +199,9 @@ class ProductRequest extends FormRequest
                 'max:'.$lang_number,
 
             ],
+
+            'categories' => 'required|array|min:1', //[]
+            'categories.*' => 'numeric|exists:categories,id',
         ];
 
         // Add translation rules for each locale
@@ -239,9 +242,9 @@ class ProductRequest extends FormRequest
                 ];
             }
         }
-
-    return $rules;
-}
+    
+        return $rules;
+    }
 
 
     /**

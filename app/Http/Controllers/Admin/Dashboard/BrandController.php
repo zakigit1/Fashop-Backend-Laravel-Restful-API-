@@ -29,7 +29,7 @@ class BrandController extends Controller
                     }])
                 ->where('status',1)
                 ->orderBy('id','DESC')
-                ->paginate(1);
+                ->paginate(20);
 
 
 
@@ -129,6 +129,7 @@ class BrandController extends Controller
 
 
     public function update(BrandRequest $request,string $id){
+        dd($request->all());
         try{
             DB::beginTransaction();
 
@@ -177,6 +178,7 @@ class BrandController extends Controller
 
     
     public function destroy(string $id){
+        dd($id);
         try{
             $brand = Brand::find($id);
 
@@ -199,7 +201,7 @@ class BrandController extends Controller
             
             $this->deleteImage_Trait($brand->logo);
 
-            $brand->delete();
+            // $brand->delete();
 
             return $this->success(null,'Deleted Successfully!',SUCCESS_CODE);
 
