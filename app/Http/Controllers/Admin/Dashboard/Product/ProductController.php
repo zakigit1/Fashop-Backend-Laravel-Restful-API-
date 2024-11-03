@@ -84,10 +84,46 @@ class ProductController extends Controller
     public function show(string $id):JsonResponse
     {
         try{
-            $product = Product::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])->find($id);
+            $product = Product::with([
+                    'translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
+                            //  $query->where('locale',config('app.locale'));
+                        },
+                    'categories',
+                    // 'categories' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    'brand',
+                    // 'brand' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    'gallery',
+                    // 'attributes',
+                    // 'attributes' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // },
+                    // 'attribute_values',
+                    // 'attribute_values' => function($query){
+                    //     $query->with(['translations' => function($query){
+                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                    //     },
+                    //     ]);
+                    // }
+                ])    
+            ->find($id);
 
             if(!$product){
                 return $this->error('Product Is Not Found!',NOT_FOUND_ERROR_CODE);

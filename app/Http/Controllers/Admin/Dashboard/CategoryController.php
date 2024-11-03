@@ -50,9 +50,18 @@ class CategoryController extends Controller
     { 
         try{
             $category = Category::with(['translations' => function($query){
+                    $query->where('locale',config('translatable.locale'));// this is work 100%
+            },'children'=>function($query){
+                    $query->with(['translations' => function($query){
                         $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])->find($id);
+                    }]);
+            },'_parent'=>function($query){
+                $query->with(['translations' => function($query){
+                    $query->where('locale',config('translatable.locale'));// this is work 100%
+                }]);
+            },
+            ])
+            ->find($id);
             if(!$category){
                 return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }

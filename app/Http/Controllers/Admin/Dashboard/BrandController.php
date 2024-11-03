@@ -21,6 +21,7 @@ class BrandController extends Controller
     const FOLDER_NAME = 'brands';
 
 
+
     public function index(){
         try{
             $brands = Brand::with(['translations' => function($query){
@@ -70,6 +71,8 @@ class BrandController extends Controller
 
             // dd($brand);
             return $this->success($brand,'Brand Details',SUCCESS_CODE,'brand');
+
+            // return view('test image.test-images',compact('brand'));
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);

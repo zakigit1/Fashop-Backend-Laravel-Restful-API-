@@ -37,10 +37,10 @@ class Brand extends Model implements TranslatableContract
     /*                                                 Begin GET                                          */
     public function getLogoAttribute($value)
     {
-        $base_url = env('BASE_URL_API','http://localhost:8000');
-        // return ($value !== NULL) ? asset( $base_url.'/storage/uploads/images/brands/'.$value) : " ";
-        
-        return ($value !== NULL) ? asset( '/storage/uploads/images/brands/'.$value) : " ";
+        $base_url = env('BASE_URL_API','http://127.0.0.1:8000');
+        // $base_url = env('BASE_URL_API','http://localhost:3000');
+        return ($value !== NULL) ? asset( $base_url.'/storage/uploads/images/brands/'.$value) : " ";
+        // return ($value !== NULL) ? asset( '/storage/uploads/images/brands/'.$value) : " ";
     }
 /*                                                 End GET                                            */
 
