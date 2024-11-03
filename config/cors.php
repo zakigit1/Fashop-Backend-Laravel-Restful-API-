@@ -15,13 +15,30 @@ return [
     |
     */
 
-    'paths' => ['*'],
-    // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    // 'paths' => ['*'],
+    // // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
+
+    // 'allowed_methods' => ['*'],
+
+    // // 'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    // 'allowed_origins' => ['*'],// the new update 
+
+    // 'allowed_origins_patterns' => [],
+
+    // 'allowed_headers' => ['*'],
+
+    // 'exposed_headers' => [],
+
+    // 'max_age' => 0,
+
+    // 'supports_credentials' => true,
+
+
+    'paths' => ['api/*', 'storage/*', 'sanctum/csrf-cookie'],  // Add 'storage/*'
 
     'allowed_methods' => ['*'],
 
-    // 'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
-    'allowed_origins' => ['*'],// the new update 
+    'allowed_origins' => ['*'],  // In production, specify your app's domain
 
     'allowed_origins_patterns' => [],
 
@@ -31,6 +48,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];

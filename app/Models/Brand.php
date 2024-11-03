@@ -30,10 +30,6 @@ class Brand extends Model implements TranslatableContract
 
 
 
-
-
-
-
     /*                                                 Begin GET                                          */
     public function getLogoAttribute($value)
     {
@@ -43,7 +39,6 @@ class Brand extends Model implements TranslatableContract
         // return ($value !== NULL) ? asset( '/storage/uploads/images/brands/'.$value) : " ";
     }
 /*                                                 End GET                                            */
-
 
 
 
