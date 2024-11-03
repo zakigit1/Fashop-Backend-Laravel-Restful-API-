@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\Dashboard\AdminAuthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+// use App\Http\Controllers\Auth\VerifyEmailController;
+// use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 

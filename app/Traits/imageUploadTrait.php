@@ -23,8 +23,8 @@ trait imageUploadTrait{
         
         // $base_url = env('BASE_URL_API','http://127.0.0.1:8000');
         // dd($base_url);
-
         // return $base_url.$imageName;
+        
         return $imageName;
     }
 

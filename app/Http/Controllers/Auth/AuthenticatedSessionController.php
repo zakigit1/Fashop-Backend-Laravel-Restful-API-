@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -17,9 +18,7 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): JsonResponse
     {
         try{
-
             $request->authenticate();// this is like Auth::attemp 
-    
             $user = $request->user();
         
             if($user->role == 'user'){
@@ -30,38 +29,33 @@ class AuthenticatedSessionController extends Controller
             }
     
             $user->tokens()->delete();
-        
             $token = $user->createToken('api-token-login');
-        
-               
+          
             return response()->json([
+                'status' => 'success',
+                'statusCode' => SUCCESS_CODE,
+                'message' =>'Logged in successfully.',
                 'userData' => $user,
                 'token' => $token->plainTextToken,
-            ],200);
+            ],SUCCESS_CODE);
             
-        }catch(\Exception $ex){
-            
-            return response()->json(['error' => $ex->getMessage()], 500);
-
-        }
-        
-
-        
-        // return response()->json(['error' => 'Unauthorized'], 401);
-        
-
+        }catch (ValidationException $ex) {
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }  
     }
-
 
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            'message' => 'Logged out successfully.',
-        ],200);
+        try{
+            $request->user()->currentAccessToken()->delete();
+            return $this->success(null,'Logged out successfully.',SUCCESS_DELETE_CODE);
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
     }
 }

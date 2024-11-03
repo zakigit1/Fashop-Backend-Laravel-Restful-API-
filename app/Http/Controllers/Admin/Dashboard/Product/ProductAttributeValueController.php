@@ -7,6 +7,7 @@ use App\Http\Requests\AttributeValueRequest;
 use App\Models\AttributeValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProductAttributeValueController extends Controller
 {
@@ -24,7 +25,7 @@ class ProductAttributeValueController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($attributes,'attributes','All Product Attribute',SUCCESS_CODE);
+            return $this->paginationResponse($attributes,'productAttributeValues','All Product Attribute',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 
@@ -34,6 +35,28 @@ class ProductAttributeValueController extends Controller
     }
 
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        try{
+            $attribute_value = AttributeValue::with(['translations' => function($query){
+                        $query->where('locale',config('translatable.locale'));
+                    }])->find($id);
+
+            if(!$attribute_value){
+                return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+            
+            return $this->success($attribute_value,'Product Attribute Value Details',SUCCESS_CODE,'productAttributeValue');
+
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+    }
+
+    
     /**
      * Store a newly created resource in storage.
      */
@@ -68,34 +91,18 @@ class ProductAttributeValueController extends Controller
             $attribute_value->save();
 
             DB::commit();
-            return $this->success($attribute_value,'Created Successfully!',SUCCESS_CODE);
+            return $this->success($attribute_value,'Created Successfully!',SUCCESS_STORE_CODE,'productAttributeValue');
 
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();
+            DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        try{
-            $attribute_value = AttributeValue::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));
-                    }])->find($id);
 
-            if(!$attribute_value){
-                return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
-            
-            return $this->success($attribute_value,'Product Attribute Value Details',SUCCESS_CODE);
-
-        }catch(\Exception $ex){ 
-            return $this->error($ex->getMessage(),ERROR_CODE);
-        }
-    }
 
     /**
      * Update the specified resource in storage.
@@ -135,10 +142,13 @@ class ProductAttributeValueController extends Controller
             $attribute_value->save();
 
             DB::commit();
-            return $this->success($attribute_value,'Updated Successfully!',SUCCESS_CODE);
+            return $this->success($attribute_value,'Updated Successfully!',SUCCESS_CODE,'productAttributeValue');
 
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();
+            DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
@@ -157,7 +167,7 @@ class ProductAttributeValueController extends Controller
             
             $attribute_value->delete();
 
-            return $this->success(null,'Deleted Successfully!',SUCCESS_CODE);
+            return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
         }catch(\Exception $ex){
             return $this->error($ex->getMessage(),ERROR_CODE);
         }

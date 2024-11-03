@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin\Dashboard;
 
 use App\Http\Requests\BrandRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use App\Models\Brand;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 // use Illuminate\Support\Str;
 
 class BrandController extends Controller
@@ -31,8 +31,6 @@ class BrandController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-
-
             // return response()->json([
             //     'status'=>'success',
             //     'message'=>'All Brands',
@@ -50,11 +48,10 @@ class BrandController extends Controller
                 
             return $this->paginationResponse($brands,'brands','All Brands',SUCCESS_CODE);
            
-
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
-            
         }
+        
     }
 
 
@@ -72,7 +69,7 @@ class BrandController extends Controller
             // $brand->load('translations');
 
             // dd($brand);
-            return $this->success($brand,'Brand Details',SUCCESS_CODE);
+            return $this->success($brand,'Brand Details',SUCCESS_CODE,'brand');
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
@@ -82,26 +79,21 @@ class BrandController extends Controller
 
     public function store(BrandRequest $request)
     {
+        // return $request->all();
         try{
-
-            // return $request->all();
-
             DB::beginTransaction();
      
             /** Save logo  */
-
-            // $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
+            $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
 
         
-            $path = $request->file('logo')->store('brand-logos', 'public');
-            $url = asset('storage/' . $path);
-
-
+            // $path = $request->file('logo')->store('brand-logos', 'public');
+            // $url = asset('storage/' . $path);
 
 
             $brand = Brand::create([
-                "logo" => $url,
-                // "logo" => $logo_name,
+                // "logo" => $url,
+                "logo" => $logo_name,
                "status" => $request->status,
             ]);
 
@@ -121,12 +113,11 @@ class BrandController extends Controller
 
             $brand->save() ;
 
-
-
             DB::commit();
-            return $this->success($brand,'Created Successfully!',SUCCESS_CODE);
-
-
+            return $this->success($brand,'Created Successfully!',SUCCESS_STORE_CODE,'brand');
+        }catch (ValidationException $ex) {
+            DB::rollBack();     
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
             DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
@@ -136,7 +127,7 @@ class BrandController extends Controller
 
 
     public function update(BrandRequest $request,string $id){
-        dd($request->all());
+        // dd($request->all());
         try{
             DB::beginTransaction();
 
@@ -175,17 +166,20 @@ class BrandController extends Controller
             $brand->save();
 
             DB::commit();
-            return $this->success($brand,'Updated Successfully!',SUCCESS_CODE);
+            return $this->success($brand,'Updated Successfully!',SUCCESS_CODE,'brand');
 
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();
+            DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
 
     
     public function destroy(string $id){
-        dd($id);
+        // dd($id);
         try{
             $brand = Brand::find($id);
 
@@ -196,35 +190,23 @@ class BrandController extends Controller
             
             # Check if the brand have product(s): [without using relation]
             // if(Product::where('brand_id',$brand->id)->count() > 0){
-                
-            //     return response(['status'=>'error','message'=>"You Can't Delete This Brand Because They Have Products Communicated With It !"]);
+            // return $this->error('You Can't Delete This Brand Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
             // }
             # Check if the brand have product(s): [using relation]
-            // if(isset($brand->products)  && count($brand->products) > 0){
+            if(isset($brand->products)  && count($brand->products) > 0){
+                return $this->error('You Can\'t Delete This Brand Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
+            }
 
-            //     return response(['status'=>'error','message'=>"You Can't Delete This Brand Because They Have Products Communicated With It !"]);
-            // }
-
-            
             $this->deleteImage_Trait($brand->logo);
 
-            // $brand->delete();
+            $brand->delete();
 
-            return $this->success(null,'Deleted Successfully!',SUCCESS_CODE);
+            return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
 
         }catch(\Exception $ex){
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
 
-
-    // public function change_status(string $id){
-    //     try{
-
-    //     }catch(\Exception $ex){
-    //         return $this->error($ex->getMessage(),ERROR_CODE);
-    //     }
-    // }
-
-    
+   
 }

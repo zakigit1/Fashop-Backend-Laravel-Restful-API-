@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
-class GeneralGuard
+class GeneralGuard 
 {
     /**
      * Handle an incoming request.
@@ -56,7 +56,11 @@ class GeneralGuard
             $token = $request->bearerToken();
             
             if (!$token) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json([
+                    'status' => 'error',
+                    'statusCode' => 401,
+                    'message' => 'Unauthorized',
+                ],401);  
             }
     
             try{
@@ -66,11 +70,20 @@ class GeneralGuard
                 }
 
             } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid token'], 401);
+                return response()->json([
+                    'status' => 'error',
+                    'statusCode' => 401,
+                    'message' => 'Invalid token',
+                ],401);  
             }
     
             // If the user is not an admin, return unauthorized response
-            return response()->json(['error' => 'Unauthorized - Admins only'], 403);
+            
+            return response()->json([
+                'status' => 'error',
+                'statusCode' => 403,
+                'message' => 'Unauthorized - Admins only',
+            ],403);  
         }
     }
         

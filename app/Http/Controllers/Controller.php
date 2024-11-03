@@ -20,12 +20,21 @@ class Controller extends BaseController
      * @param int $statusCode
      * @return JsonResponse
      */
-    public function sendResponse(mixed $data, string $status = 'success', string $message = '', int $statusCode = 200): JsonResponse
+    public function sendResponse(mixed $data = null, string $status , string $message = '', int $statusCode , string $data_name = 'data'): JsonResponse
     {
+        if($data == null){ 
+            return response()->json([
+                'status' => $status,
+                'statusCode' => $statusCode,
+                'message' => $message,
+            ], $statusCode);
+        }
         return response()->json([
-            'data' => $data,
             'status' => $status,
+            'statusCode' => $statusCode,
             'message' => $message,
+            "$data_name" => $data,
+           
         ], $statusCode);
     }
 
@@ -37,9 +46,9 @@ class Controller extends BaseController
      * @param int $statusCode
      * @return JsonResponse
      */
-    public function success(mixed $data, string $message = 'okay', int $statusCode = 200): JsonResponse
+    public function success(mixed $data, string $message = 'okay', int $statusCode = 200, string $data_name = 'data'): JsonResponse
     {
-        return $this->sendResponse($data, 'success', $message, $statusCode);
+        return $this->sendResponse($data, 'success', $message, $statusCode,$data_name);
     }
 
     /**
@@ -59,6 +68,7 @@ class Controller extends BaseController
 
         return response()->json([
             'status'=>'success',
+            'statusCode'=>$statusCode,
             'message'=>$message,
             'pagination'=> [
                 'currentPage' => $data->currentPage(),

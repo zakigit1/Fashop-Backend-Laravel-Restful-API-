@@ -21,4 +21,8 @@ class AttributeValue extends Model implements TranslatableContract
     // ];
 
     public $translatedAttributes = ['name','display_name'];
+
+    public function attribute(){
+        return $this->belongsTo(Attribute::class,'attribute_id','id');
+    }
 }

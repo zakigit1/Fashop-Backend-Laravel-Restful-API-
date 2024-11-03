@@ -32,9 +32,13 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', 'min:6','max:20'],
+            'image' => ['nullable','image', 'mimes:jpg,jpeg,png' ,'max:5*1024*1024'],
+            'username' => ['nullable','string','min:4','max:255', 'unique:'.User::class],
+            'phone' => ['nullable','string','min:10','max:11', 'unique:'.User::class],
         ]);
 
         $user_image = null;
+
         if($request->hasFile('image')){
             if ($request->hasFile('image')) {
                 $user_image = $this->uploadImage_Trait($request, 'image', self::FOLDER_PATH, self::FOLDER_NAME);
@@ -53,12 +57,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-
+        // SEND EMAIL VERICATION 
         $user->sendEmailVerificationNotification();
 
-
-        return response()->json(['message' => 'User registered successfully. Please verify your email.'], 201);
-
+        return $this->success(null,'User registered successfully. Please verify your email.',SUCCESS_STORE_CODE);
 
 
 
@@ -68,13 +70,13 @@ class RegisteredUserController extends Controller
 
         // $token = $user->createToken('api-token-register');
 
-
         // return response()->json([
+        //     'status' => 'success',
+        //     'statusCode' => SUCCESS_STORE_CODE,
+        //     'message' =>'Logged in successfully.',
         //     'userData' => $user,
         //     'token' => $token->plainTextToken,
-        // ],200);
+        // ],SUCCESS_STORE_CODE);
 
-
-        // return response()->noContent();
     }
 }

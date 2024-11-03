@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
-
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -30,6 +30,9 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users,email',
             'password' => 'required|string|confirmed|min:6|max:20',
+            'image' => ['nullable','image', 'mimes:jpg,jpeg,png' ,'max:5*1024*1024'],
+            'username' => ['nullable','string','min:4','max:255', 'unique:'.User::class],
+            'phone' => ['nullable','string','min:10','max:11', 'unique:'.User::class],
         ];
     }
 

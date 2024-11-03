@@ -4,15 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Services\UserServices;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -75,8 +75,6 @@ class AuthController extends Controller
         ];
     }
 
-
-
     /**
      * Logins a user
      *
@@ -86,27 +84,38 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request){
 
-        $isValid = $this->isValidCredential($request);// radi tjih array json man function isValidCredential
+        try{
 
-        if (!$isValid['success']) { //sucess value is false
+            $isValid = $this->isValidCredential($request);// radi tjih array json man function isValidCredential
 
-            return $this->error($isValid['message'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            if (!$isValid['success']) { //sucess value is false
+                return $this->error($isValid['message'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+    
+    
+            $user = $isValid['user'];
+    
+            $user->tokens()->delete();// this new update
+    
+            // i need to delete the previous token that give it to use when you register
+            $token = $user->createToken(User::USER_TOKEN);
+    
 
+            return response()->json([
+                'status' => 'success',
+                'statusCode' => SUCCESS_CODE,
+                'message' =>'Logged in successfully.',
+                'userData' => $user,
+                'token' => $token->plainTextToken,
+            ],SUCCESS_CODE);
+
+        }catch (ValidationException $ex) {
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
         }
+        
 
-
-        $user = $isValid['user'];
-
-        $user->tokens()->delete();// this new update
-
-        // i need to delete the previous token that give it to use when you register
-        $token = $user->createToken(User::USER_TOKEN);
-
-
-        return $this->success([
-            'userData' => $user,
-            'token' => $token->plainTextToken
-        ],'Login successfully!',SUCCESS_CODE);
 
     }
 

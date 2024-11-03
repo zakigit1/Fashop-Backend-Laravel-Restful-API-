@@ -25,7 +25,13 @@ class Attribute extends Model implements TranslatableContract
 
 
 
+    public function product(){
+        return $this->belongsTo(Product::class,'product_id','id');
+    }
 
+   public function values(){
+       return $this->hasMany(AttributeValue::class,'attribute_id','id');
+   }
 
 
 

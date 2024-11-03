@@ -7,6 +7,8 @@ use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+
 class CategoryController extends Controller
 {
     /**
@@ -18,8 +20,16 @@ class CategoryController extends Controller
 
             $categories = Category::with(['translations' => function($query){
                         $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])
+                    },'children'=>function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
+                    }]);
+                    },'_parent'=>function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
+                    }]);
+                    },
+                    ])
                 ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
@@ -31,14 +41,35 @@ class CategoryController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);
           
         }
+    }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    { 
+        try{
+            $category = Category::with(['translations' => function($query){
+                        $query->where('locale',config('translatable.locale'));// this is work 100%
+                        //  $query->where('locale',config('app.locale'));
+                    }])->find($id);
+            if(!$category){
+                return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+
+            // $category->load('translations');// if you want to get all the tranlation
+            // dd($category);
+            
+            return $this->success($category,'Category Details',SUCCESS_CODE,'category');
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(CategoryRequest $request)
-    // public function store(Request $request)
     {
         
         try{
@@ -68,44 +99,16 @@ class CategoryController extends Controller
             $category->save();
 
             DB::commit();
-            return $this->success($category,'Created Successfully!',SUCCESS_CODE);
+            return $this->success($category,'Created Successfully!',SUCCESS_STORE_CODE,'category');
 
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();
+            DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-
-        
-        try{
-           
-            $category = Category::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])->find($id);
-
-
-            if(!$category){
-                return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
-
-            
-            // $category->load('translations');// if you want to get all the tranlation
-
-            // dd($category);
-            return $this->success($category,'Category Details',SUCCESS_CODE);
-
-        }catch(\Exception $ex){ 
-            return $this->error($ex->getMessage(),ERROR_CODE);
-        }
-    }
-
 
     /**
      * Update the specified resource in storage.
@@ -138,10 +141,13 @@ class CategoryController extends Controller
             $category->save();
 
             DB::commit();
-            return $this->success($category,'Updated Successfully!',SUCCESS_CODE);
+            return $this->success( $category,'Updated Successfully!',SUCCESS_CODE,'category');
             
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();
+            DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
@@ -157,38 +163,23 @@ class CategoryController extends Controller
                 return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
-            
-            # Check if the category have product(s): [without using relation]
-            // if(Product::where('category_id',$category->id)->count() > 0){
-                
-            //     return response(['status'=>'error','message'=>"You Can't Delete This Category Because They Have Products Communicated With It !"]);
-            // }
             # Check if the category have product(s): [using relation]
-            // if(isset($category->products)  && count($category->products) > 0){
-
-            //     return response(['status'=>'error','message'=>"You Can't Delete This Category Because They Have Products Communicated With It !"]);
-            // }
+            if(isset($category->products)  && count($category->products) > 0){
+                return $this->error('You Can\'t Delete This Category Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
+            }
 
             # Check if the category have subcategory(ies): [without using relation]
-            //if(isset($category->children)  && count($category->children) > 0){
-            //if($category->parent_id != null){
-                  //     return response(['status'=>'error','message'=>"You Can't Delete This Category Because They Have Products Communicated With It !"]);
-            // }
+            if(isset($category->children)  && count($category->children) > 0){
+                return $this->error('You Can\'t Delete This Category Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
+            }
 
         
             $category->delete();
 
-            return $this->success(null,'Deleted Successfully!',SUCCESS_CODE);
+            return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
         }catch(\Exception $ex){
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
 
-    // public function change_status(string $id){
-    //     try{
-
-    //     }catch(\Exception $ex){
-    //         return $this->error($ex->getMessage(),ERROR_CODE);
-    //     }
-    // }
 }
