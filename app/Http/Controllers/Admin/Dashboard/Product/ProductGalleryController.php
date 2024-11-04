@@ -23,8 +23,6 @@ class ProductGalleryController extends Controller
         return $this->success($productGallery,'Product Gallery',SUCCESS_CODE);    
     }
 
-
-
     /**
      * Store a newly created resource in storage.
      */
@@ -81,7 +79,7 @@ class ProductGalleryController extends Controller
             }
 
 
-            $this->deleteImage_Trait($product_gallery->image);
+            $this->deleteImage_Trait($product_gallery->image,self::FOLDER_PATH,self::FOLDER_NAME);
 
             $product_gallery->delete();
 
@@ -102,7 +100,7 @@ class ProductGalleryController extends Controller
     //         }
     //         if(isset($product->gallery)  && count($product->gallery)>0){
     //             foreach($product->gallery as $product_image){
-    //                 $this->deleteImage_Trait($product_image->image);
+    //                 $this->deleteImage_Trait($product_image->image,self::FOLDER_PATH,self::FOLDER_NAME);
     //                 $product_image->delete();
     //             }
     //         }

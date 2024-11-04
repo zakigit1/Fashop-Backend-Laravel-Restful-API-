@@ -198,7 +198,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id) :JsonResponse
     {
-        dd($request->all());
+        // dd($request->all());
         try{
             DB::beginTransaction();
 

@@ -54,7 +54,7 @@ class AdminProfileController extends Controller
                         'status' => 'success',
                         'statusCode' => SUCCESS_CODE,
                         'message' =>'Profile updated successfully.',
-                        'userData' => $user,
+                        'adminData' => $user,
                     ],SUCCESS_CODE);
                 }else{
                     return $this->error('You are not allowed to enter here',FORBIDDEN);
@@ -100,7 +100,7 @@ class AdminProfileController extends Controller
                         'status' => 'success',
                         'statusCode' => SUCCESS_CODE,
                         'message' =>'Profile Password Updated Successfully !',
-                        'userData' => $user,
+                        'adminData' => $user,
                     ],SUCCESS_CODE);
                 }else{
                     return $this->error('You are not allowed to enter here',FORBIDDEN);
