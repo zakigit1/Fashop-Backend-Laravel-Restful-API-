@@ -36,10 +36,10 @@ class ProductImageGallery extends Model
 /*                                                  End Local Scopes                                  */
 
     /*                                                 Begin GET                                          */
-    public function getImageAttribute($value)
-    {
-        return ($value !== NULL) ? asset( 'storage/uploads/images/products/gallery/'.$value) : " ";
-    }
+    // public function getImageAttribute($value)
+    // {
+    //     return ($value !== NULL) ? asset( 'storage/uploads/images/products/gallery/'.$value) : " ";
+    // }
     /*                                                 End GET                                            */
 
 

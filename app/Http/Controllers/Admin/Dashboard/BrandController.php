@@ -200,7 +200,7 @@ class BrandController extends Controller
                 return $this->error('You Can\'t Delete This Brand Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
             }
 
-            $this->deleteImage_Trait($brand->logo);
+            $this->deleteImage_Trait($brand->logo ,self::FOLDER_PATH,self::FOLDER_NAME);
 
             $brand->delete();
 

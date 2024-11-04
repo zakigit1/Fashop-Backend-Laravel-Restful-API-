@@ -33,14 +33,12 @@ return [
 
     // 'supports_credentials' => true,
 
-
-    'paths' => ['api/*', 'storage/*', 'sanctum/csrf-cookie'],  // Add 'storage/*'
+    
+    'paths' => ['api/*', 'storage/*', 'sanctum/csrf-cookie'],  // Make sure 'storage/*' is included
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],  // In production, specify your app's domain
-
-    'allowed_origins_patterns' => [],
+    'allowed_origins' => ['http://localhost:3000'], // Add your Flutter web port here
 
     'allowed_headers' => ['*'],
 

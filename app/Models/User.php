@@ -66,10 +66,10 @@ class User extends Authenticatable implements MustVerifyEmail
 /*                                                  End Local Scopes                                  */
 
 /*                                                 Begin GET                                          */
-    public function getImageAttribute($value)
-    {
-        return ($value !== NULL) ? asset( 'storage/uploads/images/users/'.$value) : " ";
-    }
+    // public function getImageAttribute($value)
+    // {
+    //     return ($value !== NULL) ? asset( 'storage/uploads/images/users/'.$value) : " ";
+    // }
 /*                                                 End GET                                            */
 
 

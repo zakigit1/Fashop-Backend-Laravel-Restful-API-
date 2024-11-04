@@ -42,16 +42,26 @@ class AuthController extends Controller
                 $user->update(['image' => $imageName]);
             }
 
-            $token = $user->createToken(User::USER_TOKEN);
+            
+            // SEND EMAIL VERICATION 
+            $user->sendEmailVerificationNotification();
 
             DB::commit();
+            return $this->success(null,'User registered successfully. Please verify your email.',SUCCESS_STORE_CODE);
 
 
-            return $this->success(
-                [
-                'userData'=>$user,
-                'token'=> $token->plainTextToken,// you give you a token
-            ],'User has been register successfully.',SUCCESS_CODE);
+
+            /** if you want to not send email verification  */
+            // $token = $user->createToken(User::USER_TOKEN);
+            // DB::commit();
+            // return response()->json([
+            //     'status' => 'success',
+            //     'statusCode' => SUCCESS_CODE,
+            //     'message' =>'Register successfully.',
+            //     'userData' => $user,
+            //     'token' => $token->plainTextToken,
+            // ],SUCCESS_STORE_CODE);
+
 
 
         } catch (\Exception $ex) {
@@ -184,19 +194,27 @@ class AuthController extends Controller
     ######## this doing deleted just the current token of user :
     public function logout(Request $request) : JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();//delete the current user authanticated token
-
-        return $this->success(null,'Logout successfully!');
+        try{
+            $request->user()->currentAccessToken()->delete();  //delete the current user authanticated token
+            return $this->success(null,'Logged out successfully.',SUCCESS_DELETE_CODE);
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
     }
 
     ######## this doing deleted all user token  :
     // public function logout(Request $request): JsonResponse
     // {
-    //     $request->user()->tokens->each(function ($token, $key) {
-    //         $token->delete();
-    //     });
 
-    //     return $this->success(null,'Logout successfully!',SUCCESS_CODE);
+        // try{
+        //     $request->user()->tokens->each(function ($token, $key) {
+        //         $token->delete();
+        //     });
+        //     return $this->success(null,'Logged out successfully.',SUCCESS_DELETE_CODE);
+        // }catch(\Exception $ex){ 
+        //     return $this->error($ex->getMessage(),ERROR_CODE);
+        // }
+
     // }
 
 

@@ -28,11 +28,15 @@ trait imageUploadTrait{
         return $imageName;
     }
 
-    function deleteImage_Trait($old_image):void
+    function deleteImage_Trait($old_image,$folderPath,$folderName):void
     {
-        // dd(public_path($old_image));
-        if(file_exists(public_path($old_image))){
-            File::delete(public_path($old_image));   
+
+        $imgDir = '/storage'.$folderPath.$folderName.'/';
+
+        // dd(public_path($imgDir.$old_image));
+        
+        if(file_exists(public_path($imgDir.$old_image))){
+            File::delete(public_path($imgDir.$old_image));   
         }
     }
 
@@ -46,7 +50,7 @@ trait imageUploadTrait{
             //     File::delete(public_path($old_image));   
             // }
             // ? instead of the three ligne we use direct the function 
-            $this->deleteImage_Trait($old_image);
+            $this->deleteImage_Trait($old_image,$folderPath,$folderName);
                 
         #-------- end of Delete the old image ---------#
 

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin\Dashboard\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Models\Attribute;
 use App\Models\Product;
 use App\Traits\imageUploadTrait;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -191,7 +193,6 @@ class ProductController extends Controller
         }
     }
 
-    
     /**
      * Update the specified resource in storage.
      */
@@ -278,8 +279,7 @@ class ProductController extends Controller
 
             //********************   Delete Product the thumb image    ******************** */
             
-            $this->deleteImage_Trait($product->thumb_image);
-            
+            $this->deleteImage_Trait($product->thumb_image ,self::FOLDER_PATH,self::FOLDER_NAME);
 
             //********************   Delete Product Gallery    ******************** */
 
@@ -288,7 +288,7 @@ class ProductController extends Controller
 
             if(isset($product->gallery)  && count($product->gallery)>0){
                 foreach($product->gallery as $product_image){
-                    $this->deleteImage_Trait($product_image->image);
+                    $this->deleteImage_Trait($product_image->image,self::FOLDER_PATH,'gallery');
                     $product_image->delete();
                 }
             }
@@ -296,12 +296,12 @@ class ProductController extends Controller
             //********************   Delete variants & items     ******************** */
             
             ##M1: 
-            // $variants = ProductVariant::where('product_id',$product->id)->get();
+            $attributes = Attribute::where('product_id',$product->id)->get();
         
-            // foreach($variants as $variant){
-            //     $variant->items()->delete();//if you use after calling a relation a method you need to add in the name of relation bracket like tahe RelationName() 
-            //     $variant->delete();
-            // }
+            foreach($attributes as $attribute){
+                $attribute->values()->delete();//if you use after calling a relation a method you need to add in the name of relation bracket like tahe RelationName() 
+                $attribute->delete();
+            }
 
             
             ##M2: 
@@ -321,7 +321,7 @@ class ProductController extends Controller
             
             //********************   Delete Product  *****************//
                
-            // $product->delete();
+            $product->delete();
 
 
             // we are using ajax : 

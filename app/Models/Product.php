@@ -47,10 +47,10 @@ class Product extends Model implements TranslatableContract
     /*                                                  End Local Scopes                                  */
 
     /*                                                 Begin GET                                          */
-    public function getThumbImageAttribute($value)
-    {
-        return ($value !== NULL) ? asset( 'storage/uploads/images/products/thumb-images/'.$value) : " ";
-    }
+    // public function getThumbImageAttribute($value)
+    // {
+    //     return ($value !== NULL) ? asset( 'storage/uploads/images/products/thumb-images/'.$value) : " ";
+    // }
     /*                                                 End GET                                            */
 
 

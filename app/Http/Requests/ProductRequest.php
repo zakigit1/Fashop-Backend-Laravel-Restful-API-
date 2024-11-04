@@ -234,11 +234,11 @@ class ProductRequest extends FormRequest
                     'string',
                     'min:2',
                     'max:100',
-                    Rule::unique('product_translations', 'product_type')
-                        ->ignore($id, 'product_id')
-                        ->where(function ($query) use ($keyLang) {
-                            return $query->where('locale', $keyLang);
-                        })
+                    // Rule::unique('product_translations', 'product_type')
+                    //     ->ignore($id, 'product_id')
+                    //     ->where(function ($query) use ($keyLang) {
+                    //         return $query->where('locale', $keyLang);
+                    //     })
                 ];
             }
         }
