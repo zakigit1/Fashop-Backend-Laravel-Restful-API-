@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
-class AttributeValueRequest extends FormRequest
+class ProductTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,53 +23,15 @@ class AttributeValueRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules()
     {
         $id = $this->id;
-        $maxPrice = 1000000;
-        $maxQty = 100000;
 
         $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
 
         $rules = [
 
             'status' => 'required|boolean',
-
-            'attribute_id' => [
-                'required',
-                'integer',
-                'exists:attributes,id',
-                'gt:0',
-            ],
-
-            'color_code' => [
-                'nullable',
-                'string',
-                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', // Hex color regex like #FF0000
-            ],
-
-            'extra_price' => [
-                'numeric',
-                'min:0',
-                'max:' . $maxPrice,
-                'decimal:0,2', // Allow up to 2 decimal places
-            ],
-            
-            'is_default' => [
-                'boolean',
-            ],
-
-            'sort_order' => [
-                'integer',
-                'min:0',
-                'max:100', 
-            ],
-
-            'quantity' => [
-                'integer',
-                'min:0',
-                'max:' . $maxQty,
-            ],
 
             // Translation arrays
 
@@ -79,14 +41,6 @@ class AttributeValueRequest extends FormRequest
                 'min:'.$lang_number,
                 'max:'.$lang_number,
             ],
-            'display_name' => [
-                'nullable',
-                'array',
-                'min:'.$lang_number,
-                'max:'.$lang_number,
-            ],
-
-
         ];
 
         // Add translation rules for each locale
@@ -95,30 +49,21 @@ class AttributeValueRequest extends FormRequest
                 $rules["name.$keyLang"] = [
                     'required',
                     'string',
-                    'min:1',
-                    'max:200',
-                    Rule::unique('attribute_value_translations', 'name')
-                        ->ignore($id, 'attribute_value_id')
-                        ->where(function ($query) use ($keyLang) {
-                            return $query->where('locale', $keyLang);
-                        })
-                ];
-                $rules["display_name.$keyLang"] = [
-                    'nullable',
-                    'string',
                     'min:2',
                     'max:200',
-                    Rule::unique('attribute_value_translations', 'display_name')
-                        ->ignore($id, 'attribute_value_id')
+                    Rule::unique('product_type_translations', 'name')
+                        ->ignore($id, 'product_type_id')
                         ->where(function ($query) use ($keyLang) {
                             return $query->where('locale', $keyLang);
                         })
                 ];
+
             }
         }
     
         return $rules;
     }
+
 
     /**
      * Summary of failedValidation : this function for return error validation in the response 

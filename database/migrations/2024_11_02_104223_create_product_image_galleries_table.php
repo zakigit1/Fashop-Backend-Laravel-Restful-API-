@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_image_galleries', function (Blueprint $table) {
             $table->id();
-            $table->text('image');
+            $table->string('image',255);
             $table->unsignedBigInteger('product_id');
             $table->timestamps();
 

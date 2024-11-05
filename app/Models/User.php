@@ -35,8 +35,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         // 'id',
         'password',
-        'created_at',
-        'updated_at',
+        // 'created_at',
+        // 'updated_at',
         'remember_token',
     ];
 
@@ -46,8 +46,11 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<string, string>
      */
+
+
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
 

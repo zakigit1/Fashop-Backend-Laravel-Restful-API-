@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('brands', function (Blueprint $table) {
+        Schema::create('product_type_translations', function (Blueprint $table) {
             $table->id();
-            $table->string('logo',255);
-            $table->boolean('status')->default(1);
-            $table->timestamps();
+            $table->foreignId('product_type_id')->constrained()->onDelete('cascade');
+
+            $table->string('locale')->index();
+
+            $table->string('name', 50);
+
+            $table->unique(['product_type_id', 'locale']);
         });
     }
 
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('brands');
+        Schema::dropIfExists('product_type_translations');
     }
 };

@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\Dashboard\AdminProfileController;
 use App\Http\Controllers\Admin\Dashboard\BrandController;
 use App\Http\Controllers\Admin\Dashboard\CategoryController;
 use App\Http\Controllers\Admin\Dashboard\Product\ProductAttributeController;
 use App\Http\Controllers\Admin\Dashboard\Product\ProductAttributeValueController;
 use App\Http\Controllers\Admin\Dashboard\Product\ProductController;
 use App\Http\Controllers\Admin\Dashboard\Product\ProductGalleryController;
+use App\Http\Controllers\Admin\Dashboard\Product\ProductTypeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,96 +20,89 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::group(['middleware'=>['admin-api:api'],'as'=>'admin.'],function () {
+Route::group(['middleware'=>['admin-api:api'],],function () {
 
-    // Brand Routes
+    //Admin Profile :
+    Route::prefix('profile')->group(function () {
+        Route::post('/update', [AdminProfileController::class, 'update_profile']);
+        Route::post('/update/password', [AdminProfileController::class, 'update_profile_password']);
+    });
+      
+    // Brand Routes :
     Route::prefix('brands')->group(function () {
-        Route::get('/', [BrandController::class, 'index'])->middleware('setLang')
-            ->name('brands.index');
-        
-        Route::get('/{id}', [BrandController::class, 'show'])->middleware('setLang')
-            ->name('brands.show');
-        
-        Route::post('/', [BrandController::class, 'store'])
-            ->name('brands.store');
-        
+        // Route::get('/', [BrandController::class, 'index'])->middleware('setLang');
+        Route::get('/', [BrandController::class, 'index']);
+        Route::get('/{id}', [BrandController::class, 'show'])->middleware('setLang');
+        Route::post('/', [BrandController::class, 'store']);
+
         // in update problem to us put method 
-        // Route::put('/{id}', [BrandController::class, 'update'])
-        //     ->name('brands.update');
-        Route::post('/{id}/update', [BrandController::class, 'update'])
-            ->name('brands.update');
+        // Route::put('/{id}', [BrandController::class, 'update']);
+        Route::post('/{id}/update', [BrandController::class, 'update']);
         
-        Route::delete('/{id}/delete', [BrandController::class, 'destroy'])
-            ->name('brands.destroy');
+        Route::delete('/{id}/delete', [BrandController::class, 'destroy']);
     });
 
     
-    // Category Routes
+    // Category Routes :
     Route::prefix('categories')->group(function () {
-        Route::get('/', [CategoryController::class, 'index'])->middleware('setLang')
-            ->name('categories.index');
+        Route::get('/', [CategoryController::class, 'index'])->middleware('setLang');
+        Route::get('/{id}', [CategoryController::class, 'show'])->middleware('setLang');
+        Route::post('/', [CategoryController::class, 'store']);
         
-        Route::get('/{id}', [CategoryController::class, 'show'])->middleware('setLang')
-            ->name('categories.show');
+        // Route::put('/{id}', [CategoryController::class, 'update']);
+        Route::post('/{id}/update', [CategoryController::class, 'update']);
         
-        Route::post('/', [CategoryController::class, 'store'])
-            ->name('categories.store');
-        
-        // Route::put('/{id}', [CategoryController::class, 'update'])
-        //     ->name('categories.update');
-        Route::post('/{id}/update', [CategoryController::class, 'update'])
-            ->name('categories.update');
-        
-        Route::delete('/{id}/delete', [CategoryController::class, 'destroy'])
-            ->name('categories.destroy');
+        Route::delete('/{id}/delete', [CategoryController::class, 'destroy']);
     });
 
 
-    // Product Routes
+    // Product Routes :
     Route::prefix('products')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->middleware('setLang')
-            ->name('products.index');
+        Route::get('/', [ProductController::class, 'index'])->middleware('setLang');
+        Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang');
+        Route::post('/', [ProductController::class, 'store']);
         
-        Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang')
-            ->name('products.show');
+        // Route::put('/{id}/update', [ProductController::class, 'update']);
+        Route::post('/{id}/update', [ProductController::class, 'update']);
         
-        Route::post('/', [ProductController::class, 'store'])
-            ->name('products.store');
-        
-        // Route::put('/{id}/update', [ProductController::class, 'update'])
-        //     ->name('products.update');
-        Route::post('/{id}/update', [ProductController::class, 'update'])
-            ->name('products.update');
-        
-        Route::delete('/{id}/delete', [ProductController::class, 'destroy'])
-            ->name('products.destroy');
-    });
-
-    Route::group(['prefix'=>'product-image-gallery','as'=>'product-image-gallery.'],function(){
-        
-        Route::get('',[ProductGalleryController::class,'index'])->name('index');
-        Route::post('',[ProductGalleryController::class,'store'])->name('store');
-        
-        Route::DELETE('{id}/destroy',[ProductGalleryController::class,'destroy'])->name('destroy');
-        // Route::DELETE('{id}/destroyAll',[ProductGalleryController::class,'destroyAllImages'])->name('destroy-all-images');
-        
+        Route::delete('/{id}/delete', [ProductController::class, 'destroy']);
     });
 
 
-    Route::group(['prefix'=>'product-variant','as'=>'product-variant.'],function(){
-        Route::get('/',[ProductAttributeController::class,'index'])->name('index');
-        Route::post('store',[ProductAttributeController::class,'store'])->name('store');
-        Route::post('{id}/update',[ProductAttributeController::class,'update'])->name('update');
-        Route::DELETE('{id}/destroy',[ProductAttributeController::class,'destroy'])->name('destroy');     
+    // Product Gallery Routes :
+    Route::prefix('product-image-gallery')->group(function () {
+        Route::get('',[ProductGalleryController::class,'index']);
+        Route::post('',[ProductGalleryController::class,'store']);
+        Route::DELETE('{id}/destroy',[ProductGalleryController::class,'destroy']);
+        // Route::DELETE('{id}/destroyAll',[ProductGalleryController::class,'destroyAllImages']);
     });
 
-    Route::group(['prefix'=>'product-variant-item','as'=>'product-variant-item.'],function(){
-        Route::get('/{productId}/{variantId}',[ProductAttributeValueController::class,'index'])->name('index');
-        Route::post('store',[ProductAttributeValueController::class,'store'])->name('store');
-        Route::post('{itemId}/update',[ProductAttributeValueController::class,'update'])->name('update');
-        Route::DELETE('{itemId}/destroy',[ProductAttributeValueController::class,'destroy'])->name('destroy');
-        
 
+    // Product Attribute Routes :
+    Route::prefix('product-attribute')->group(function () {
+        Route::get('',[ProductAttributeController::class,'index'])->middleware('setLang');
+        Route::get('/{id}', [ProductAttributeController::class, 'show'])->middleware('setLang');
+        Route::post('',[ProductAttributeController::class,'store']);
+        Route::post('{id}/update',[ProductAttributeController::class,'update']);
+        Route::DELETE('{id}/delete',[ProductAttributeController::class,'destroy']);
     });
 
-});
+
+    // Product Attribute Value Routes :
+    Route::prefix('product-attribute-value')->group(function () {
+        Route::get('',[ProductAttributeValueController::class,'index'])->middleware('setLang');
+        Route::get('/{id}', [ProductAttributeValueController::class, 'show'])->middleware('setLang');
+        Route::post('',[ProductAttributeValueController::class,'store']);
+        Route::post('{id}/update',[ProductAttributeValueController::class,'update']);
+        Route::DELETE('{id}/delete',[ProductAttributeValueController::class,'destroy']);
+    });
+
+    //Product Type Routes :
+    Route::prefix('product-type')->group(function () {
+        Route::get('/',[ProductTypeController::class,'index'])->middleware('setLang');
+        Route::get('/{id}', [ProductTypeController::class, 'show'])->middleware('setLang');
+        Route::post('',[ProductTypeController::class,'store']);
+        Route::post('{id}/update',[ProductTypeController::class,'update']);
+        Route::DELETE('{id}/delete',[ProductTypeController::class,'destroy']);
+    });
+}); 

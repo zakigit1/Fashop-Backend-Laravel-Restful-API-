@@ -51,7 +51,7 @@ class ProductGalleryController extends Controller
             //  return print_r($data);
             $storeImages = ProductImageGallery::insert($data);
             
-            return $this->success($storeImages,'Product Images has been added successfully!',SUCCESS_CODE);    
+            return $this->success(null,'Product Images has been added successfully!',SUCCESS_STORE_CODE);    
     
 
         }catch(\Exception $e){
@@ -84,7 +84,7 @@ class ProductGalleryController extends Controller
             $product_gallery->delete();
 
             // we are using ajax : 
-            return $this->success(null,'Image Has Been Deleted Successfully!',SUCCESS_CODE);    
+            return $this->success(null,'Image Has Been Deleted Successfully!',SUCCESS_DELETE_CODE);    
         }catch(\Exception $e){
             return $this->error($e->getMessage(),ERROR_CODE);
         }

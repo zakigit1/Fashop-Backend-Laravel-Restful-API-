@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserProfilePasswordRequest;
 use App\Http\Requests\UpdateUserProfileRequest;
 use App\Traits\imageUploadTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,10 +20,8 @@ class AdminProfileController extends Controller
     const FOLDER_PATH = '/uploads/images/';
     const FOLDER_NAME = 'users';
 
-    public function update_profile(UpdateUserProfileRequest $request){
-    // public function update_profile(Request $request){
-        // return $request;
-
+    public function update_profile(UpdateUserProfileRequest $request): JsonResponse
+    {
         try{
             // $user = Auth::user();
             $user = $request->user();
@@ -77,16 +76,11 @@ class AdminProfileController extends Controller
     }
 
 
-    public function update_profile_password(UpdateUserProfilePasswordRequest $request){
-    
+    public function update_profile_password(UpdateUserProfilePasswordRequest $request): JsonResponse
+    {
+
         try{    
 
-            // $user = Auth::user();
-            // $user->password = Hash::make($request->password);
-            // // $user->password = bcrypt($request->password);
-            // $user->save();
-
-            ##
             $user = $request->user();
             if($user){
                 if($user->role == 'admin'){

@@ -33,12 +33,6 @@ class AttributeRequest extends FormRequest
 
             'status' => 'required|boolean',
 
-            'product_id' => [
-                'required',
-                'integer',
-                'exists:products,id',
-            ],
-
             'type' => [
                 'string',
                 'min:2',

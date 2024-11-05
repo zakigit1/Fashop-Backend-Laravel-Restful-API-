@@ -22,8 +22,9 @@ class ProductGalleryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image.*'=>['required','image','max:80640'],
-            'product_id'=>['required','numeric','exists:products,id']
+            'image' =>['required','array','min:1','max:10'],
+            'image.*'=>['required','image','mimes:jpg,jpeg,png','max:80640'],
+            'product_id'=>['required','numeric','exists:products,id','gt:0']
         ];
     }
 }

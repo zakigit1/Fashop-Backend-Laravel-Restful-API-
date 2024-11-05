@@ -13,7 +13,7 @@ class Attribute extends Model implements TranslatableContract
 
     protected $table = 'attributes';
 
-    protected $fillable = ['type','is_required','is_filterable','sort_order','product_id','status'];
+    protected $fillable = ['type','is_required','is_filterable','sort_order','status'];
 
     // protected $hidden = [
     //     'created_at',
@@ -25,8 +25,16 @@ class Attribute extends Model implements TranslatableContract
 
 
 
-    public function product(){
-        return $this->belongsTo(Product::class,'product_id','id');
+    public function products()
+    {
+        return $this -> belongsToMany(
+            Product::class,
+            'product_attributes',
+            'attribute_id',
+            'product_id',
+            'id',
+            'id'
+        );
     }
 
    public function values(){

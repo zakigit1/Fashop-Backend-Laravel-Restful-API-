@@ -175,6 +175,14 @@ class ProductRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:brands,id',
+                'gt:0',
+            ],
+
+            'product_type_id' => [
+                'required',
+                'integer',
+                'exists:product_types,id',
+                'gt:0',
             ],
 
             // Translation arrays
@@ -190,18 +198,13 @@ class ProductRequest extends FormRequest
                 'array',
                 'min:'.$lang_number,
                 'max:'.$lang_number,
-                
-            ],
-            'product_type' => [
-                'nullable',
-                'array',
-                'min:'.$lang_number,
-                'max:'.$lang_number,
-
             ],
 
-            'categories' => 'required|array|min:1', //[]
-            'categories.*' => 'numeric|exists:categories,id',
+            'category_ids' => 'required|array|min:1', //[]
+            'category_ids.*' => 'numeric|exists:categories,id|gt:0',
+
+            'attribute_ids' => 'required|array|min:1', //[]
+            'attribute_ids.*' => 'numeric|exists:attributes,id|gt:0',
         ];
 
         // Add translation rules for each locale
@@ -229,17 +232,6 @@ class ProductRequest extends FormRequest
                         })
                 ];
 
-                $rules["product_type.$keyLang"] = [
-                    'nullable', // Changed from string to nullable since array is nullable
-                    'string',
-                    'min:2',
-                    'max:100',
-                    // Rule::unique('product_translations', 'product_type')
-                    //     ->ignore($id, 'product_id')
-                    //     ->where(function ($query) use ($keyLang) {
-                    //         return $query->where('locale', $keyLang);
-                    //     })
-                ];
             }
         }
     

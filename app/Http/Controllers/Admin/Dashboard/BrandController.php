@@ -24,11 +24,11 @@ class BrandController extends Controller
 
     public function index(){
         try{
-            $brands = Brand::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    }])
-                ->where('status',1)
+            // $brands = Brand::with(['translations' => function($query){
+            //             $query->where('locale',config('translatable.locale'));// this is work 100%
+            //             //  $query->where('locale',config('app.locale'));
+            //         }])
+            $brands = Brand::where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
@@ -82,7 +82,6 @@ class BrandController extends Controller
 
     public function store(BrandRequest $request)
     {
-        // return $request->all();
         try{
             DB::beginTransaction();
      
@@ -90,15 +89,11 @@ class BrandController extends Controller
             $logo_name= $this->uploadImage_Trait($request,'logo',self::FOLDER_PATH,self::FOLDER_NAME);
 
         
-            // $path = $request->file('logo')->store('brand-logos', 'public');
-            // $url = asset('storage/' . $path);
-
-
             $brand = Brand::create([
-                // "logo" => $url,
                 "logo" => $logo_name,
-               "status" => $request->status,
+                "status" =>(int) $request->status,
             ]);
+
 
             // dd(config('translatable.locales.'.config('translatable.locale')));
             // $Languages = config('translatable.locales.'.config('translatable.locale'));
@@ -118,6 +113,7 @@ class BrandController extends Controller
 
             DB::commit();
             return $this->success($brand,'Created Successfully!',SUCCESS_STORE_CODE,'brand');
+
         }catch (ValidationException $ex) {
             DB::rollBack();     
             return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
@@ -150,10 +146,10 @@ class BrandController extends Controller
 
             /**  if you use postman */
             // if($request->has('status')){
-            //     $brand->update(["status" => $request->status]);
+            //     $brand->update(["status" =>(int) $request->status]);
             // }
             
-            $brand->update(["status" => $request->status]);
+            $brand->update(["status" =>(int) $request->status]);
 
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
                 /** if u use post man  */

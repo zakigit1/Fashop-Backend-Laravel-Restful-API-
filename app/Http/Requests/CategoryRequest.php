@@ -53,7 +53,7 @@ class CategoryRequest extends FormRequest
                 'max:'.$lang_number,
             ],
             'status' => 'required|boolean',
-            'parent_id' => 'nullable|numeric|exists:categories,id'
+            'parent_id' => 'nullable|numeric|exists:categories,id|gt:0'
         
         ];
 

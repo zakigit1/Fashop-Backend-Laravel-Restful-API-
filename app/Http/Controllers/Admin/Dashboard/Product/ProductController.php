@@ -146,7 +146,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request):JsonResponse
     {
-        // dd($request->all());
+        dd($request->all());
         try{
             DB::beginTransaction();
     
@@ -156,18 +156,21 @@ class ProductController extends Controller
 
             $product = Product::create([
                 "thumb_image" => $image_name,
-                "brand_id" => $request->brand_id,
-                "qty" => $request->qty,
+                "brand_id" =>(int) $request->brand_id,
+                "product_type_id" =>(int) $request->product_type_id,
+                "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
-                "price" => $request->price,
-                "offer_price" => $request->offer_price,
+                "price" =>(float) $request->price,
+                "offer_price" =>(float) $request->offer_price,
                 "offer_start_date" => $request->offer_start_date,
                 "offer_end_date" => $request->offer_end_date,
                 "video_link" => $request->video_link,
-                "status" => $request->status,
+                "status" =>(int) $request->status,
             ]);
 
-            $product->categories()->syncWithoutDetaching($request->categories);
+            $product->categories()->syncWithoutDetaching($request->category_ids);
+            $product->attributes()->syncWithoutDetaching($request->attribute_ids);
+            
             // $product->categories()->attach($request->categories);
 
             /** Store translations for each locale */
@@ -175,7 +178,6 @@ class ProductController extends Controller
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
                 $product->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
                 $product->translateOrNew($keyLang)->description = $request->input("description.$keyLang");
-                $product->translateOrNew($keyLang)->product_type = $request->input("product_type.$keyLang");
             }
 
             $product->save() ;
@@ -198,7 +200,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id) :JsonResponse
     {
-        // dd($request->all());
+        dd($request->all());
         try{
             DB::beginTransaction();
 
@@ -214,23 +216,22 @@ class ProductController extends Controller
                 $image_name = $this->updateImage_Trait($request,'thumb_image',ProductController::FOLDER_PATH,ProductController::FOLDER_NAME,$old_image);
                 $product->update(['thumb_image'=>$image_name]);
             }
-
-            /**  if you use postman */
-            // if($request->has('status')){
-            //     $product->update(["status" => $request->status]);
-            // }
             
             $product->update([
-                "brand_id" => $request->brand_id,
-                "qty" => $request->qty,
+                "brand_id" =>(int) $request->brand_id,
+                "product_type_id" =>(int) $request->product_type_id,
+                "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
-                "price" => $request->price,
-                "offer_price" => $request->offer_price,
+                "price" =>(float) $request->price,
+                "offer_price" =>(float) $request->offer_price,
                 "offer_start_date" => $request->offer_start_date,
                 "offer_end_date" => $request->offer_end_date,
                 "video_link" => $request->video_link,
-                "status" => $request->status
+                "status" =>(int) $request->status
             ]);
+
+            $product->categories()->syncWithoutDetaching($request->category_ids);
+            $product->attributes()->syncWithoutDetaching($request->attribute_ids);
 
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
                 /** if u use post man  */
@@ -238,12 +239,11 @@ class ProductController extends Controller
                 //     $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
                 //     $product->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
                 //     $product->translateOrNew($keyLang)->description = $request->input("description.$keyLang");
-                //     $product->translateOrNew($keyLang)->product_type = $request->input("product_type.$keyLang");
                 // }
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
                 $product->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
                 $product->translateOrNew($keyLang)->description = $request->input("description.$keyLang");
-                $product->translateOrNew($keyLang)->product_type = $request->input("product_type.$keyLang");
+
             }
     
             $product->save();
@@ -295,17 +295,9 @@ class ProductController extends Controller
 
             //********************   Delete variants & items     ******************** */
             
-            ##M1: 
-            $attributes = Attribute::where('product_id',$product->id)->get();
-        
-            foreach($attributes as $attribute){
-                $attribute->values()->delete();//if you use after calling a relation a method you need to add in the name of relation bracket like tahe RelationName() 
-                $attribute->delete();
-            }
-
-            
+  
             ##M2: 
-            // if (isset($product->variants) && count($product->variants) > 0) {
+            // if (isset($product->attributes) && count($product->attributes) > 0) {
             //     foreach ($product->variants as $variant) {
             //         if (isset($variant->items) && count($variant->items) > 0) {
             //             foreach ($variant->items as $item) {

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('locale')->index();
 
             $table->string('name', 100);  // S, M, L or Red, Blue, etc.
-            $table->string('display_name', 100);  // S = in column display value it is Small
+            $table->string('display_name', 100)->nullable();  // S = in column display value it is Small
 
             $table->unique(['attribute_value_id', 'locale']);
         });

@@ -19,11 +19,7 @@ return new class extends Migration
             $table->boolean('is_filterable')->default(true); // Can be used in product filters?
             $table->integer('sort_order')->default(0);
             $table->boolean('status')->default(true);
-
-            $table->unsignedBigInteger('product_id')->nullable();
             $table->timestamps();
-            
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
         });
     }
 

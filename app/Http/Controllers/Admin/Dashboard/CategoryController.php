@@ -88,8 +88,8 @@ class CategoryController extends Controller
 
             $category = Category::create([
                 "icon" => $request->icon,
-                "parent_id" => $request->parent_id,
-                "status" => $request->status,
+                "parent_id" =>(int) $request->parent_id,
+                "status" =>(int) $request->status,
             ]);
 
 
@@ -135,8 +135,8 @@ class CategoryController extends Controller
 
             $category->update([
                 "icon" => $request->icon,
-                "parent_id" => $request->parent_id,
-                "status" => $request->status,
+                "parent_id" =>(int) $request->parent_id,
+                "status" =>(int) $request->status,
             ]);
            
             // Update translations

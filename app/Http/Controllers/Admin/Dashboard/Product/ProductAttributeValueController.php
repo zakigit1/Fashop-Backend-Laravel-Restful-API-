@@ -20,6 +20,12 @@ class ProductAttributeValueController extends Controller
             $attributes = AttributeValue::with(['translations' => function($query){
                         $query->where('locale',config('translatable.locale'));// this is work 100%
                         //  $query->where('locale',config('app.locale'));
+                    },
+                    'attribute'=>function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
+
+                        }]);
                     }])
                 ->where('status',1)
                 ->orderBy('id','DESC')
@@ -60,26 +66,39 @@ class ProductAttributeValueController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(AttributeValueRequest $request)
-    public function store(Request $request)
+    public function store(AttributeValueRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
         try{
 
             DB::beginTransaction();
 
             $attribute_value = AttributeValue::create([
-
-                "attribute_id" => $request->attribute_id,
+                "attribute_id" =>(int) $request->attribute_id,
                 "color_code" => $request->color_code,
-                "sort_order" => $request->sort_order,
-
-                "extra_price" => $request->extra_price,
-                "quantity" => $request->quantity,
-                "is_default" => $request->is_default,
-
-                "status" => $request->status,
+                "status" =>(int) $request->status,
             ]);
+
+            if($request->has('extra_price')){
+                $attribute_value->update([
+                    "extra_price" =>(float) $request->extra_price,
+                ]);
+            }
+            if($request->has('quantity')){
+                $attribute_value->update([
+                   "quantity" =>(int) $request->quantity,
+                ]);
+            }
+            if($request->has('is_default')){
+                $attribute_value->update([
+                    "is_default" =>(int) $request->is_default,
+                ]);
+            }
+            if($request->has('sort_order')){
+                $attribute_value->update([
+                    "sort_order" =>(int) $request->sort_order,
+                ]);
+            }
 
 
 
@@ -107,10 +126,9 @@ class ProductAttributeValueController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(AttributeValueRequest $request, string $id)
-    public function update(Request $request, string $id)
+    public function update(AttributeValueRequest $request, string $id)
     {
-        dd($request->all());
+        // dd($request->all());
         try{
 
             DB::beginTransaction();
@@ -121,17 +139,31 @@ class ProductAttributeValueController extends Controller
             }
 
             $attribute_value->update([
-                "attribute_id" => $request->attribute_id,
+                "attribute_id" =>(int) $request->attribute_id,
                 "color_code" => $request->color_code,
-                "sort_order" => $request->sort_order,
-
-                "extra_price" => $request->extra_price,
-                "quantity" => $request->quantity,
-                "is_default" => $request->is_default,
-
-                "status" => $request->status,
+                "status" =>(int) $request->status,
             ]);
 
+            if($request->has('extra_price')){
+                $attribute_value->update([
+                    "extra_price" =>(float) $request->extra_price,
+                ]);
+            }
+            if($request->has('quantity')){
+                $attribute_value->update([
+                   "quantity" =>(int) $request->quantity,
+                ]);
+            }
+            if($request->has('is_default')){
+                $attribute_value->update([
+                    "is_default" =>(int) $request->is_default,
+                ]);
+            }
+            if($request->has('sort_order')){
+                $attribute_value->update([
+                    "sort_order" =>(int) $request->sort_order,
+                ]);
+            }
 
 
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english

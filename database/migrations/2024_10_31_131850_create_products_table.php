@@ -46,6 +46,14 @@ return new class extends Migration
                     ->references('id')
                     ->on('brands')
                     ->onDelete('cascade');
+
+            // Product Type relationship
+            $table->unsignedBigInteger('product_type_id');  // Changed from bigInteger to unsignedBigInteger
+
+            $table->foreign('product_type_id')
+                    ->references('id')
+                    ->on('product_types')
+                    ->onDelete('cascade');
             
             // Inventory
             $table->unsignedInteger('qty');  // Changed to unsignedInteger since you don't need bigInteger

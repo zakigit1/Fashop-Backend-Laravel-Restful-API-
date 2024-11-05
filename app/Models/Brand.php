@@ -23,11 +23,17 @@ class Brand extends Model implements TranslatableContract
     //     'updated_at'
     // ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'status' => 'integer',
+    ];
+
+
     public $translatedAttributes = ['name','slug'];
-
-
-
-
 
 
     /*                                                 Begin GET                                          */

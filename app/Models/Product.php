@@ -27,7 +27,8 @@ class Product extends Model implements TranslatableContract
         'offer_price',
         'offer_start_date',
         'offer_end_date',
-        'status'
+        'status',
+        'product_type_id'
     ];
 
     // protected $hidden = [
@@ -66,6 +67,17 @@ class Product extends Model implements TranslatableContract
             'id'
         );
     }
+
+    public function attributes(){
+        return $this->belongsToMany(
+            Attribute::class,
+            'product_attributes',
+            'product_id',
+            'attribute_id',
+            'id',
+            'id'
+        );
+    }
         public function brand(){
             return $this->belongsTo(Brand::class,'brand_id','id','id');
         }
@@ -74,11 +86,6 @@ class Product extends Model implements TranslatableContract
             return $this->hasMany(ProductImageGallery::class,'product_id','id');
         }
 
-
-        // public function attributes(){
-
-        //     return $this->hasMany(ProductVariant::class,'product_id','id');
-        // }
 
 
 
