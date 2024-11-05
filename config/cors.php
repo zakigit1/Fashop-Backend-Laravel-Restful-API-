@@ -38,7 +38,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'], // Add your Flutter web port here
+    'allowed_origins' => ['http://localhost*'], // Add your Flutter web port here
 
     'allowed_headers' => ['*'],
 
