@@ -5,12 +5,21 @@ namespace App\Http\Controllers\Admin\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Traits\imageUploadTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
 {
+
+    use imageUploadTrait;
+
+    const FOLDER_PATH = '/uploads/images/';
+    const FOLDER_NAME = 'categories';
+
+
+
     /**
      * Display a listing of the resource.
      */
@@ -18,18 +27,10 @@ class CategoryController extends Controller
     {
         try{
 
-            $categories = Category::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                    },'children'=>function($query){
-                        $query->with(['translations' => function($query){
-                            $query->where('locale',config('translatable.locale'));// this is work 100%
-                    }]);
-                    },'_parent'=>function($query){
-                        $query->with(['translations' => function($query){
-                            $query->where('locale',config('translatable.locale'));// this is work 100%
-                    }]);
-                    },
-                    ])
+            $categories = Category::with([
+                'children',
+                '_parent'
+                ])
                 ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
@@ -80,15 +81,18 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
+        // dd($request->all());
         
         try{
 
-            // dd($request->all());
             DB::beginTransaction();
 
+            /** Save logo  */
+            $icon_name= $this->uploadImage_Trait($request,'icon',self::FOLDER_PATH,self::FOLDER_NAME);
+
             $category = Category::create([
-                "icon" => $request->icon,
-                "parent_id" =>(int) $request->parent_id,
+                "icon" => $icon_name,
+                "parent_id" => (is_null($request->parent_id)) ? $request->parent_id :(int) $request->parent_id,
                 "status" =>(int) $request->status,
             ]);
 
@@ -133,9 +137,16 @@ class CategoryController extends Controller
                 return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
+
+            if($request->hasFile('icon')){
+    
+                $old_icon = $category->icon;
+                $icon_name = $this->updateImage_Trait($request,'icon',CategoryController::FOLDER_PATH,CategoryController::FOLDER_NAME,$old_icon);
+                $category->update(['icon'=>$icon_name]);
+            }
+
             $category->update([
-                "icon" => $request->icon,
-                "parent_id" =>(int) $request->parent_id,
+                "parent_id" =>(is_null($request->parent_id)) ? $request->parent_id :(int) $request->parent_id,
                 "status" =>(int) $request->status,
             ]);
            
@@ -182,7 +193,7 @@ class CategoryController extends Controller
                 return $this->error('You Can\'t Delete This Category Because They Have Products Communicated With It !',CONFLICT_ERROR_CODE);
             }
 
-        
+            $this->deleteImage_Trait($category->icon ,self::FOLDER_PATH,self::FOLDER_NAME);
             $category->delete();
 
             return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);

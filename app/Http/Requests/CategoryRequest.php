@@ -25,7 +25,7 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         $id = $this->id;
-
+        $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes (programmer common use)
         $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
         
         // ### Method 2 : this is more Effective [testing with post man]
@@ -45,7 +45,14 @@ class CategoryRequest extends FormRequest
 
         ### Method 3 : this is more Effective [For Ramy] perfect
         $rules = [
-            'icon' => 'required|string|min:2|max:255',//you can add unique but i want to be the user able to duplacate normaly the icons
+
+            'icon'=>[
+                $id ? 'nullable' : 'required',
+                'image',
+                'max:' . $maxFileSize,
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
+            ],
+            // 'icon' => 'required|string|min:2|max:255',//you can add unique but i want to be the user able to duplacate normaly the icons
             'name' => [
                 'required',
                 'array',
@@ -53,7 +60,7 @@ class CategoryRequest extends FormRequest
                 'max:'.$lang_number,
             ],
             'status' => 'required|boolean',
-            'parent_id' => 'nullable|numeric|exists:categories,id|gt:0'
+            'parent_id' => 'nullable|numeric|exists:categories,id'
         
         ];
 

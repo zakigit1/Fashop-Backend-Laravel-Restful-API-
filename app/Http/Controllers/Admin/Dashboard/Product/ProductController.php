@@ -29,10 +29,6 @@ class ProductController extends Controller
         try{
 
             $products = Product::with([
-                    'translations' => function($query){
-                            $query->where('locale',config('translatable.locale'));// this is work 100%
-                            //  $query->where('locale',config('app.locale'));
-                        },
                     'categories',
                     // 'categories' => function($query){
                     //     $query->with(['translations' => function($query){
@@ -156,7 +152,7 @@ class ProductController extends Controller
 
             $product = Product::create([
                 "thumb_image" => $image_name,
-                "brand_id" =>(int) $request->brand_id,
+                "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
                 "product_type_id" =>(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
@@ -218,7 +214,7 @@ class ProductController extends Controller
             }
             
             $product->update([
-                "brand_id" =>(int) $request->brand_id,
+                "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
                 "product_type_id" =>(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,

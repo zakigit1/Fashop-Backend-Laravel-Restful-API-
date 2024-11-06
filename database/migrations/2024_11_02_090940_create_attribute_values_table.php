@@ -19,9 +19,7 @@ return new class extends Migration
             $table->string('color_code', 20)->nullable(); // For color attributes
             $table->integer('sort_order')->default(0);
             
-            $table->decimal('extra_price', 10, 2)->default(0.00); // Additional price for this variant
-            $table->integer('quantity')->default(0); // Stock for this specific combination
-            $table->boolean('is_default')->default(false);
+ 
             $table->boolean('status')->default(true);
             $table->timestamps();
             

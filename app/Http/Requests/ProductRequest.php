@@ -175,7 +175,6 @@ class ProductRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:brands,id',
-                'gt:0',
             ],
 
             'product_type_id' => [

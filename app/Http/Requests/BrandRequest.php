@@ -69,7 +69,7 @@ class BrandRequest extends FormRequest
                 $id ? 'nullable' : 'required',
                 'image',
                 'max:' . $maxFileSize,
-                'mimes:jpeg,png,jpg,webp', // Add supported formats
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
             ],
         
             'name' => [
