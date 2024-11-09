@@ -17,16 +17,7 @@ class ProductAttributeValueController extends Controller
     public function index()
     {
         try{
-            $attributes = AttributeValue::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    },
-                    'attribute'=>function($query){
-                        $query->with(['translations' => function($query){
-                            $query->where('locale',config('translatable.locale'));// this is work 100%
-
-                        }]);
-                    }])
+            $attributes = AttributeValue::with(['attribute'])
                 ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
@@ -47,9 +38,7 @@ class ProductAttributeValueController extends Controller
     public function show(string $id)
     {
         try{
-            $attribute_value = AttributeValue::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));
-                    }])->find($id);
+            $attribute_value = AttributeValue::with(['attribute'])->find($id);
 
             if(!$attribute_value){
                 return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
@@ -75,37 +64,18 @@ class ProductAttributeValueController extends Controller
 
             $attribute_value = AttributeValue::create([
                 "attribute_id" =>(int) $request->attribute_id,
+                "name" => $request->name,
+                "display_name" => $request->display_name,
                 "color_code" => $request->color_code,
                 "status" =>(int) $request->status,
             ]);
 
-            if($request->has('extra_price')){
-                $attribute_value->update([
-                    "extra_price" =>(float) $request->extra_price,
-                ]);
-            }
-            if($request->has('quantity')){
-                $attribute_value->update([
-                   "quantity" =>(int) $request->quantity,
-                ]);
-            }
-            if($request->has('is_default')){
-                $attribute_value->update([
-                    "is_default" =>(int) $request->is_default,
-                ]);
-            }
             if($request->has('sort_order')){
                 $attribute_value->update([
                     "sort_order" =>(int) $request->sort_order,
                 ]);
             }
 
-
-
-            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
-                $attribute_value->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
-                $attribute_value->translateOrNew($keyLang)->display_name = $request->input("display_name.$keyLang");
-            }
 
             $attribute_value->save();
 

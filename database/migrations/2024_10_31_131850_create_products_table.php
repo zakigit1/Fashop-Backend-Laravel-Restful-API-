@@ -48,7 +48,7 @@ return new class extends Migration
                     ->onDelete('cascade');
 
             // Product Type relationship
-            $table->unsignedBigInteger('product_type_id');  // Changed from bigInteger to unsignedBigInteger
+            $table->unsignedBigInteger('product_type_id')->nullable();  // Changed from bigInteger to unsignedBigInteger
 
             $table->foreign('product_type_id')
                     ->references('id')
@@ -63,6 +63,10 @@ return new class extends Migration
             
             // Product identifiers
             $table->string('sku', 50)->unique()->nullable();  // Added length constraint
+
+            // Product Barcode : 
+            $table->string('barcode', 255)->nullable(); // you can add UPC and EAN (search about it)
+            
             
             // Pricing
             $table->decimal('price', 10, 2)->unsigned();  // Changed from double to decimal for precise money handling

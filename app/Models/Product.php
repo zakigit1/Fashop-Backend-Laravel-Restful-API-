@@ -28,7 +28,8 @@ class Product extends Model implements TranslatableContract
         'offer_start_date',
         'offer_end_date',
         'status',
-        'product_type_id'
+        'product_type_id',
+        'barcode',
     ];
 
     // protected $hidden = [
@@ -36,7 +37,7 @@ class Product extends Model implements TranslatableContract
     //     'updated_at'
     // ];
 
-    public $translatedAttributes = ['name','slug','description','product_type'];
+    public $translatedAttributes = ['name','slug','description'];
 
 
 
@@ -68,23 +69,32 @@ class Product extends Model implements TranslatableContract
         );
     }
 
-    public function attributes(){
-        return $this->belongsToMany(
-            Attribute::class,
-            'product_attributes',
-            'product_id',
-            'attribute_id',
-            'id',
-            'id'
-        );
-    }
-        public function brand(){
-            return $this->belongsTo(Brand::class,'brand_id','id','id');
-        }
+    // public function attributes(){
+    //     return $this->belongsToMany(
+    //         Attribute::class,
+    //         'product_attributes',
+    //         'product_id',
+    //         'attribute_id',
+    //         'id',
+    //         'id'
+    //     );
+    // }
 
-        public function gallery(){
-            return $this->hasMany(ProductImageGallery::class,'product_id','id');
-        }
+
+    public function attributeValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'product_attribute_values')
+                    ->withPivot('attribute_id','extra_price', 'quantity');
+    }
+
+
+    public function brand(){
+        return $this->belongsTo(Brand::class,'brand_id','id','id');
+    }
+
+    public function gallery(){
+        return $this->hasMany(ProductImageGallery::class,'product_id','id');
+    }
 
 
 

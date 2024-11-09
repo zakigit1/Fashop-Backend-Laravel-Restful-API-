@@ -18,7 +18,8 @@ class ProductController extends Controller
     use imageUploadTrait;
 
     const FOLDER_PATH = 'uploads/images/products/';
-    const FOLDER_NAME = 'thumb-images';
+    const FOLDER_NAME_THUMB_IMAGE = 'thumb-images';
+    const FOLDER_NAME_BARCODE = 'barcodes';
 
 
     /**
@@ -75,6 +76,103 @@ class ProductController extends Controller
           
         }
     }
+
+
+    public function save_product_attribute_value(Request $request,string $id){
+        $request->validate([
+            /** this validation if you want to save multiple attribute with multiple values for one product : */
+                // 'product_id' => 'required|integer|exists:products,id|gt:0',
+
+                // 'attributes' => 'required|array|min:1',
+                // 'attributes.*.attribute_id' => 'required|integer|exists:attributes,id|gt:0',
+
+                // 'attributes.*.values' => 'required|array',
+                // 'attributes.*.values.*.attribute_value_id' => 'required|exists:attribute_values,id',
+
+                // 'attributes.*.values.*.extra_price' => 'required|numeric|min:0',
+                // 'attributes.*.values.*.quantity' => 'required|integer|min:0',
+                // 'attributes.*.values.*.is_default' => 'required|boolean',
+
+            /** this validation if you want to save single attribute with single values for one product : */
+
+                'product_id' => 'required|integer|exists:products,id|gt:0',
+                'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
+                'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0|required_with:attribute_id',
+                'extra_price' => 'required|numeric|min:0',//need modify to decimal value
+                'quantity' => 'required|integer|min:0',
+                'is_default' => 'required|boolean',
+        ]);
+
+
+
+        
+        
+        try{
+            DB::beginTransaction();
+            
+            $product = Product::find($id);
+            
+            if(!$product){
+                return $this->error('Product Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+            
+            $product_attribute = $product->attributes()->where('id',$request->attribute_id)->first();
+
+            if(!$product_attribute){
+                return $this->error('This Attribute is not define for this Product , Please Check Again !',NOT_FOUND_ERROR_CODE);
+            }
+
+            $product->attributeValues()->syncWithoutDetaching([
+                'attribute_id' => $request->attribute_id,
+                'extra_price' => $request->extra_price,
+                'quantity' => $request->quantity,
+                'is_default' => $request->is_default,
+            ]);
+
+
+            // if you want to delete all attribute values for this product :
+            $product->attributeValues()->detach();
+
+            // if you want to delete specific attribute values for this product :
+            $product->attributeValues()->detach($request->attribute_value_id);
+
+
+            // if($request->has('extra_price')){
+            //     $attribute_value->update([
+            //         "extra_price" =>(float) $request->extra_price,
+            //     ]);
+            // }
+            // if($request->has('quantity')){
+            //     $attribute_value->update([
+            //        "quantity" =>(int) $request->quantity,
+            //     ]);
+            // }
+            // if($request->has('is_default')){
+            //     $attribute_value->update([
+            //         "is_default" =>(int) $request->is_default,
+            //     ]);
+            // }
+            // if($request->has('sort_order')){
+            //     $attribute_value->update([
+            //         "sort_order" =>(int) $request->sort_order,
+            //     ]);
+            // }
+
+
+            DB::commit();
+            return $this->success('Product Attribute Value Saved Successfully !',SUCCESS_CODE);
+
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){ 
+            DB::rollBack();
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+
+
+    }
+
 
     /**
      * Display the specified resource.
@@ -142,18 +240,18 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request):JsonResponse
     {
-        dd($request->all());
+        // dd($request->all());
         try{
             DB::beginTransaction();
     
-            /** Save logo  */
+            /** Save thumb_image  */
 
-            $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME);
+            $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
 
             $product = Product::create([
                 "thumb_image" => $image_name,
                 "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
-                "product_type_id" =>(int) $request->product_type_id,
+                "product_type_id" => null,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
                 "price" =>(float) $request->price,
@@ -164,9 +262,13 @@ class ProductController extends Controller
                 "status" =>(int) $request->status,
             ]);
 
+            if($request->hasFile('barcode')){
+                $barcode_image_name = $this->uploadImage_Trait($request,'barcode',ProductController::FOLDER_PATH,ProductController::FOLDER_NAME_BARCODE);
+                $product->update(['barcode' => $barcode_image_name]);
+            }
+
+
             $product->categories()->syncWithoutDetaching($request->category_ids);
-            $product->attributes()->syncWithoutDetaching($request->attribute_ids);
-            
             // $product->categories()->attach($request->categories);
 
             /** Store translations for each locale */
@@ -209,8 +311,14 @@ class ProductController extends Controller
 
             if($request->hasFile('thumb_image')){
                 $old_image = $product->thumb_image;
-                $image_name = $this->updateImage_Trait($request,'thumb_image',ProductController::FOLDER_PATH,ProductController::FOLDER_NAME,$old_image);
+                $image_name = $this->updateImage_Trait($request,'thumb_image',ProductController::FOLDER_PATH,ProductController::FOLDER_NAME_THUMB_IMAGE,$old_image);
                 $product->update(['thumb_image'=>$image_name]);
+            }
+
+            if($request->hasFile('barcode')){
+                $old_barcode_image = $product->barcode;
+                $barcode_image_name = $this->updateImage_Trait($request,'barcode',ProductController::FOLDER_PATH,ProductController::FOLDER_NAME_BARCODE,$old_barcode_image);
+                $product->update(['barcode' => $barcode_image_name]);
             }
             
             $product->update([
@@ -275,7 +383,8 @@ class ProductController extends Controller
 
             //********************   Delete Product the thumb image    ******************** */
             
-            $this->deleteImage_Trait($product->thumb_image ,self::FOLDER_PATH,self::FOLDER_NAME);
+            $this->deleteImage_Trait($product->thumb_image ,self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
+            $this->deleteImage_Trait($product->barcode ,self::FOLDER_PATH,self::FOLDER_NAME_BARCODE);
 
             //********************   Delete Product Gallery    ******************** */
 

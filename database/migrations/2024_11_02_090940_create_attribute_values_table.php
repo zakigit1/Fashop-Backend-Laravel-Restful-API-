@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('attribute_id');
-            
-           
+            $table->string('name', 100);  // S, M, L or Red, Blue, etc.
+            $table->string('display_name', 100)->nullable();  // S = in column display value it is Small
             $table->string('color_code', 20)->nullable(); // For color attributes
             $table->integer('sort_order')->default(0);
-            
- 
             $table->boolean('status')->default(true);
             $table->timestamps();
+
+
+            $table->unique(['attribute_id', 'value']);
             
             $table->foreign('attribute_id')
                   ->references('id')

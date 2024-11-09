@@ -109,7 +109,14 @@ class ProductRequest extends FormRequest
                 $id ? 'nullable' : 'required',
                 'image',
                 'max:' . $maxFileSize,
-                'mimes:jpeg,png,jpg,webp', // Add supported formats
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
+            ],
+
+            'barcode' => [
+                'nullable',
+                'image',
+                'max:' . $maxFileSize,
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
             ],
 
             // Inventory validation
@@ -178,10 +185,9 @@ class ProductRequest extends FormRequest
             ],
 
             'product_type_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:product_types,id',
-                'gt:0',
             ],
 
             // Translation arrays
@@ -202,8 +208,6 @@ class ProductRequest extends FormRequest
             'category_ids' => 'required|array|min:1', //[]
             'category_ids.*' => 'numeric|exists:categories,id|gt:0',
 
-            'attribute_ids' => 'required|array|min:1', //[]
-            'attribute_ids.*' => 'numeric|exists:attributes,id|gt:0',
         ];
 
         // Add translation rules for each locale

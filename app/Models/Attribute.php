@@ -24,23 +24,15 @@ class Attribute extends Model implements TranslatableContract
 
 
 
-
-    public function products()
-    {
-        return $this -> belongsToMany(
-            Product::class,
-            'product_attributes',
-            'attribute_id',
-            'product_id',
-            'id',
-            'id'
-        );
-    }
-
    public function values(){
        return $this->hasMany(AttributeValue::class,'attribute_id','id');
    }
 
+   public function products()
+   {
+       return $this->belongsToMany(Product::class, 'product_attribute_values')
+                   ->withPivot('attribute_value_id', 'extra_price', 'quantity');
+   }
 
 
 
