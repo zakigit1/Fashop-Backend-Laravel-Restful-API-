@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Dashboard\Product;
+namespace App\Http\Controllers\Dashboard\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttributeValueRequest;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class ProductAttributeValueController extends Controller
+class AttributeValueController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -55,9 +55,10 @@ class ProductAttributeValueController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
     public function store(AttributeValueRequest $request)
     {
-        // dd($request->all());
+        // return $request->all();
         try{
 
             DB::beginTransaction();
@@ -78,6 +79,8 @@ class ProductAttributeValueController extends Controller
 
 
             $attribute_value->save();
+
+            $attribute_value->load('attribute');
 
             DB::commit();
             return $this->success($attribute_value,'Created Successfully!',SUCCESS_STORE_CODE,'productAttributeValue');
@@ -110,25 +113,13 @@ class ProductAttributeValueController extends Controller
 
             $attribute_value->update([
                 "attribute_id" =>(int) $request->attribute_id,
+                "name" => $request->name,
+                "display_name" => $request->display_name,
                 "color_code" => $request->color_code,
                 "status" =>(int) $request->status,
             ]);
 
-            if($request->has('extra_price')){
-                $attribute_value->update([
-                    "extra_price" =>(float) $request->extra_price,
-                ]);
-            }
-            if($request->has('quantity')){
-                $attribute_value->update([
-                   "quantity" =>(int) $request->quantity,
-                ]);
-            }
-            if($request->has('is_default')){
-                $attribute_value->update([
-                    "is_default" =>(int) $request->is_default,
-                ]);
-            }
+
             if($request->has('sort_order')){
                 $attribute_value->update([
                     "sort_order" =>(int) $request->sort_order,
@@ -136,10 +127,6 @@ class ProductAttributeValueController extends Controller
             }
 
 
-            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
-                $attribute_value->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
-                $attribute_value->translateOrNew($keyLang)->display_name = $request->input("display_name.$keyLang");
-            }
 
             $attribute_value->save();
 

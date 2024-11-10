@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Dashboard\Product;
+namespace App\Http\Controllers\Dashboard\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttributeRequest;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class ProductAttributeController extends Controller
+class AttributeController extends Controller
 {
  /**
      * Display a listing of the resource.
@@ -19,17 +19,14 @@ class ProductAttributeController extends Controller
     public function index()
     {
         try{
-            $attributes = Attribute::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));// this is work 100%
-                        //  $query->where('locale',config('app.locale'));
-                    },
+            $attributes = Attribute::with([
                     'values',
                     ])
                 ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($attributes,'productAttributes','All Product Attribute',SUCCESS_CODE);
+            return $this->paginationResponse($attributes,'Attributes','All Attribute',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 
@@ -46,10 +43,10 @@ class ProductAttributeController extends Controller
                     }])->find($id);
 
             if(!$attribute){
-                return $this->error('Product Attribute Is Not Found!',NOT_FOUND_ERROR_CODE);
+                return $this->error('Attribute Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
             
-            return $this->success($attribute,'Product Attribute Details',SUCCESS_CODE,'productAttribute');
+            return $this->success($attribute,'Attribute Details',SUCCESS_CODE,'Attribute');
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
@@ -102,7 +99,7 @@ class ProductAttributeController extends Controller
             $attribute->save();
 
             DB::commit();
-            return $this->success($attribute,'Created Successfully!',SUCCESS_STORE_CODE,'productAttribute');
+            return $this->success($attribute,'Created Successfully!',SUCCESS_STORE_CODE,'Attribute');
 
         }catch (ValidationException $ex) {
             DB::rollBack();  
@@ -164,7 +161,7 @@ class ProductAttributeController extends Controller
             $attribute->save();
 
             DB::commit();
-            return $this->success($attribute,'Updated Successfully!',SUCCESS_CODE,'productAttribute');
+            return $this->success($attribute,'Updated Successfully!',SUCCESS_CODE,'Attribute');
             
         }catch (ValidationException $ex) {
             DB::rollBack();  

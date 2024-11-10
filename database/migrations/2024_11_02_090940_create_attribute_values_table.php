@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
 
 
-            $table->unique(['attribute_id', 'value']);
+            $table->unique(['attribute_id', 'name']);
             
             $table->foreign('attribute_id')
                   ->references('id')

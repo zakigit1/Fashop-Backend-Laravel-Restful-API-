@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Dashboard\Product;
+namespace App\Http\Controllers\Dashboard\Admin\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductGalleryRequest;

@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\Dashboard\AdminProfileController;
-use App\Http\Controllers\Admin\Dashboard\BrandController;
-use App\Http\Controllers\Admin\Dashboard\CategoryController;
-use App\Http\Controllers\Admin\Dashboard\Product\ProductAttributeController;
-use App\Http\Controllers\Admin\Dashboard\Product\ProductAttributeValueController;
-use App\Http\Controllers\Admin\Dashboard\Product\ProductController;
-use App\Http\Controllers\Admin\Dashboard\Product\ProductGalleryController;
-use App\Http\Controllers\Admin\Dashboard\Product\ProductTypeController;
+use App\Http\Controllers\Dashboard\Admin\AdminProfileController;
+use App\Http\Controllers\Dashboard\Admin\BrandController;
+use App\Http\Controllers\Dashboard\Admin\CategoryController;
+use App\Http\Controllers\Dashboard\Admin\AttributeController;
+use App\Http\Controllers\Dashboard\Admin\AttributeValueController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductAttributeValueController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductGalleryController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductTypeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -66,7 +67,23 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::post('/{id}/update', [ProductController::class, 'update']);
         
         Route::delete('/{id}/delete', [ProductController::class, 'destroy']);
+
+
+        // Route::post('/{id}/product-attribute-values/add', [ProductController::class,'save_product_attribute_value']);
+        // Route::post('/{id}/product-attribute-values/{attributeValueId}/update', [ProductController::class,'update_product_attribute_value']);
     });
+
+
+    //Product Attribute Value : 
+    Route::prefix('product-attribute-value')->group(function () {
+
+        Route::post('/{productId}', [ProductAttributeValueController::class,'store']);
+        // Route::put('/{id}/update', [ProductAttributeValueController::class,'update']);// when you finish all dashboard routes
+        Route::post('/{id}/update/{productId}', [ProductAttributeValueController::class,'update']);
+        Route::DELETE('/{id}/delete/{productId}', [ProductAttributeValueController::class,'destroy']);
+
+    });
+
 
 
     // Product Gallery Routes :
@@ -79,22 +96,22 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
 
     // Product Attribute Routes :
-    Route::prefix('product-attribute')->group(function () {
-        Route::get('',[ProductAttributeController::class,'index'])->middleware('setLang');
-        Route::get('/{id}', [ProductAttributeController::class, 'show'])->middleware('setLang');
-        Route::post('',[ProductAttributeController::class,'store']);
-        Route::post('{id}/update',[ProductAttributeController::class,'update']);
-        Route::DELETE('{id}/delete',[ProductAttributeController::class,'destroy']);
+    Route::prefix('attribute')->group(function () {
+        Route::get('',[AttributeController::class,'index'])->middleware('setLang');
+        Route::get('/{id}', [AttributeController::class, 'show'])->middleware('setLang');
+        Route::post('',[AttributeController::class,'store']);
+        Route::post('{id}/update',[AttributeController::class,'update']);
+        Route::DELETE('{id}/delete',[AttributeController::class,'destroy']);
     });
 
 
     // Product Attribute Value Routes :
-    Route::prefix('product-attribute-value')->group(function () {
-        Route::get('',[ProductAttributeValueController::class,'index'])->middleware('setLang');
-        Route::get('/{id}', [ProductAttributeValueController::class, 'show'])->middleware('setLang');
-        Route::post('',[ProductAttributeValueController::class,'store']);
-        Route::post('{id}/update',[ProductAttributeValueController::class,'update']);
-        Route::DELETE('{id}/delete',[ProductAttributeValueController::class,'destroy']);
+    Route::prefix('attribute-value')->group(function () {
+        Route::get('',[AttributeValueController::class,'index'])->middleware('setLang');
+        Route::get('/{id}', [AttributeValueController::class, 'show'])->middleware('setLang');
+        Route::post('',[AttributeValueController::class,'store']);
+        Route::post('{id}/update',[AttributeValueController::class,'update']);
+        Route::DELETE('{id}/delete',[AttributeValueController::class,'destroy']);
     });
 
     //Product Type Routes :
