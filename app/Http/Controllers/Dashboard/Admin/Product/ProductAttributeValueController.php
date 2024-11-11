@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard\Admin\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductAttributeValueRequest;
 use App\Models\AttributeValue;
 use App\Models\Product;
 use App\Models\ProductAttributeValue;
@@ -36,12 +37,10 @@ class ProductAttributeValueController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-     // public function store(ProductAttributeValueRequest $request,string $id)
-    // {
-    public function store(Request $request,int $id): JsonResponse
+     public function store(ProductAttributeValueRequest $request,string $productId)
     {
         
-        // return $request->all();
+        return $request->all();
         $request->validate([
             'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
             'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0|required_with:attribute_id',
@@ -49,7 +48,7 @@ class ProductAttributeValueController extends Controller
             'quantity' => 'integer|min:0',
             'is_default' => 'boolean',
         ]);
-    
+        // return $request->all();
         
         try{
             DB::beginTransaction();
@@ -115,10 +114,10 @@ class ProductAttributeValueController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(ProductAttributeValueRequest $request,string $id)
-    public function update(Request $request, int $id,int $productId)
+    public function update(ProductAttributeValueRequest $request, int $id,int $productId)
     {
         
+        // return $request->all();
         try{
             DB::beginTransaction();
             $request->validate([

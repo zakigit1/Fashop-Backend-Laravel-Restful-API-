@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
             // Using unsignedBigInteger is more appropriate than bigInteger for foreign keys
-            $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('attribute_id');
-            $table->unsignedBigInteger('attribute_value_id');
+            $table->unsignedBigInteger('product_id')->index();
+            $table->unsignedBigInteger('attribute_id')->index();
+            $table->unsignedBigInteger('attribute_value_id')->index();
             $table->decimal('extra_price', 10, 2)->default(0.00); // Additional price for this variant
             $table->integer('quantity')->default(0); // Stock for this specific combination
             $table->boolean('is_default')->default(false);
@@ -24,6 +24,9 @@ return new class extends Migration
 
 
 
+            // Indices for better performance
+            $table->index(['product_id', 'attribute_id']);
+            $table->index(['is_default', 'product_id']);
 
             
             // Foreign key constraints

@@ -146,7 +146,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request):JsonResponse
     {
-        // dd($request->all());
+        // $request->all();
         try{
             DB::beginTransaction();
     
@@ -174,7 +174,7 @@ class ProductController extends Controller
             }
 
 
-            $product->categories()->syncWithoutDetaching($request->category_ids);
+            $product->categories()->syncWithoutDetaching($request->category_id);
             // $product->categories()->attach($request->categories);
 
             /** Store translations for each locale */
@@ -204,7 +204,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id) :JsonResponse
     {
-        dd($request->all());
+        // $request->all();
         try{
             DB::beginTransaction();
 
@@ -229,7 +229,7 @@ class ProductController extends Controller
             
             $product->update([
                 "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
-                "product_type_id" =>(int) $request->product_type_id,
+                "product_type_id" =>(is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
                 "price" =>(float) $request->price,
@@ -240,23 +240,25 @@ class ProductController extends Controller
                 "status" =>(int) $request->status
             ]);
 
-            $product->categories()->syncWithoutDetaching($request->category_ids);
-            $product->attributes()->syncWithoutDetaching($request->attribute_ids);
+            if($request->has('category_id')){
+                /**sync() method doing dettach and after attach to data */
+                $product->categories()->sync($request->category_id);
+            }
+
+
+
+
+            // $product->categories()->syncWithoutDetaching( $request->category_ids);
+           
 
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
-                /** if u use post man  */
-                // if($request->input("name.$keyLang") != null){
-                //     $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
-                //     $product->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
-                //     $product->translateOrNew($keyLang)->description = $request->input("description.$keyLang");
-                // }
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
                 $product->translateOrNew($keyLang)->slug = str_replace(' ', '-', $request->input("name.$keyLang"));
                 $product->translateOrNew($keyLang)->description = $request->input("description.$keyLang");
-
             }
     
             $product->save();
+            $product->load('categories');
 
             DB::commit();
             return $this->success($product,'Updated Successfully!',SUCCESS_CODE,'product');
@@ -324,7 +326,8 @@ class ProductController extends Controller
             
             //********************   Delete Product  *****************//
                
-            $product->delete();
+            // $product->delete();
+            $product->forceDelete();// because we are using soft delete after add this feature .
 
 
             // we are using ajax : 

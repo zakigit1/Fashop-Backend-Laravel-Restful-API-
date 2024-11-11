@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Dashboard\AdminAuthController;
+use App\Http\Controllers\Dashboard\Admin\AdminAuthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;

@@ -205,8 +205,11 @@ class ProductRequest extends FormRequest
                 'max:'.$lang_number,
             ],
 
-            'category_ids' => 'required|array|min:1', //[]
-            'category_ids.*' => 'numeric|exists:categories,id|gt:0',
+            // 'category_ids' => 'required|array|min:1', //[]
+            // 'category_ids.*' => 'numeric|integer|exists:categories,id|gt:0',
+        
+
+            'category_id' => 'required|numeric|integer|exists:categories,id|gt:0',// you can after add this column to products table because we store just one category for a product 
 
         ];
 
