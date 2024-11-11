@@ -76,6 +76,9 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     //Product Attribute Value : 
     Route::prefix('product-attribute-value')->group(function () {
+        
+        Route::get('/',[ProductAttributeValueController::class,'index']);
+        Route::get('/{productId}',[ProductAttributeValueController::class,'show']);
 
         Route::post('/{productId}', [ProductAttributeValueController::class,'store']);
         // Route::put('/{id}/update', [ProductAttributeValueController::class,'update']);// when you finish all dashboard routes

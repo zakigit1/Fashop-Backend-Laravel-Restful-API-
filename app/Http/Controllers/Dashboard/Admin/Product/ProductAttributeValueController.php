@@ -21,10 +21,15 @@ class ProductAttributeValueController extends Controller
     {
         try{
 
-        $productAttributeValue = ProductAttributeValue::with(['product','attribute','attributeValue']) 
+        $productAttributeValue = ProductAttributeValue::with([
+            'product',
+            'attribute',
+            'attributeValue'
+            ]) 
             ->orderBy('id','DESC')
             ->paginate(20);
 
+        
         return $this->paginationResponse($productAttributeValue,'productAttributeValues','All Product Attribute Value',SUCCESS_CODE);
 
     }catch(\Exception $ex){ 
@@ -40,7 +45,7 @@ class ProductAttributeValueController extends Controller
      public function store(ProductAttributeValueRequest $request,string $productId)
     {
         
-        return $request->all();
+        // return $request->all();
         $request->validate([
             'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
             'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0|required_with:attribute_id',
@@ -53,7 +58,8 @@ class ProductAttributeValueController extends Controller
         try{
             DB::beginTransaction();
             
-            $product = Product::find($id);
+            $product = Product::find($productId);
+
             
             if(!$product){
                 return $this->error('Product Is Not Found!',NOT_FOUND_ERROR_CODE);
@@ -66,7 +72,7 @@ class ProductAttributeValueController extends Controller
             }
 
             $productAttributeValue = ProductAttributeValue::create([
-                'product_id' => (int) $id,
+                'product_id' => (int) $productId,
                 'attribute_id' => (int) $request->attribute_id,
                 'attribute_value_id' => (int) $request->attribute_value_id,
             ]);
@@ -90,7 +96,7 @@ class ProductAttributeValueController extends Controller
 
             DB::commit();
 
-            // $productAttributeValue->load(['product','attribute','attributeValue']);
+            $productAttributeValue->load(['product','attribute','attributeValue']);
             return $this->success( $productAttributeValue,'Created Successfully !',SUCCESS_CODE,'ProductAttributeValue');
 
         }catch (ValidationException $ex) {
@@ -101,14 +107,6 @@ class ProductAttributeValueController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
         
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -173,9 +171,10 @@ class ProductAttributeValueController extends Controller
                     "is_default" =>(int) $request->is_default,
                 ]);
             }
-    
+            
+            $productAttributeValue->load(['product','attribute','attributeValue']);
             DB::commit();
-            return $this->success( $productAttributeValue,'Product Attribute Value Updated Successfully !',SUCCESS_CODE,'ProductAttributeValue');
+            return $this->success( $productAttributeValue,'Updated Successfully !',SUCCESS_CODE,'ProductAttributeValue');
     
         }catch (ValidationException $ex) {
             DB::rollBack();  

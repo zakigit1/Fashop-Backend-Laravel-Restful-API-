@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AttributeValue extends Model 
 {
@@ -21,14 +22,32 @@ class AttributeValue extends Model
 
 
 
-    public function attribute(){
+
+
+
+     /**
+     * Get the attribute that owns this value
+     */
+    public function attribute()
+    {
         return $this->belongsTo(Attribute::class,'attribute_id','id');
     }
 
-    
-    public function products()
+    /**
+     * Get all products that have this attribute value through pivot
+     */
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_attribute_values')
-            ->withPivot('attribute_id','attribute_value_id','extra_price', 'quantity','is_default');
+                    ->withPivot('attribute_id', 'extra_price', 'quantity', 'is_default')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get all product attribute value records
+     */
+    public function productAttributeValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValue::class);
     }
 }

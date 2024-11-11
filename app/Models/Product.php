@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model implements TranslatableContract
 {
@@ -69,23 +71,36 @@ class Product extends Model implements TranslatableContract
         );
     }
 
-    // public function attributes(){
-    //     return $this->belongsToMany(
-    //         Attribute::class,
-    //         'product_attributes',
-    //         'product_id',
-    //         'attribute_id',
-    //         'id',
-    //         'id'
-    //     );
-    // }
+ 
 
-
-    public function attributeValues()
+    /**
+     * Get all attribute values associated with this product through pivot
+     */
+    public function attributeValues(): BelongsToMany
     {
         return $this->belongsToMany(AttributeValue::class, 'product_attribute_values')
-                    ->withPivot('attribute_id','extra_price', 'quantity','is_default');
+                    ->withPivot('attribute_id', 'extra_price', 'quantity', 'is_default')
+                    ->withTimestamps();
     }
+
+    /**
+     * Get all attributes associated with this product through pivot
+     */
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany(Attribute::class, 'product_attribute_values')
+                    ->withPivot('attribute_value_id', 'extra_price', 'quantity', 'is_default')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get all product attribute value records
+     */
+    public function productAttributeValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValue::class);
+    }
+
 
 
     public function brand(){

@@ -22,7 +22,7 @@ class AttributeValueController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($attributes,'productAttributeValues','All Product Attribute',SUCCESS_CODE);
+            return $this->paginationResponse($attributes,'AttributeValues','All Attribute Value',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 
@@ -41,10 +41,10 @@ class AttributeValueController extends Controller
             $attribute_value = AttributeValue::with(['attribute'])->find($id);
 
             if(!$attribute_value){
-                return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
+                return $this->error('Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
             
-            return $this->success($attribute_value,'Product Attribute Value Details',SUCCESS_CODE,'productAttributeValue');
+            return $this->success($attribute_value,'Attribute Value Details',SUCCESS_CODE,'AttributeValue');
 
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
@@ -83,7 +83,7 @@ class AttributeValueController extends Controller
             $attribute_value->load('attribute');
 
             DB::commit();
-            return $this->success($attribute_value,'Created Successfully!',SUCCESS_STORE_CODE,'productAttributeValue');
+            return $this->success($attribute_value,'Created Successfully!',SUCCESS_STORE_CODE,'AttributeValue');
 
         }catch (ValidationException $ex) {
             DB::rollBack();  
@@ -108,7 +108,7 @@ class AttributeValueController extends Controller
             $attribute_value = AttributeValue::find($id);
 
             if(!$attribute_value){
-                return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
+                return $this->error('Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
             $attribute_value->update([
@@ -126,12 +126,12 @@ class AttributeValueController extends Controller
                 ]);
             }
 
-
-
             $attribute_value->save();
 
+            $attribute_value->load('attribute');
+
             DB::commit();
-            return $this->success($attribute_value,'Updated Successfully!',SUCCESS_CODE,'productAttributeValue');
+            return $this->success($attribute_value,'Updated Successfully!',SUCCESS_CODE,'AttributeValue');
 
         }catch (ValidationException $ex) {
             DB::rollBack();  
@@ -151,7 +151,7 @@ class AttributeValueController extends Controller
             $attribute_value = AttributeValue::find($id);
 
             if(!$attribute_value){
-                return $this->error('Product Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
+                return $this->error('Attribute Value Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
             
             $attribute_value->delete();
