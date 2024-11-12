@@ -34,10 +34,27 @@ class Product extends Model implements TranslatableContract
         'barcode',
     ];
 
-    // protected $hidden = [
+    protected $hidden = [
+        // 'pivot'
     //     'created_at',
     //     'updated_at'
-    // ];
+    ];
+
+
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'price' => 'float',
+        'offer_price' => 'float',
+        // 'offer_start_date' => 'datetime',
+        // 'offer_end_date' => 'datetime',
+        'qty' => 'integer',
+        'status' => 'integer',
+    ];
 
     public $translatedAttributes = ['name','slug','description'];
 
@@ -111,6 +128,10 @@ class Product extends Model implements TranslatableContract
         return $this->hasMany(ProductImageGallery::class,'product_id','id');
     }
 
+
+    public function productType(){
+        return $this->belongsTo(ProductType::class,'product_type_id','id');
+    }
 
 
 

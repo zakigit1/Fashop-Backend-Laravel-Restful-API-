@@ -18,7 +18,6 @@ class AttributeValueController extends Controller
     {
         try{
             $attributes = AttributeValue::with(['attribute'])
-                ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
 

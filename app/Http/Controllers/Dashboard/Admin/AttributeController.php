@@ -22,7 +22,7 @@ class AttributeController extends Controller
             $attributes = Attribute::with([
                     'values',
                     ])
-                ->where('status',1)
+                
                 ->orderBy('id','DESC')
                 ->paginate(20);
 

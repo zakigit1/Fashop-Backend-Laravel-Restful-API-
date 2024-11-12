@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_translations', function (Blueprint $table) {
+        Schema::create('slider_translations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('slider_id')->constrained()->onDelete('cascade');
 
             $table->string('locale')->index();
 
-            $table->string('name', 150);
-            $table->string('slug', 150);
-            $table->text('description');
-        
+            $table->string('title',100);
+            $table->text('description')->nullable();
+            // $table->string('button_text',50)->nullable();
 
-            $table->unique(['product_id', 'locale']);
+            $table->unique(['slider_id', 'locale']);
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_translations');
+        Schema::dropIfExists('slider_translations');
     }
 };

@@ -20,7 +20,7 @@ class ProductController extends Controller
 {
     use imageUploadTrait;
 
-    const FOLDER_PATH = 'uploads/images/products/';
+    const FOLDER_PATH = '/uploads/images/products/';
     const FOLDER_NAME_THUMB_IMAGE = 'thumb-images';
     const FOLDER_NAME_BARCODE = 'barcodes';
 
@@ -34,40 +34,13 @@ class ProductController extends Controller
 
             $products = Product::with([
                     'categories',
-                    // 'categories' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
-
-                    //     },
-                    //     ]);
-                    // },
                     'brand',
-                    // 'brand' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
-
-                    //     },
-                    //     ]);
-                    // },
                     'gallery',
-                    // 'attributes',
-                    // 'attributes' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
-
-                    //     },
-                    //     ]);
-                    // },
-                    // 'attribute_values',
-                    // 'attribute_values' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
-
-                    //     },
-                    //     ]);
-                    // }
+                    'attributes',
+                    'attributeValues',
+                    'productType'
                 ])    
-                ->where('status',1)
+
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
@@ -89,41 +62,40 @@ class ProductController extends Controller
             $product = Product::with([
                     'translations' => function($query){
                             $query->where('locale',config('translatable.locale'));// this is work 100%
-                            //  $query->where('locale',config('app.locale'));
+
                         },
-                    'categories',
-                    // 'categories' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+                    'categories' => function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
 
-                    //     },
-                    //     ]);
-                    // },
-                    'brand',
-                    // 'brand' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+                        },
+                        ]);
+                    },
+       
+                    'brand' => function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
 
-                    //     },
-                    //     ]);
-                    // },
+                        },
+                        ]);
+                    },
                     'gallery',
-                    // 'attributes',
-                    // 'attributes' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+       
+                    'attributes' => function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
 
-                    //     },
-                    //     ]);
-                    // },
-                    // 'attribute_values',
-                    // 'attribute_values' => function($query){
-                    //     $query->with(['translations' => function($query){
-                    //         $query->where('locale',config('translatable.locale'));// this is work 100%
+                        },
+                        ]);
+                    },
+                    'attributeValues',
+                    'productType' => function($query){
+                        $query->with(['translations' => function($query){
+                            $query->where('locale',config('translatable.locale'));// this is work 100%
 
-                    //     },
-                    //     ]);
-                    // }
+                        },
+                        ]);
+                    },
                 ])    
             ->find($id);
 
@@ -157,7 +129,7 @@ class ProductController extends Controller
             $product = Product::create([
                 "thumb_image" => $image_name,
                 "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
-                "product_type_id" => null,
+                "product_type_id" =>(is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
                 "price" =>(float) $request->price,
@@ -186,7 +158,7 @@ class ProductController extends Controller
 
             $product->save() ;
 
-            $product->load('categories');
+            $product->load('categories','brand','productType');
 
             DB::commit();
             return $this->success($product,'Created Successfully!',SUCCESS_STORE_CODE,'product');
@@ -246,8 +218,6 @@ class ProductController extends Controller
             }
 
 
-
-
             // $product->categories()->syncWithoutDetaching( $request->category_ids);
            
 
@@ -258,7 +228,7 @@ class ProductController extends Controller
             }
     
             $product->save();
-            $product->load('categories');
+            $product->load('categories','brand','productType');
 
             DB::commit();
             return $this->success($product,'Updated Successfully!',SUCCESS_CODE,'product');
@@ -340,141 +310,141 @@ class ProductController extends Controller
 
 
 
-    public function save_product_attribute_value(Request $request,string $id)
-    {
-        // return $request->all();
-        $request->validate([
-            /** this validation if you want to save multiple attribute with multiple values for one product : */
-                // 'product_id' => 'required|integer|exists:products,id|gt:0',
 
-                // 'attributes' => 'required|array|min:1',
-                // 'attributes.*.attribute_id' => 'required|integer|exists:attributes,id|gt:0',
 
-                // 'attributes.*.values' => 'required|array',
-                // 'attributes.*.values.*.attribute_value_id' => 'required|exists:attribute_values,id',
+    // public function save_product_attribute_value(Request $request,string $id)
+    // {
+    //     // return $request->all();
+    //     $request->validate([
+    //         /** this validation if you want to save multiple attribute with multiple values for one product : */
+    //             // 'product_id' => 'required|integer|exists:products,id|gt:0',
 
-                // 'attributes.*.values.*.extra_price' => 'required|numeric|min:0',
-                // 'attributes.*.values.*.quantity' => 'required|integer|min:0',
-                // 'attributes.*.values.*.is_default' => 'required|boolean',
+    //             // 'attributes' => 'required|array|min:1',
+    //             // 'attributes.*.attribute_id' => 'required|integer|exists:attributes,id|gt:0',
 
-            /** this validation if you want to save single attribute with single values for one product : */
+    //             // 'attributes.*.values' => 'required|array',
+    //             // 'attributes.*.values.*.attribute_value_id' => 'required|exists:attribute_values,id',
 
-                // 'product_id' => 'required|integer|exists:products,id|gt:0',
-                'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
-                'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0|required_with:attribute_id',
-                'extra_price' => 'required|numeric|min:0',//need modify to decimal value
-                'quantity' => 'required|integer|min:0',
-                'is_default' => 'required|boolean',
-        ]);
+    //             // 'attributes.*.values.*.extra_price' => 'required|numeric|min:0',
+    //             // 'attributes.*.values.*.quantity' => 'required|integer|min:0',
+    //             // 'attributes.*.values.*.is_default' => 'required|boolean',
+
+    //         /** this validation if you want to save single attribute with single values for one product : */
+
+    //             // 'product_id' => 'required|integer|exists:products,id|gt:0',
+    //             'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
+    //             'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0|required_with:attribute_id',
+    //             'extra_price' => 'required|numeric|min:0',//need modify to decimal value
+    //             'quantity' => 'required|integer|min:0',
+    //             'is_default' => 'required|boolean',
+    //     ]);
 
     
-        try{
-            DB::beginTransaction();
+    //     try{
+    //         DB::beginTransaction();
             
-            $product = Product::find($id);
+    //         $product = Product::find($id);
             
-            if(!$product){
-                return $this->error('Product Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
+    //         if(!$product){
+    //             return $this->error('Product Is Not Found!',NOT_FOUND_ERROR_CODE);
+    //         }
             
-            $attributeValue = AttributeValue::where('id',$request->attribute_value_id)->first();
+    //         $attributeValue = AttributeValue::where('id',$request->attribute_value_id)->first();
 
-            if($attributeValue->attribute_id != $request->attribute_id){
-                return $this->error('This Attribute is not matched with Value , Please Check Again !',NOT_FOUND_ERROR_CODE);
-            }
+    //         if($attributeValue->attribute_id != $request->attribute_id){
+    //             return $this->error('This Attribute is not matched with Value , Please Check Again !',NOT_FOUND_ERROR_CODE);
+    //         }
 
-            $product->attributeValues()->attach($request->attribute_value_id,[
-                'attribute_id' => $request->attribute_id,
-                'extra_price' => $request->extra_price,
-                'quantity' => $request->quantity,
-                'is_default' => $request->is_default,
-            ]);
-
-
-
-            //// if you want to delete all attribute values for this product :
-            // $product->attributeValues()->detach();
-
-            // // if you want to delete specific attribute values for this product :
-            // $product->attributeValues()->detach($request->attribute_value_id);
+    //         $product->attributeValues()->attach($request->attribute_value_id,[
+    //             'attribute_id' => $request->attribute_id,
+    //             'extra_price' => $request->extra_price,
+    //             'quantity' => $request->quantity,
+    //             'is_default' => $request->is_default,
+    //         ]);
 
 
-            DB::commit();
-            return $this->success('Created Successfully !',SUCCESS_CODE);
+
+    //         //// if you want to delete all attribute values for this product :
+    //         // $product->attributeValues()->detach();
+
+    //         // // if you want to delete specific attribute values for this product :
+    //         // $product->attributeValues()->detach($request->attribute_value_id);
+
+
+    //         DB::commit();
+    //         return $this->success('Created Successfully !',SUCCESS_CODE);
             
-        }catch (ValidationException $ex) {
-            DB::rollBack();  
-            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
-        }catch(\Exception $ex){ 
-            DB::rollBack();
-            return $this->error($ex->getMessage(),ERROR_CODE);
-        }
+    //     }catch (ValidationException $ex) {
+    //         DB::rollBack();  
+    //         return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+    //     }catch(\Exception $ex){ 
+    //         DB::rollBack();
+    //         return $this->error($ex->getMessage(),ERROR_CODE);
+    //     }
 
 
-    }
+    // }
 
+    // /**
+    //  * Update product attribute value
+    //  *
+    //  * @param Request $request
+    //  * @param string $id
+    //  * @param int $attributeValueId
+    //  * @return JsonResponse
+    //  *
+    //  * @throws ValidationException
+    //  * @throws \Exception
+    //  */
+    // public function update_product_attribute_value(Request $request, string $id, int $attributeValueId)
+    // {
+    //     $request->validate([
+    //         'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
+    //         'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0',
+    //         'extra_price' => 'required|numeric|min:0',
+    //         'quantity' => 'required|integer|min:0',
+    //         'is_default' => 'required|boolean',
+    //     ]);
 
-     
-    /**
-     * Update product attribute value
-     *
-     * @param Request $request
-     * @param string $id
-     * @param int $attributeValueId
-     * @return JsonResponse
-     *
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    public function update_product_attribute_value(Request $request, string $id, int $attributeValueId)
-    {
-        $request->validate([
-            'attribute_id' => 'required|integer|exists:attributes,id|gt:0',
-            'attribute_value_id' => 'required|integer|exists:attribute_values,id|gt:0',
-            'extra_price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:0',
-            'is_default' => 'required|boolean',
-        ]);
+    //     try {
+    //         DB::beginTransaction();
 
-        try {
-            DB::beginTransaction();
+    //         $product = Product::find($id);
 
-            $product = Product::find($id);
+    //         if (!$product) {
+    //             return $this->error('Product Is Not Found!', NOT_FOUND_ERROR_CODE);
+    //         }
 
-            if (!$product) {
-                return $this->error('Product Is Not Found!', NOT_FOUND_ERROR_CODE);
-            }
+    //         $attributeValue = AttributeValue::find($attributeValueId);
 
-            $attributeValue = AttributeValue::find($attributeValueId);
-
-            if (!$attributeValue) {
-                return $this->error('Attribute Value Is Not Found!', NOT_FOUND_ERROR_CODE);
-            }
+    //         if (!$attributeValue) {
+    //             return $this->error('Attribute Value Is Not Found!', NOT_FOUND_ERROR_CODE);
+    //         }
 
             
 
-            if($attributeValue->attribute_id != $request->attribute_id){
-                return $this->error('This Attribute is not matched with Value , Please Check Again !',NOT_FOUND_ERROR_CODE);
-            }
+    //         if($attributeValue->attribute_id != $request->attribute_id){
+    //             return $this->error('This Attribute is not matched with Value , Please Check Again !',NOT_FOUND_ERROR_CODE);
+    //         }
 
-            $product->attributeValues()->updateExistingPivot($attributeValueId, [
-                'attribute_id' => $request->attribute_id,
-                'attribute_value_id' => $request->attribute_value_id,
-                'extra_price' => $request->extra_price,
-                'quantity' => $request->quantity,
-                'is_default' => $request->is_default,
-            ]);
+    //         $product->attributeValues()->updateExistingPivot($attributeValueId, [
+    //             'attribute_id' => $request->attribute_id,
+    //             'attribute_value_id' => $request->attribute_value_id,
+    //             'extra_price' => $request->extra_price,
+    //             'quantity' => $request->quantity,
+    //             'is_default' => $request->is_default,
+    //         ]);
 
-            DB::commit();
-            return $this->success('Product Attribute Value Updated Successfully !', SUCCESS_CODE);
+    //         DB::commit();
+    //         return $this->success('Product Attribute Value Updated Successfully !', SUCCESS_CODE);
 
-        } catch (ValidationException $ex) {
-            DB::rollBack();
-            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            return $this->error($ex->getMessage(), ERROR_CODE);
-        }
-    }
+    //     } catch (ValidationException $ex) {
+    //         DB::rollBack();
+    //         return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+    //     } catch (\Exception $ex) {
+    //         DB::rollBack();
+    //         return $this->error($ex->getMessage(), ERROR_CODE);
+    //     }
+    // }
     
 }

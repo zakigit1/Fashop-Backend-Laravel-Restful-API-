@@ -36,6 +36,7 @@ trait imageUploadTrait{
         // dd(public_path($imgDir.$old_image));
         
         if(file_exists(public_path($imgDir.$old_image))){
+            // dd(public_path($imgDir.$old_image));
             File::delete(public_path($imgDir.$old_image));   
         }
     }

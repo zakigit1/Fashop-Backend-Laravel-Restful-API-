@@ -17,18 +17,9 @@ class ProductTypeController extends Controller
     public function index()
     {
         try{
-            $product_types = ProductType::with(['translations' => function($query){
-                        $query->where('locale',config('translatable.locale'));
-
-                    },
-                    'products'=>function($query){
-                        $query->with(['translations' => function($query){
-                            $query->where('locale',config('translatable.locale'));
-
-                        }]);
-                    },
+            $product_types = ProductType::with([
+                    'products'
                     ])
-                ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
 

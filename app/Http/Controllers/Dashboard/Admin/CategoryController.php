@@ -31,7 +31,6 @@ class CategoryController extends Controller
                 'children',
                 '_parent'
                 ])
-                ->where('status',1)
                 ->orderBy('id','DESC')
                 ->paginate(20);
 

@@ -28,8 +28,7 @@ class BrandController extends Controller
             //             $query->where('locale',config('translatable.locale'));// this is work 100%
             //             //  $query->where('locale',config('app.locale'));
             //         }])
-            $brands = Brand::where('status',1)
-                ->orderBy('id','DESC')
+            $brands = Brand::orderBy('id','DESC')
                 ->paginate(20);
 
             // return response()->json([
