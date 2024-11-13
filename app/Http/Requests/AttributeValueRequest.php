@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Attribute;
+use App\Models\AttributeTranslation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -21,6 +23,7 @@ class AttributeValueRequest extends FormRequest
     public function rules(): array
     {
         $id = $this->id;
+        $attributeId = $this->attribute_id;
 
         $rules = [
 
@@ -36,6 +39,29 @@ class AttributeValueRequest extends FormRequest
             'color_code' => [
                 'nullable',
                 'string',
+
+                /** need to fix this code  */
+                // function ($attribute, $value, $fail) {
+                //     if ($this->attribute_id == 'color' && empty($value)) {
+                //         $fail('Color code is required when attribute is color.');
+                //     } elseif ($this->attribute_id != 'color' && !empty($value)) {
+                //         $fail('Color code is not allowed when attribute is not color.');
+                //     }
+                // },
+
+                // function ($attribute, $value, $fail) use ($attributeId) {
+                //     if ($value) {
+                //         $attribute = AttributeTranslation::where('attribute_id', $attributeId)
+                //             ->where('name','!=','color')
+                //             ->orWhere('name','!=','couleur')
+                //             ->orWhere('name','!=','لون')
+                //             ->exists();
+                //         if (!$attribute) {
+                //             $fail('Color code is not allowed when attribute is not color.');
+                //         }
+                //     }
+                // },
+
                 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', // Hex color regex like #FF0000
             ],
 

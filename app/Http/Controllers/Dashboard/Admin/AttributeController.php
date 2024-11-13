@@ -26,7 +26,7 @@ class AttributeController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($attributes,'Attributes','All Attribute',SUCCESS_CODE);
+            return $this->paginationResponse($attributes,'Attributes','All Attributes',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 

@@ -22,7 +22,7 @@ class ProductAttributeValue extends Model
     protected $casts = [
         'extra_price' => 'float',
         'quantity' => 'integer',
-        'is_default' => 'boolean',
+        'is_default' => 'integer',
     ];
     // protected $hidden = [
     //     'created_at',

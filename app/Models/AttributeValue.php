@@ -21,13 +21,18 @@ class AttributeValue extends Model
     // ];
 
 
+    protected $casts = [
+        // 'attribute_id'=> 'integer',
+        'sort_order'=> 'integer',
+        'status'=> 'integer',
+    ];
 
 
 
 
-     /**
-     * Get the attribute that owns this value
-     */
+    /**
+ * Get the attribute that owns this value
+ */
     public function attribute()
     {
         return $this->belongsTo(Attribute::class,'attribute_id','id');

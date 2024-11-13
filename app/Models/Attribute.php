@@ -25,7 +25,14 @@ class Attribute extends Model implements TranslatableContract
     public $translatedAttributes = ['name'];
 
 
+    // public $timestamps = false;
 
+    protected $casts = [
+        'is_required'=> 'integer',
+        'is_filterable'=> 'integer',
+        'sort_order'=> 'integer',
+        'status'=> 'integer',
+    ];
 
 
 

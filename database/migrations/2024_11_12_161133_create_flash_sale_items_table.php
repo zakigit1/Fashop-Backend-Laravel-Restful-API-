@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
            
             $table->unsignedBigInteger('product_id');
+
+            // Flash Sale End Date: flash_sale_id
             $table->foreignId('flash_sale_id')->nullable()->constrained('flash_sales')->onDelete('set null');
-            $table->boolean('show_at_home');
-            $table->boolean('status');
+            $table->boolean('show_at_home')->default(false);
+            $table->boolean('status')->default(true);
             $table->timestamps();
             
             $table->foreign('product_id')

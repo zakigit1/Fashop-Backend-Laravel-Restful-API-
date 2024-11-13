@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Dashboard\Admin\Product;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductAttributeValueRequest;
+// use App\Http\Requests\ProductAttributeValueRequest;
 use App\Http\Requests\ProductRequest;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
+// use App\Models\Attribute;
+// use App\Models\AttributeValue;
 use App\Models\Product;
-use App\Models\ProductAttributeValue;
+// use App\Models\ProductAttributeValue;
 use App\Traits\imageUploadTrait;
 
 use Illuminate\Http\JsonResponse;
@@ -116,15 +116,42 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request):JsonResponse
+    public function store(ProductRequest $request)
     {
-        // $request->all();
+    //   return  $request->all();
         try{
             DB::beginTransaction();
     
             /** Save thumb_image  */
 
             $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
+           
+
+
+            // $price = $request->price;
+            // $offer_price = (int) $request->offer_price;
+
+            /** this use it if the price and offer price are integer */
+            // if (is_int($price)) {
+            //     $price = number_format($price, 2, '.', '');
+            // }
+
+            // if (is_int($offer_price)) {
+            //     $offer_price = number_format($offer_price, 2, '.', '');
+            // }
+
+
+            // if (strpos($price, '.') === false) {
+            //     // $price = number_format($price, 2, '.', '');
+            //     $price = $price . '.00';
+            // }
+            // if (strpos($offer_price, '.') === false) {
+            //     // $offer_price = number_format($offer_price, 2, '.', '');
+            //     $offer_price = $offer_price . '.00';
+            // }
+
+            // return $price . " || " . $offer_price;
+           
 
             $product = Product::create([
                 "thumb_image" => $image_name,
@@ -132,8 +159,8 @@ class ProductController extends Controller
                 "product_type_id" =>(is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
                 "sku" => $request->sku,
-                "price" =>(float) $request->price,
-                "offer_price" =>(float) $request->offer_price,
+                "price" => (float) $request->price ,
+                "offer_price" => (float) $request->offer_price,
                 "offer_start_date" => $request->offer_start_date,
                 "offer_end_date" => $request->offer_end_date,
                 "video_link" => $request->video_link,

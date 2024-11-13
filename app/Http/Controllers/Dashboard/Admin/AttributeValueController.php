@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttributeValueRequest;
 use App\Models\AttributeValue;
+use Attribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +22,7 @@ class AttributeValueController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($attributes,'AttributeValues','All Attribute Value',SUCCESS_CODE);
+            return $this->paginationResponse($attributes,'AttributeValues','All Attribute Values',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 
@@ -61,6 +62,10 @@ class AttributeValueController extends Controller
         try{
 
             DB::beginTransaction();
+
+            // $attribute = Attribute::with('translations')->find($request->attribute_id);
+
+            // if($attribute->)
 
             $attribute_value = AttributeValue::create([
                 "attribute_id" =>(int) $request->attribute_id,

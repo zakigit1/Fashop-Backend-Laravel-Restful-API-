@@ -48,6 +48,8 @@ class Product extends Model implements TranslatableContract
      * @var array<string, string>
      */
     protected $casts = [
+        'brand_id' => 'integer',
+        'product_type_id' => 'integer',
         'price' => 'float',
         'offer_price' => 'float',
         // 'offer_start_date' => 'datetime',
@@ -58,6 +60,31 @@ class Product extends Model implements TranslatableContract
 
     public $translatedAttributes = ['name','slug','description'];
 
+
+    // public function transform()
+    // {
+        
+    // should the price and offer price be integer value
+        // $this->price = (float) $this->price;
+        // $this->offer_price = (float) $this->offer_price;
+
+    //     if (is_int($this->price)) {
+    //         $this->price  = number_format($this->price, 2, '.', '');
+    //     }
+    //     if (is_int($this->offer_price)) {
+    //         $this->price  = number_format($this->offer_price, 2, '.', '');
+    //     }
+
+        // dont should the price and offer price be integer value
+
+    //     if (strpos($this->price, '.') === false) {
+    //         $this->price = ;
+    //     }
+    //     if (strpos($this->offer_price, '.') === false) {
+    //         $this->offer_price = ;
+    //     }
+    //     return $this;
+    // }
 
 
     /*                                                 Begin Local Scopes                                 */

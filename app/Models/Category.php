@@ -25,6 +25,11 @@ class Category extends Model implements TranslatableContract
 
     public $translatedAttributes = ['name','slug'];
 
+    protected $casts = [
+        // 'parent_id'=> 'integer',
+        'status'=> 'integer',
+    ];
+
 
 
     /**###################################################Scopes Start################################################## */

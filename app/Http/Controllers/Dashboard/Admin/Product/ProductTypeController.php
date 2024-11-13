@@ -23,7 +23,7 @@ class ProductTypeController extends Controller
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
-            return $this->paginationResponse($product_types,'productTypes','All Product Type',SUCCESS_CODE);
+            return $this->paginationResponse($product_types,'productTypes','All Product Types',SUCCESS_CODE);
            
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE); 

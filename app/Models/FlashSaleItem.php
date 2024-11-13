@@ -23,6 +23,14 @@ class FlashSaleItem extends Model
         'updated_at'
     ];
 
+    protected $casts = [
+        // 'flash_sale_id' => 'integer',
+        'product_id'=>'integer',
+        'show_at_home' => 'integer',
+        'status' => 'integer'
+    ];
+
+
 
 /*                                                 Begin Local Scopes                                 */
     public function scopeActive($query) // to show just the active slide in store 

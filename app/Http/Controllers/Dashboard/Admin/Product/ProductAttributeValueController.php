@@ -30,7 +30,7 @@ class ProductAttributeValueController extends Controller
             ->paginate(20);
 
         
-        return $this->paginationResponse($productAttributeValue,'productAttributeValues','All Product Attribute Value',SUCCESS_CODE);
+        return $this->paginationResponse($productAttributeValue,'productAttributeValues','All Products Attributes Values',SUCCESS_CODE);
 
     }catch(\Exception $ex){ 
     
