@@ -185,6 +185,22 @@ when you click to the link they redirect you to page not work but you need just 
 
 
 
+#############################################################################
+Example for each attributes : 
 
 
+Material: Use a dropdown menu or radio buttons if you have a limited number of materials (e.g., cotton, polyester, wool).
 
+Fit Type: Radio buttons or a dropdown menu work well for fit types (e.g., slim fit, regular fit, loose fit).
+
+Pattern: Radio buttons or a dropdown menu are suitable for patterns (e.g., solid, striped, checked).
+
+Length: Dropdown menu or radio buttons can be used for length options (e.g., short, medium, long).
+
+Sleeve Length: Use a dropdown menu or radio buttons for options like short sleeve, long sleeve, and sleeveless.
+
+Neckline: Dropdown menu or radio buttons for options like V-neck, round neck, and crew neck.
+
+Occasion: Dropdown menu or radio buttons for options like casual, formal, and party wear.
+
+Fabric Care: Dropdown menu or radio buttons for options like machine wash, hand wash, and dry clean only.

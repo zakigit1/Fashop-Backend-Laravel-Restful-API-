@@ -26,172 +26,177 @@ class AttributeSeeder extends Seeder
         
     }
 
-    public function attributes(){
-
-        return [
-             [
-
-                'status'=>'admin@gmail.com',
-                // $table->string('type', 20)->default('select'); // select, radio, color_picker, etc.
-                // $table->boolean('is_required')->default(false);
-                // $table->boolean('is_filterable')->default(true); // Can be used in product filters?
-                // $table->integer('sort_order')->default(0);
-                // $table->boolean('status')->default(true);
-             ],
-             [
-                'name'=>'user',
-                'username'=>'user',
-                'email'=>'user@gmail.com',
-                'role'=>'user',
-                'password'=>bcrypt('password'),
-             ]
-         ];
-    }
 
 
-    public function attributeTranslations(){
-       
-        return [
-            //Size
-            [
-                [
-                    'attribute_id' => 1,
-                    'locale' => 'en',
-                    'name' => 'Size',
-                ],
-                [
-                    'attribute_id' => 1,
-                    'locale' => 'ar',
-                    'name' => 'الحجم',
-                ],
-                [
-                    'attribute_id' => 1,
-                    'locale' => 'fr',
-                    'name' => 'Taille',
-                ],
-            ],
-
-            //Color
-            [
-                [
-                    'attribute_id' => 2,
-                    'locale' => 'en',
-                    'name' => 'Color',
-                ],
-                [
-                    'attribute_id' => 2,
-                    'locale' => 'ar',
-                    'name' => 'اللون',
-                ],
-                [
-                    'attribute_id' => 2,
-                    'locale' => 'fr',
-                    'name' => 'Couleur',
-                ],
-            ],
-
-            //Material
-            [
-                [
-                    'attribute_id' => 3,
-                    'locale' => 'en',
-                    'name' => 'Material',
-                ],
-                [
-                    'attribute_id' => 3,
-                    'locale' => 'ar',
-                    'name' => 'المواد',
-                ],
-                [
-                    'attribute_id' => 3,
-                    'locale' => 'fr',
-                    'name' => 'Matériau',
-                ],
-            ],
-
-            //Fit Type
-            [
-                [
-                    'attribute_id' => 4,
-                    'locale' => 'en',
-                    'name' => 'Fit Type',
-                ],
-                [
-                    'attribute_id' => 4,
-                    'locale' => 'ar',
-                    'name' => 'نوع الملاءمة',
-                ],
-                [
-                    'attribute_id' => 4,
-                    'locale' => 'fr',
-                    'name' => 'Type d\'ajustement',
-                ],
-            ],
-            //Pattern
-            [
-                [
-                    'attribute_id' => 5,
-                    'locale' => 'en',
-                    'name' => 'Pattern',
-                ],
-                [
-                    'attribute_id' => 5,
-                    'locale' => 'ar',
-                    'name' => 'النمط',
-                ],
-                [
-                    'attribute_id' => 5,
-                    'locale' => 'fr',
-                    'name' => 'Modèle',
-                ],
-            ],  
-    
-            //Length
-            [
-                [
-                    'attribute_id' => 6,
-                    'locale' => 'en',
-                    'name' => 'Length',
-                ],
-                [
-                    'attribute_id' => 6,
-                    'locale' => 'ar',
-                    'name' => 'الطول',
-                ],
-                [
-                    'attribute_id' => 6,
-                    'locale' => 'fr',
-                    'name' => 'Longueur',
-                ],
-            ],  
-    
+    public function attributes()
+    {
+        $attributeTypes = [
+            'radio',
+            'select',
+            'color_picker'
+            // Add more types as needed
         ];
 
+        $attributes = [
+            [
+                'id' => 1,            
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 2,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 3,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 4,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 5,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 6,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 7,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 8,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 9,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 10,
+                'type' => $attributeTypes[0],
+            ],
+            [
+                'id' => 11,
+                'type' => $attributeTypes[0],
+            ],
+        ];
 
+        return $attributes;
+    }
 
-        // $attribute->translateOrNew(en)->name = 'Size';
-        // $attribute->translateOrNew(ar)->name = 'الحجم';
-        // $attribute->translateOrNew(fr)->name = 'Taille';
+    public function attributeTranslations()
+    {
+        $locales = [
+            'en',
+            'ar',
+            'fr',
+        ];
 
-        // $attribute->translateOrNew(en)->name = 'Color';
-        // $attribute->translateOrNew(ar)->name = 'اللون';
-        // $attribute->translateOrNew(fr)->name = 'Couleur';
+        $attributeTranslations = [
+            [
+                'attribute_id' => 1,
+                'translations' => [
+                    'en' => 'Size',
+                    'ar' => 'الحجم',
+                    'fr' => 'Taille',
+                ],
+            ],
+            [
+                'attribute_id' => 2,
+                'translations' => [
+                    'en' => 'Color',
+                    'ar' => 'اللون',
+                    'fr' => 'Couleur',
+                ],
+            ],
+            [
+                'attribute_id' => 3,
+                'translations' => [
+                    'en' => 'Material',
+                    'ar' => 'المواد',
+                    'fr' => 'Matériau',
+                ],
+            ],
+            [
+                'attribute_id' => 4,
+                'translations' => [
+                    'en' => 'Fit Type',
+                    'ar' => 'نوع الملاءمة',
+                    'fr' => 'Type d\'ajustement',
+                ],
+            ],
+            [
+                'attribute_id' => 5,
+                'translations' => [
+                    'en' => 'Pattern',
+                    'ar' => 'النمط',
+                    'fr' => 'Modèle',
+                ],
+            ],
+            [
+                'attribute_id' => 6,
+                'translations' => [
+                    'en' => 'Length',
+                    'ar' => 'الطول',
+                    'fr' => 'Longueur',
+                ],
+            ],
+            [
+                'attribute_id' => 7,
+                'translations' => [
+                    'en' => 'Numeric Size',
+                    'ar' => 'الحجم الرقمي',
+                    'fr' => 'Taille numérique',
+                ],
+            ],
+            [
+                'attribute_id' => 8,
+                'translations' => [
+                    'en' => 'Sleeve Length',
+                    'ar' => 'طول الأكمام',
+                    'fr' => 'Longueur de la manche',
+                ],
+            ],
+            [
+                'attribute_id' => 9,
+                'translations' => [
+                    'en' => 'Neckline',
+                    'ar' => 'خط العنق',
+                    'fr' => 'Encolure',
+                ],
+            ],
+            [
+                'attribute_id' => 10,
+                'translations' => [
+                    'en' => 'Occasion',
+                    'ar' => 'المناسبة',
+                    'fr' => 'Occasion',
+                ],
+            ],
+            [
+                'attribute_id' => 11,
+                'translations' => [
+                    'en' => 'Fabric Care',
+                    'ar' => 'العناية بالأقمشة',
+                    'fr' => 'Entretien du tissu',
+                ],
+            ],
+        ];
 
-        // $attribute->translateOrNew(en)->name = 'Material';
-        // $attribute->translateOrNew(ar)->name = 'المواد';
-        // $attribute->translateOrNew(fr)->name = 'Matériau';
+        $result = [];
+        foreach ($attributeTranslations as $attributeTranslation) {
+            foreach ($locales as $locale) {
+                $result[] = [
+                    'attribute_id' => $attributeTranslation['attribute_id'],
+                    'locale' => $locale,
+                    'name' => $attributeTranslation['translations'][$locale],
+                ];
+            }
+        }
 
-        // $attribute->translateOrNew(en)->name = 'Fit Type';
-        // $attribute->translateOrNew(ar)->name = 'نوع الملاءمة';
-        // $attribute->translateOrNew(fr)->name = 'Type d\'ajustement';
-
-        // $attribute->translateOrNew(en)->name = 'Pattern';
-        // $attribute->translateOrNew(ar)->name = 'النمط';
-        // $attribute->translateOrNew(fr)->name = 'Modèle';
-
-        // $attribute->translateOrNew(en)->name = 'Length';
-        // $attribute->translateOrNew(ar)->name = 'الطول';
-        // $attribute->translateOrNew(fr)->name = 'Longueur';
-        
+        return $result;
     }
 }
