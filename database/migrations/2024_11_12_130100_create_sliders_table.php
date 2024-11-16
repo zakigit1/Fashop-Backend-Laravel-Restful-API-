@@ -20,7 +20,7 @@ return new class extends Migration
             // $table->string('button_text',50)->nullable();
             $table->string('button_link')->nullable();
 
-            $table->integer('order');
+            $table->integer('order')->unsigned();
             $table->boolean('status')->default(true);
             $table->timestamps();
         });

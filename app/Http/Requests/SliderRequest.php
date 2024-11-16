@@ -55,6 +55,22 @@ class SliderRequest extends FormRequest
             'status' => 'required|boolean',
 
             'order' => 'required|integer|min:1|max:100|gt:0|unique:sliders,order,'.$id,
+
+
+            // Translation arrays
+
+            'title' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+            ],
+            'description' => [
+                'required',
+                'array',
+                'min:'.$lang_number,
+                'max:'.$lang_number,
+            ],
         ];
 
 
@@ -77,11 +93,11 @@ class SliderRequest extends FormRequest
                 $rules["description.$keyLang"] = [
                     'required',
                     'string',
-                    Rule::unique('slider_translations', 'description')
-                        ->ignore($id, 'slider_id')
-                        ->where(function ($query) use ($keyLang) {
-                            return $query->where('locale', $keyLang);
-                        })
+                    // Rule::unique('slider_translations', 'description')
+                    //     ->ignore($id, 'slider_id')
+                    //     ->where(function ($query) use ($keyLang) {
+                    //         return $query->where('locale', $keyLang);
+                    //     })
                 ];
 
             }

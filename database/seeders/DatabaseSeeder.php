@@ -28,24 +28,22 @@ class DatabaseSeeder extends Seeder
                 UserSeeder::class,
             ]);
         }   
-        if (DB::table('attributes')->count() === 0) {
+
+        if (DB::table('attributes')->count() === 0 && DB::table('attribute_translations')->count() === 0) {
             $this->call([
-                UserSeeder::class,
+                AttributeSeeder::class,
             ]);
         }   
-        if (DB::table('attribute_translations')->count() === 0) {
-            $this->call([
-                UserSeeder::class,
-            ]);
-        }   
+ 
+
         if (DB::table('attribute_values')->count() === 0) {
             $this->call([
-                UserSeeder::class,
+                AttributeValueSeeder::class,
             ]);
         }   
         
         $this->call([
-            AttributeSeeder::class,
+            AttributeValueSeeder::class,
         ]);
 
 

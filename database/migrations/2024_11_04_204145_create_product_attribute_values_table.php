@@ -17,8 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->index();
             $table->unsignedBigInteger('attribute_id')->index();
             $table->unsignedBigInteger('attribute_value_id')->index();
-            $table->decimal('extra_price', 10, 2)->default(0.00); // Additional price for this variant
-            $table->integer('quantity')->default(0); // Stock for this specific combination
+            $table->float('extra_price', 5, 2)->default(0.00)->unsigned(); // Additional price for this variant
+            $table->integer('quantity')->default(0)->unsigned(); // Stock for this specific combination
             $table->boolean('is_default')->default(false);
 
 

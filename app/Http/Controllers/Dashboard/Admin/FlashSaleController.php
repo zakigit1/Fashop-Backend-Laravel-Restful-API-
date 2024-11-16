@@ -66,9 +66,6 @@ class FlashSaleController extends Controller
     }
 
 
-
-
-
     public function end_date(FlashSaleEndDateRequest $request){
 
         // return $request->all();
@@ -77,6 +74,17 @@ class FlashSaleController extends Controller
                 ['id'=>'1'],// ?  this is the condition of update Or create ( if the id =1 the data with update if the id doesn't equal 1 they will create new row with id 1 )
                 ['end_date'=>$request->end_date]
             );
+
+            
+            $flashSaleItems = FlashSaleItem::where('flash_sale_id',null)->get();
+            if(count($flashSaleItems) > 0){
+                foreach($flashSaleItems as $item){
+                    $item->update([
+                        'flash_sale_id' => $flashSaleEndDate->id ,//Or 1
+                    ]);
+                }
+            }
+
             return $this->success($flashSaleEndDate,'Updated Successfully!',SUCCESS_STORE_CODE,'flashSaleEndDate');
 
         }catch(\Exception $ex){
@@ -120,45 +128,46 @@ class FlashSaleController extends Controller
             $flash_item = FlashSaleItem::find($id);
 
             if(!$flash_item){
-                return response(['status'=>'error','message'=>'flash item is not found!']);
+                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
-
+   
             $flash_item->delete();
 
-            // we are using ajax : 
-            return response(['status'=>'success','message'=>" Product Has Been Deleted From The Flash Sale Successfully !"]);
-        }catch(\Exception $e){
-            return response(['status'=>'error','message'=>'حدث خطا ما برجاء المحاوله لاحقا']);
+            return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
+
+        }catch(\Exception $ex){
+            return $this->error($ex->getMessage(),ERROR_CODE);
         }
+
     }
 
 
 
-    public function change_at_home_status(Request $request)
-    {
-        $flash_item =FlashSaleItem::find($request->id);
+    // public function change_at_home_status(Request $request)
+    // {
+    //     $flash_item =FlashSaleItem::find($request->id);
 
 
-        if(!$flash_item){
+    //     if(!$flash_item){
            
-            // toastr()->error( 'Item is not found!');
-            return to_route('admin.flash-sale.index');
-            // return redirect()->back();
-        }
+    //         // toastr()->error( 'Item is not found!');
+    //         return to_route('admin.flash-sale.index');
+    //         // return redirect()->back();
+    //     }
 
-        $product_name =$flash_item->product->name;
+    //     $product_name =$flash_item->product->name;
 
         
-        $flash_item->show_at_home = $request->show_at_home_status == 'true' ? 1 : 0;
+    //     $flash_item->show_at_home = $request->show_at_home_status == 'true' ? 1 : 0;
          
-        $flash_item->save();
+    //     $flash_item->save();
 
-        $status =($flash_item->show_at_home == 1) ? 'show it' : 'don\'t show it ';
+    //     $status =($flash_item->show_at_home == 1) ? 'show it' : 'don\'t show it ';
 
-        return response(['status'=>'success','message'=>"The $product_name has been $status at the flash sale in the home page"]);
+    //     return response(['status'=>'success','message'=>"The $product_name has been $status at the flash sale in the home page"]);
 
        
-    }
+    // }
 
 
 

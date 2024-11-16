@@ -231,11 +231,11 @@ class ProductRequest extends FormRequest
                 $rules["description.$keyLang"] = [
                     'required',
                     'string',
-                    Rule::unique('product_translations', 'description')
-                        ->ignore($id, 'product_id')
-                        ->where(function ($query) use ($keyLang) {
-                            return $query->where('locale', $keyLang);
-                        })
+                    // Rule::unique('product_translations', 'description')
+                    //     ->ignore($id, 'product_id')
+                    //     ->where(function ($query) use ($keyLang) {
+                    //         return $query->where('locale', $keyLang);
+                    //     })
                 ];
 
             }

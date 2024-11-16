@@ -13,21 +13,16 @@ class AttributeSeeder extends Seeder
      */
     public function run(): void
     {
-        // if (DB::table('Attributes')->count() === 0) {
-        //     DB::table('Attributes')->insert($this->attributes());
-        // }
-        // if (DB::table('Attribute_Translations')->count() === 0) {
-        //     DB::table('Attribute_Translations')->insert($this->attributeTranslations());
-        // }
-        
-        DB::table('Attributes')->insert($this->attributes());
-
-        DB::table('Attribute_Translations')->insert($this->attributeTranslations());
-        
+        if (DB::table('Attributes')->count() === 0) {
+            DB::table('Attributes')->insert($this->attributes());
+        }
+        if (DB::table('Attribute_Translations')->count() === 0) {
+            DB::table('Attribute_Translations')->insert($this->attributeTranslations());
+        }        
     }
 
 
-
+ 
     public function attributes()
     {
         $attributeTypes = [
