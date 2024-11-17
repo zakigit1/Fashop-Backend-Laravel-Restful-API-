@@ -23,15 +23,15 @@ class Product extends Model implements TranslatableContract
         'thumb_image',
         'brand_id',
         'qty',
+        'variant_quantity',
         'video_link',
-        'sku',
         'price',
         'offer_price',
         'offer_start_date',
         'offer_end_date',
         'status',
         'product_type_id',
-        'barcode',
+        
     ];
 
     protected $hidden = [
@@ -115,6 +115,7 @@ class Product extends Model implements TranslatableContract
         );
     }
 
+
  
 
     /**
@@ -123,22 +124,28 @@ class Product extends Model implements TranslatableContract
     public function attributeValues(): BelongsToMany
     {
         return $this->belongsToMany(AttributeValue::class, 'product_attribute_values')
-                    ->withPivot('attribute_id', 'extra_price', 'quantity', 'is_default')
                     ->withTimestamps();
     }
 
+
+
     /**
+     * ! check if this relation work: 
      * Get all attributes associated with this product through pivot
      */
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'product_attribute_values')
-                    ->withPivot('attribute_value_id', 'extra_price', 'quantity', 'is_default')
+                    ->withPivot('attribute_value_id')
                     ->withTimestamps();
     }
 
+
+
     /**
+     * ! this relation work if you add a model for product attribute value table 
      * Get all product attribute value records
+     * 
      */
     public function productAttributeValues(): HasMany
     {

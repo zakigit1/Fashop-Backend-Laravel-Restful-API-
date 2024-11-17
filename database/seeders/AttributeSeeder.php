@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AttributeSeeder extends Seeder
 {
@@ -13,12 +14,17 @@ class AttributeSeeder extends Seeder
      */
     public function run(): void
     {
-        if (DB::table('Attributes')->count() === 0) {
-            DB::table('Attributes')->insert($this->attributes());
+        if(Schema::hasTable('attributes')){
+            if (DB::table('attributes')->count() === 0) {
+                DB::table('attributes')->insert($this->attributes());
+            }
         }
-        if (DB::table('Attribute_Translations')->count() === 0) {
-            DB::table('Attribute_Translations')->insert($this->attributeTranslations());
-        }        
+
+        if(Schema::hasTable('attribute_translations')){
+            if (DB::table('attribute_Translations')->count() === 0) {
+                DB::table('attribute_Translations')->insert($this->attributeTranslations());
+            }    
+        }    
     }
 
 
@@ -57,26 +63,26 @@ class AttributeSeeder extends Seeder
                 'id' => 6,
                 'type' => $attributeTypes[0],
             ],
-            [
-                'id' => 7,
-                'type' => $attributeTypes[0],
-            ],
-            [
-                'id' => 8,
-                'type' => $attributeTypes[0],
-            ],
-            [
-                'id' => 9,
-                'type' => $attributeTypes[0],
-            ],
-            [
-                'id' => 10,
-                'type' => $attributeTypes[0],
-            ],
-            [
-                'id' => 11,
-                'type' => $attributeTypes[0],
-            ],
+            // [
+            //     'id' => 7,
+            //     'type' => $attributeTypes[0],
+            // ],
+            // [
+            //     'id' => 8,
+            //     'type' => $attributeTypes[0],
+            // ],
+            // [
+            //     'id' => 9,
+            //     'type' => $attributeTypes[0],
+            // ],
+            // [
+            //     'id' => 10,
+            //     'type' => $attributeTypes[0],
+            // ],
+            // [
+            //     'id' => 11,
+            //     'type' => $attributeTypes[0],
+            // ],
         ];
 
         return $attributes;
@@ -131,54 +137,58 @@ class AttributeSeeder extends Seeder
                     'fr' => 'Modèle',
                 ],
             ],
+
             [
                 'attribute_id' => 6,
-                'translations' => [
-                    'en' => 'Length',
-                    'ar' => 'الطول',
-                    'fr' => 'Longueur',
-                ],
-            ],
-            [
-                'attribute_id' => 7,
                 'translations' => [
                     'en' => 'Numeric Size',
                     'ar' => 'الحجم الرقمي',
                     'fr' => 'Taille numérique',
                 ],
             ],
-            [
-                'attribute_id' => 8,
-                'translations' => [
-                    'en' => 'Sleeve Length',
-                    'ar' => 'طول الأكمام',
-                    'fr' => 'Longueur de la manche',
-                ],
-            ],
-            [
-                'attribute_id' => 9,
-                'translations' => [
-                    'en' => 'Neckline',
-                    'ar' => 'خط العنق',
-                    'fr' => 'Encolure',
-                ],
-            ],
-            [
-                'attribute_id' => 10,
-                'translations' => [
-                    'en' => 'Occasion',
-                    'ar' => 'المناسبة',
-                    'fr' => 'Occasion',
-                ],
-            ],
-            [
-                'attribute_id' => 11,
-                'translations' => [
-                    'en' => 'Fabric Care',
-                    'ar' => 'العناية بالأقمشة',
-                    'fr' => 'Entretien du tissu',
-                ],
-            ],
+
+            
+            // [
+            //     'attribute_id' => 7,
+            //     'translations' => [
+            //         'en' => 'Length',
+            //         'ar' => 'الطول',
+            //         'fr' => 'Longueur',
+            //     ],
+            // ],
+
+            // [
+            //     'attribute_id' => 8,
+            //     'translations' => [
+            //         'en' => 'Sleeve Length',
+            //         'ar' => 'طول الأكمام',
+            //         'fr' => 'Longueur de la manche',
+            //     ],
+            // ],
+            // [
+            //     'attribute_id' => 9,
+            //     'translations' => [
+            //         'en' => 'Neckline',
+            //         'ar' => 'خط العنق',
+            //         'fr' => 'Encolure',
+            //     ],
+            // ],
+            // [
+            //     'attribute_id' => 10,
+            //     'translations' => [
+            //         'en' => 'Occasion',
+            //         'ar' => 'المناسبة',
+            //         'fr' => 'Occasion',
+            //     ],
+            // ],
+            // [
+            //     'attribute_id' => 11,
+            //     'translations' => [
+            //         'en' => 'Fabric Care',
+            //         'ar' => 'العناية بالأقمشة',
+            //         'fr' => 'Entretien du tissu',
+            //     ],
+            // ],
         ];
 
         $result = [];

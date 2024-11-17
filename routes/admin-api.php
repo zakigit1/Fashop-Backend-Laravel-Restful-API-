@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\Admin\Payment\Gatways\StripeSettingController
 use App\Http\Controllers\Dashboard\Admin\Product\ProductAttributeValueController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductGalleryController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductNewController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductTypeController;
 use App\Http\Controllers\Dashboard\Admin\ShippingRuleController;
 use App\Http\Controllers\Dashboard\Admin\SliderController;
@@ -68,23 +69,31 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     });
 
 
-    // Product Routes :
+    // Product Routes (V2) :
+    // Route::prefix('products')->group(function () {
+    //     Route::get('/', [ProductController::class, 'index']);
+    //     Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang');
+    //     Route::post('/', [ProductController::class, 'store']);
+        
+    //     Route::post('/{id}/update', [ProductController::class, 'update']);
+    //     // Route::put('/{id}', [ProductController::class, 'update']);
+        
+    //     Route::delete('/{id}/delete', [ProductController::class, 'destroy']);
+    //     // Route::delete('/{id}', [ProductController::class, 'destroy']);
+
+    //     //! you need to add other route about soft deletes (restore , forceDelete)
+
+    //     // Route::post('/{id}/product-attribute-values/add', [ProductController::class,'save_product_attribute_value']);
+    //     // Route::post('/{id}/product-attribute-values/{attributeValueId}/update', [ProductController::class,'update_product_attribute_value']);
+    // });
+
+
+    // Product Routes New :
     Route::prefix('products')->group(function () {
-        Route::get('/', [ProductController::class, 'index']);
-        Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang');
-        Route::post('/', [ProductController::class, 'store']);
+        Route::get('/', [ProductNewController::class, 'index']);
         
-        Route::post('/{id}/update', [ProductController::class, 'update']);
-        // Route::put('/{id}', [ProductController::class, 'update']);
-        
-        Route::delete('/{id}/delete', [ProductController::class, 'destroy']);
-        // Route::delete('/{id}', [ProductController::class, 'destroy']);
-
-        //! you need to add other route about soft deletes (restore , forceDelete)
-
-        // Route::post('/{id}/product-attribute-values/add', [ProductController::class,'save_product_attribute_value']);
-        // Route::post('/{id}/product-attribute-values/{attributeValueId}/update', [ProductController::class,'update_product_attribute_value']);
     });
+
 
 
     // Product Gallery Routes :
@@ -96,7 +105,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         // Route::DELETE('{id}/destroyAll',[ProductGalleryController::class,'destroyAllImages']);
     });
 
-
+    
     // Product Attribute Routes :
     Route::prefix('attributes')->group(function () {
         Route::get('',[AttributeController::class,'index']);

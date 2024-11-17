@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductTypeTranslation extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
     protected $table = 'product_type_translations';
     protected $fillable = ['name'];

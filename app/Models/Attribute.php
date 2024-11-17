@@ -15,12 +15,12 @@ class Attribute extends Model implements TranslatableContract
 
     protected $table = 'attributes';
 
-    protected $fillable = ['type','is_required','is_filterable','sort_order','status'];
+    protected $fillable = ['type','is_filterable','sort_order','status'];
 
-    // protected $hidden = [
-    //     'created_at',
-    //     'updated_at'
-    // ];
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 
     public $translatedAttributes = ['name'];
 
@@ -28,7 +28,7 @@ class Attribute extends Model implements TranslatableContract
     // public $timestamps = false;
 
     protected $casts = [
-        'is_required'=> 'integer',
+
         'is_filterable'=> 'integer',
         'sort_order'=> 'integer',
         'status'=> 'integer',
@@ -51,11 +51,13 @@ class Attribute extends Model implements TranslatableContract
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_attribute_values')
-                    ->withPivot('attribute_value_id', 'extra_price', 'quantity', 'is_default')
+                    ->withPivot('attribute_value_id')
                     ->withTimestamps();
     }
+    
 
     /**
+     * ! this relation work if you add a model for product attribute value table 
      * Get all product attribute value records
      */
     public function productAttributeValues(): HasMany

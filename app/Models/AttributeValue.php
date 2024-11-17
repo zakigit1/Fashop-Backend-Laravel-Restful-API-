@@ -15,10 +15,11 @@ class AttributeValue extends Model
 
     protected $fillable = ['attribute_id','name','display_name','color_code','sort_order','status'];
 
-    // protected $hidden = [
-    //     'created_at',
-    //     'updated_at'
-    // ];
+    protected $hidden = [
+        'attribute_id',
+        'created_at',
+        'updated_at'
+    ];
 
 
     protected $casts = [
@@ -44,9 +45,9 @@ class AttributeValue extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_attribute_values')
-                    ->withPivot('attribute_id', 'extra_price', 'quantity', 'is_default')
                     ->withTimestamps();
     }
+
 
     /**
      * Get all product attribute value records
