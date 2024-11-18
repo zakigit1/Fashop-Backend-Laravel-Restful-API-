@@ -21,8 +21,8 @@ class AttributeSeeder extends Seeder
         }
 
         if(Schema::hasTable('attribute_translations')){
-            if (DB::table('attribute_Translations')->count() === 0) {
-                DB::table('attribute_Translations')->insert($this->attributeTranslations());
+            if (DB::table('attribute_translations')->count() === 0) {
+                DB::table('attribute_translations')->insert($this->attributeTranslations());
             }    
         }    
     }

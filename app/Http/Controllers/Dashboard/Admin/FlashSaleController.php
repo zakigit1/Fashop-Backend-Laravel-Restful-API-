@@ -20,7 +20,7 @@ class FlashSaleController extends Controller
             // Get all products:
             $products = Product::with('translations')
                 ->active()
-                ->orderBy('id','desc')
+                ->orderBy('id','asc')
                 ->get();
 
             // Get flash sale end date:
@@ -33,7 +33,7 @@ class FlashSaleController extends Controller
                 'flashSale'
                 ])
                 // ->where('status',1)
-                ->orderBy('id','DESC')
+                ->orderBy('id','asc')
                 ->paginate(20);
 
 

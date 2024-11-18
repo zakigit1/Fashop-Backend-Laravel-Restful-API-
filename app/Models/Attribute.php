@@ -54,16 +54,9 @@ class Attribute extends Model implements TranslatableContract
                     ->withPivot('attribute_value_id')
                     ->withTimestamps();
     }
-    
 
-    /**
-     * ! this relation work if you add a model for product attribute value table 
-     * Get all product attribute value records
-     */
-    public function productAttributeValues(): HasMany
-    {
-        return $this->hasMany(ProductAttributeValue::class);
-    }
+
+
 
 
     

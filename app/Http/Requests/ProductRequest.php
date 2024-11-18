@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Attribute;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
@@ -24,74 +25,8 @@ class ProductRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
 
-    // public function rules(): array
-    // {
-    //     $id = $this->id;
-        
-        // ### Method 2 : this is more Effective [testing with post man]
-        // $rules = [
-
-        // 'thumb_image' => $id ? 'nullable' : 'required',
-
-        // 'qty'=> $id ? 'numeric|integer|min:0|max:100000' : 'required|numeric|integer|min:0|max:100000',
-        // 'price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
-        // 'offer_price'=> $id ? 'numeric|min:0|max:100000000' : 'required|numeric|min:0|max:100000000',
-        // 'status' => $id ? 'boolean' : 'required|boolean',
-
-        // 'offer_start_date'=> 'nullable|date|after_or_equal:today',
-        // 'offer_end_date'=> 'nullable|date|after:offer_start_date',
-        // 'sku'=> 'nullable|string|min:10|max:50',
-        // 'video_link'=> 'nullable|url',
-
-        // 'brand_id' => 'nullable|numeric|exists:brands,id',
-        
-        // 'name' =>  $id ? 'array' : 'required|array',
-        // 'description' => $id ? 'array' : 'required|array',
-        // 'product_type' => 'nullable|array',
-
-        // ];
-
-        // // Add rules for each locale
-        // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-        //     $rules["name.$keyLang"] = $id ? 'string|min:2|max:100|unique:category_translations,name,'.$id.',category_id' : 'required|string|min:2|max:100|unique:category_translations,name,'.$id.',category_id';
-        // }
-        // return $rules;
 
 
-    //     ### Method 2 : this is more Effective [For Ramy] perfect
-    //     $rules = [
-    //         'thumb_image' => $id ? 'nullable|image|max:5000' : 'required|image|max:5000',
-
-    //         'qty'=> 'required|numeric|integer|min:0|max:100000',
-    //         'price'=> 'required|numeric|min:0|max:100000000|gt:offer_price',// if price give you issue remove gt:offer_price
-    //         'status' => 'required|boolean',
-            
-    //         'offer_price'=> 'nullable|numeric|min:0|max:100000000|lt:price',
-    //         'offer_start_date'=> 'nullable|date|after_or_equal:today',
-    //         'offer_end_date'=> 'nullable|date|after:offer_start_date',
-    //         'sku'=> 'nullable|string|min:10|max:50',
-    //         'video_link'=> 'nullable|url',
-
-    //         'brand_id' => 'nullable|numeric|exists:brands,id',
-            
-    //         'name' => 'required|array',
-    //         'description' => 'required|array',
-    //         'product_type' => 'nullable|array',
-    //     ];
-
-        // // Add rules for each locale
-    //     foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { 
-    //         $rules["name.$keyLang"] = 'required|string|min:2|max:200|unique:product_translations,name,'.$id.',product_id';
-    //         $rules["description.$keyLang"] = 'required|string|unique:product_translations,description,'.$id.',product_id';
-    //         $rules["product_type.$keyLang"] = 'string|min:2|max:100|unique:product_translations,product_type,'.$id.',product_id';
-    //     }
-    //     return $rules;
-    // }
-
-
-    ### Method 2 : this is Perfectooooo [For Ramy] 
     public function rules()
     {
         $id = $this->id;
@@ -100,8 +35,9 @@ class ProductRequest extends FormRequest
         $maxPrice = 1000000; // 100 million
         $maxQty = 100000;
         $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
+        $attributeCount = Attribute::count();
 
-
+     
 
         $rules = [
             // Image validation
@@ -112,12 +48,6 @@ class ProductRequest extends FormRequest
                 'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
             ],
 
-            'barcode' => [
-                'nullable',
-                'image',
-                'max:' . $maxFileSize,
-                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
-            ],
 
             // Inventory validation
             'qty' => [
@@ -161,14 +91,6 @@ class ProductRequest extends FormRequest
                 'required_with:offer_price',
             ],
 
-            // Product details
-            'sku' => [
-                'nullable',
-                'string',
-                'min:10',
-                'max:50',
-                Rule::unique('products', 'sku')->ignore($id), // Add unique constraint
-            ],
 
             'status' => 'required|boolean',
 
@@ -205,11 +127,33 @@ class ProductRequest extends FormRequest
                 'max:'.$lang_number,
             ],
 
-            // 'category_ids' => 'required|array|min:1', //[]
-            // 'category_ids.*' => 'numeric|integer|exists:categories,id|gt:0',
-        
-
             'category_id' => 'required|numeric|integer|exists:categories,id|gt:0',// you can after add this column to products table because we store just one category for a product 
+
+            'productAttributes' => [
+                'required',
+                'array',
+                'min:1',
+                'max:'.$attributeCount,
+            ],
+
+            'productAttributes.*.attribute_id' => [
+                'required',
+                'integer',
+                'exists:attributes,id',
+            ],
+
+            'productAttributes.*.values' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+
+            'productAttributes.*.values.*.attribute_value_id' => [
+                'required',
+                'integer',
+                'exists:attribute_values,id',
+            ],
+
 
         ];
 
@@ -231,11 +175,6 @@ class ProductRequest extends FormRequest
                 $rules["description.$keyLang"] = [
                     'required',
                     'string',
-                    // Rule::unique('product_translations', 'description')
-                    //     ->ignore($id, 'product_id')
-                    //     ->where(function ($query) use ($keyLang) {
-                    //         return $query->where('locale', $keyLang);
-                    //     })
                 ];
 
             }

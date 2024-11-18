@@ -91,7 +91,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // Product Routes New :
     Route::prefix('products')->group(function () {
         Route::get('/', [ProductNewController::class, 'index']);
-        
+        Route::post('/', [ProductNewController::class, 'store']);
     });
 
 

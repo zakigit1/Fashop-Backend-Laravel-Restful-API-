@@ -16,6 +16,7 @@ class AttributeValue extends Model
     protected $fillable = ['attribute_id','name','display_name','color_code','sort_order','status'];
 
     protected $hidden = [
+        // 'pivot',
         'attribute_id',
         'created_at',
         'updated_at'
@@ -32,8 +33,8 @@ class AttributeValue extends Model
 
 
     /**
- * Get the attribute that owns this value
- */
+     * Get the attribute that owns this value
+    */
     public function attribute()
     {
         return $this->belongsTo(Attribute::class,'attribute_id','id');
@@ -42,18 +43,13 @@ class AttributeValue extends Model
     /**
      * Get all products that have this attribute value through pivot
      */
-    public function products(): BelongsToMany
+
+    public function products()
     {
         return $this->belongsToMany(Product::class, 'product_attribute_values')
-                    ->withTimestamps();
+                ->withPivot('attribute_id')
+                ->withTimestamps();
     }
+    
 
-
-    /**
-     * Get all product attribute value records
-     */
-    public function productAttributeValues(): HasMany
-    {
-        return $this->hasMany(ProductAttributeValue::class);
-    }
 }

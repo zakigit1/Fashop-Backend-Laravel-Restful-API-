@@ -31,7 +31,7 @@ class CategoryController extends Controller
                 'children',
                 '_parent'
                 ])
-                ->orderBy('id','DESC')
+                ->orderBy('id','asc')
                 ->paginate(20);
 
             return $this->paginationResponse($categories,'categories','All Categories',SUCCESS_CODE);

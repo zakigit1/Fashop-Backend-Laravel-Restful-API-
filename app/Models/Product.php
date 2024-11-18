@@ -20,6 +20,7 @@ class Product extends Model implements TranslatableContract
     // protected $guarded =['id'];
 
     protected $fillable = [
+        
         'thumb_image',
         'brand_id',
         'qty',
@@ -35,7 +36,7 @@ class Product extends Model implements TranslatableContract
     ];
 
     protected $hidden = [
-        // 'pivot'
+        // 'pivot',
     //     'created_at',
     //     'updated_at'
     ];
@@ -61,30 +62,6 @@ class Product extends Model implements TranslatableContract
     public $translatedAttributes = ['name','slug','description'];
 
 
-    // public function transform()
-    // {
-        
-    // should the price and offer price be integer value
-        // $this->price = (float) $this->price;
-        // $this->offer_price = (float) $this->offer_price;
-
-    //     if (is_int($this->price)) {
-    //         $this->price  = number_format($this->price, 2, '.', '');
-    //     }
-    //     if (is_int($this->offer_price)) {
-    //         $this->price  = number_format($this->offer_price, 2, '.', '');
-    //     }
-
-        // dont should the price and offer price be integer value
-
-    //     if (strpos($this->price, '.') === false) {
-    //         $this->price = ;
-    //     }
-    //     if (strpos($this->offer_price, '.') === false) {
-    //         $this->offer_price = ;
-    //     }
-    //     return $this;
-    // }
 
 
     /*                                                 Begin Local Scopes                                 */
@@ -121,38 +98,30 @@ class Product extends Model implements TranslatableContract
     /**
      * Get all attribute values associated with this product through pivot
      */
-    public function attributeValues(): BelongsToMany
+    public function attributeValues()
     {
         return $this->belongsToMany(AttributeValue::class, 'product_attribute_values')
+                    ->select(['attribute_values.id','name','display_name','color_code'])
+                    ->withPivot('attribute_id')
                     ->withTimestamps();
     }
-
+    
 
 
     /**
-     * ! check if this relation work: 
+     *  
      * Get all attributes associated with this product through pivot
      */
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'product_attribute_values')
-                    ->withPivot('attribute_value_id')
-                    ->withTimestamps();
+                ->select(['attributes.id'])
+                // ->withPivot('attribute_value_id')//ida bgghit tzid t3rad fl pivot attribute_value_id
+                ->withTimestamps()
+                ->distinct();// remove the repetition
+                    
     }
-
-
-
-    /**
-     * ! this relation work if you add a model for product attribute value table 
-     * Get all product attribute value records
-     * 
-     */
-    public function productAttributeValues(): HasMany
-    {
-        return $this->hasMany(ProductAttributeValue::class);
-    }
-
-
+    
 
     public function brand(){
         return $this->belongsTo(Brand::class,'brand_id','id','id');
@@ -169,9 +138,9 @@ class Product extends Model implements TranslatableContract
 
 
 
-        // public function reviews(){
-        //     return $this->hasMany(ProductReview::class,'product_id','id');
-        // }
+    // public function reviews(){
+    //     return $this->hasMany(ProductReview::class,'product_id','id');
+    // }
 
     /*                                                  End Relation                                    */
 
