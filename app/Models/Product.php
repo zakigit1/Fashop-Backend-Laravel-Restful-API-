@@ -36,7 +36,7 @@ class Product extends Model implements TranslatableContract
     ];
 
     protected $hidden = [
-        // 'pivot',
+        'pivot',
     //     'created_at',
     //     'updated_at'
     ];
@@ -81,7 +81,7 @@ class Product extends Model implements TranslatableContract
 
     /*                                                  Begin Relation                                  */
 
-    public function categories(){
+    public function categories(){//i change it to category because we are storing just one category in product (categories )
         return $this->belongsToMany(
             Category::class,
             'product_categories',

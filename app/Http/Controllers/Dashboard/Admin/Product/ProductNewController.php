@@ -24,7 +24,6 @@ class ProductNewController extends Controller
 
     public function index(){
         try{
-
             // Get Attributes:
             // $attributes = Attribute::with('translations','values')
             //     ->orderBy('id','desc')
@@ -40,6 +39,7 @@ class ProductNewController extends Controller
             ->orderBy('id','asc')
             ->get();
 
+            
 
 
             // Get Attribute Values:
@@ -51,10 +51,15 @@ class ProductNewController extends Controller
 
 
             // Get All Products:
-            $products = Product::with('translations')
+            $products = Product::with(['translations','categories'
+                // 'categories' => function($q){
+                //     $q->select('categories.id');    
+                // }
+                ])
                 ->orderBy('id','DESC')
                 ->paginate(20);
 
+            
 
             $productsPagination = [
                 'pagination'=> [
@@ -95,8 +100,8 @@ class ProductNewController extends Controller
         
             /** Save thumb_image  */
 
-            $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
-            // $image_name = $request->thumb_image;
+            // $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
+            $image_name = $request->thumb_image;
 
             $product = Product::create([
                 "thumb_image" => $image_name,
@@ -145,7 +150,10 @@ class ProductNewController extends Controller
             $this->storeProductAttributeValue($request->productAttributes,$product);
 
 
-            $product->load('categories','brand','productType','attributes','attributeValues');
+            $product->load(['categories'=>function($query){
+                $query->select('categories.id');
+            }
+            ,'brand','productType','attributes','attributeValues']);
 
             DB::commit();
             return $this->success($product,'Created Successfully!',SUCCESS_STORE_CODE,'product');
@@ -229,8 +237,6 @@ class ProductNewController extends Controller
 
 
 
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -300,7 +306,6 @@ class ProductNewController extends Controller
             return $this->error($e->getMessage(),ERROR_CODE);
         }
     }
-
 
 
 
