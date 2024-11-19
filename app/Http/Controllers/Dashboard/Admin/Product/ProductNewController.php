@@ -100,8 +100,8 @@ class ProductNewController extends Controller
         
             /** Save thumb_image  */
 
-            // $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
-            $image_name = $request->thumb_image;
+            $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
+            // $image_name = $request->thumb_image;
 
             $product = Product::create([
                 "thumb_image" => $image_name,

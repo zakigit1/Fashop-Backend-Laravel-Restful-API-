@@ -43,9 +43,9 @@ class ProductRequest extends FormRequest
             // Image validation
             'thumb_image' => [
                 $id ? 'nullable' : 'required',
-                // 'image',
+                'image',
                 'max:' . $maxFileSize,
-                // 'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
             ],
 
 
