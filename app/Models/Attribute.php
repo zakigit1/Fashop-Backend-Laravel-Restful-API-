@@ -18,6 +18,7 @@ class Attribute extends Model implements TranslatableContract
     protected $fillable = ['type','is_filterable','sort_order','status'];
 
     protected $hidden = [
+        'pivot',
         'created_at',
         'updated_at'
     ];

@@ -51,10 +51,13 @@ class ProductNewController extends Controller
 
 
             // Get All Products:
-            $products = Product::with(['translations','categories'
+            $products = Product::with(['translations','categories','brand','productType',
+                'attributes',
+                'attributeValues',
                 // 'categories' => function($q){
                 //     $q->select('categories.id');    
-                // }
+                // },
+                // 'gallery'
                 ])
                 ->orderBy('id','DESC')
                 ->paginate(20);
@@ -89,10 +92,10 @@ class ProductNewController extends Controller
 
     }
 
-        /**
+    /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(ProductRequest $request): JsonResponse
     {
         // return $request->all();
         try{
@@ -101,24 +104,25 @@ class ProductNewController extends Controller
             /** Save thumb_image  */
 
             $image_name= $this->uploadImage_Trait($request,'thumb_image',self::FOLDER_PATH,self::FOLDER_NAME_THUMB_IMAGE);
-            // $image_name = $request->thumb_image;
+           
 
             $product = Product::create([
                 "thumb_image" => $image_name,
-                "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
-                "product_type_id" =>(is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
-                "qty" =>(int) $request->qty,
-                "variant_quantity" =>(int) $request->qty ,//firstly take the same value of original quantity (qty) after when we add variant we be decrement depending on qty of variants.
+                "brand_id" => (is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
+                "product_type_id" => (is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
+                "qty" => (int) $request->qty,
+                "variant_quantity" => (int) $request->qty ,//firstly take the same value of original quantity (qty) after when we add variant we be decrement depending on qty of variants.
                 "price" => (float) $request->price ,
-                "offer_price" => (float) $request->offer_price,
+                "offer_price" => (is_null($request->offer_price)) ? $request->offer_price :(float) $request->offer_price,
                 "offer_start_date" => $request->offer_start_date,
                 "offer_end_date" => $request->offer_end_date,
                 "video_link" => $request->video_link,
-                "status" =>(int) $request->status,
+                "status" => (int) $request->status,
             ]);
 
+        
             $product->categories()->syncWithoutDetaching($request->category_id);
-
+        
             /** Store translations for each locale */
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
@@ -127,33 +131,48 @@ class ProductNewController extends Controller
             }
 
             $product->save() ;
-
+            
 
             // save product attributes values : 
 
-            // Expected request format:
-                // attributes : [
-                //     {
-                //         attribute_id: 1, // size
-                //         values: [
-                //             {
-                //                 attribute_value_id: 1, // S
-                //             },
-                //             {
-                //                 attribute_value_id: 2, // M
-                //             }
-                //         ]
-                //     }
-                // ]
+                // Expected request format:
+                    // attributes : [
+                    //     {
+                    //         attribute_id: 1, // size
+                    //         values: [
+                    //             {
+                    //                 attribute_value_id: 1, // S
+                    //             },
+                    //             {
+                    //                 attribute_value_id: 2, // M
+                    //             }
+                    //         ]
+                    //     }
+                    // ]
                 
             
             $this->storeProductAttributeValue($request->productAttributes,$product);
 
-
-            $product->load(['categories'=>function($query){
-                $query->select('categories.id');
-            }
-            ,'brand','productType','attributes','attributeValues']);
+            // $product->load([
+            //     'categories'=>function($query){
+            //         $query->select('categories.id');
+            //     },'brand'=>function($query){
+            //         $query->select('brand.id');
+            //     },'productType'=>function($query){
+            //         $query->select('product_types.id');
+            //     },'attributes'=>function($query){
+            //         $query->select('attributes.id');
+            //     },'attributeValues'=>function($query){
+            //         $query->select('attribute_values.id','name','display_name','color_code');
+            //     }
+            // ]);
+            $product->load([
+                'categories',
+                'brand',
+                'productType',
+                'attributes',
+                'attributeValues'
+            ]);
 
             DB::commit();
             return $this->success($product,'Created Successfully!',SUCCESS_STORE_CODE,'product');
@@ -185,8 +204,8 @@ class ProductNewController extends Controller
                 $product->update(['thumb_image'=>$image_name]);
             }
            
-
-            $product = $product->update([
+           
+            $product->update([
                 "brand_id" =>(is_null($request->brand_id)) ? $request->brand_id :(int) $request->brand_id,
                 "product_type_id" =>(is_null($request->product_type_id)) ? $request->product_type_id :(int) $request->product_type_id,
                 "qty" =>(int) $request->qty,
@@ -198,12 +217,14 @@ class ProductNewController extends Controller
                 "video_link" => $request->video_link,
                 "status" =>(int) $request->status,
             ]);
-
+            
             if($request->has('category_id')){
-                /**sync() method doing dettach and after attach to data */
+                // sync() method doing dettach and after attach to data but if user send empty array it will delete all data
                 $product->categories()->sync($request->category_id);
             }
+            
 
+        
             /** Store translations for each locale */
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
                 $product->translateOrNew($keyLang)->name = $request->input("name.$keyLang");
@@ -213,6 +234,7 @@ class ProductNewController extends Controller
 
             $product->save() ;
 
+            
 
             /* update product attributes values : **/
 
@@ -221,8 +243,36 @@ class ProductNewController extends Controller
 
             $this->storeProductAttributeValue($request->productAttributes,$product);
 
+            //         $product->attributeValues()->updateExistingPivot($attributeValueId, [
+            //             'attribute_id' => $request->attribute_id,
+            //             'attribute_value_id' => $request->attribute_value_id,
+            //         ]);
 
-            $product->load('categories','brand','productType','attributes','attributeValues');
+
+
+            // $product->load([
+            //     'categories',
+            //     'brand',
+            //     'productType',
+            //     'attributes',
+            //     'attributeValues'
+            // ]);
+
+            
+            $product->load([
+                'categories'=>function($query){
+                    $query->select('categories.id');
+                },'brand'=>function($query){
+                    $query->select('brand.id');
+                },'productType'=>function($query){
+                    $query->select('product_types.id');
+                },'attributes'=>function($query){
+                    $query->select('attributes.id');
+                },'attributeValues'=>function($query){
+                    $query->select('attribute_values.id');
+                }
+            ]);
+
 
             DB::commit();
             return $this->success($product,'Updated Successfully!',SUCCESS_STORE_CODE,'product');

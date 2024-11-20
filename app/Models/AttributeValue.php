@@ -16,7 +16,7 @@ class AttributeValue extends Model
     protected $fillable = ['attribute_id','name','display_name','color_code','sort_order','status'];
 
     protected $hidden = [
-        // 'pivot',
+        'pivot',
         'attribute_id',
         'created_at',
         'updated_at'
