@@ -91,6 +91,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // Product Routes (New) :
 
     Route::get('/get-attributes',[ProductNewController::class,'get_attributes']);
+    Route::get('/get-product-types',[ProductNewController::class,'get_product_types']);
 
     Route::prefix('products')->group(function () {
         Route::get('/', [ProductNewController::class, 'index']);
@@ -136,7 +137,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // });
 
 
-    
+
     //Product Type Routes :
     Route::prefix('product-types')->group(function () {
         Route::get('/',[ProductTypeController::class,'index']);

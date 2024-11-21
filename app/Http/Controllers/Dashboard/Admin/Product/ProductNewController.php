@@ -9,6 +9,7 @@ use App\Models\Attribute;
 use App\Models\AttributeTranslation;
 use App\Models\AttributeValue;
 use App\Models\Product;
+use App\Models\ProductType;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,8 @@ class ProductNewController extends Controller
     const FOLDER_NAME_BARCODE = 'barcodes';
 
 
-    public function get_attributes(){
+    public function get_attributes():JsonResponse
+    {
 
         try{
             /* Get Attributes: (Attributes With Values) **/
@@ -46,9 +48,28 @@ class ProductNewController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);  
         }    
     }
+    public function get_product_types():JsonResponse
+    {
+
+        try{
+            /* Get Attributes: (Attributes With Values) **/
+
+            $product_types = ProductType::with([
+                'translations',
+            ])->select('id')
+            ->orderBy('id','asc')
+            ->get();
+
+            return $this->success($product_types,'All Product Types',SUCCESS_CODE,'productTypes');
+            
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);  
+        }    
+    }
 
 
-    public function index(){
+    public function index():JsonResponse
+    {
         try{
 
             /* Get All Products: **/
@@ -235,7 +256,8 @@ class ProductNewController extends Controller
     }
 
 
-    public function update(ProductRequest $request,int $id){
+    public function update(ProductRequest $request,int $id):JsonResponse
+    {
         try{
             DB::beginTransaction();
 
@@ -380,12 +402,12 @@ class ProductNewController extends Controller
 
             #M2: 
 
-            if(isset($product->gallery)  && count($product->gallery)>0){
-                foreach($product->gallery as $product_image){
-                    $this->deleteImage_Trait($product_image->image,self::FOLDER_PATH,'gallery');
-                    $product_image->delete();
-                }
-            }
+            // if(isset($product->gallery)  && count($product->gallery)>0){
+            //     foreach($product->gallery as $product_image){
+            //         $this->deleteImage_Trait($product_image->image,self::FOLDER_PATH,'gallery');
+            //         $product_image->delete();
+            //     }
+            // }
 
             //********************   Delete variants & items     ******************** */
             
@@ -409,8 +431,6 @@ class ProductNewController extends Controller
                
             $product->delete();
             
-
-
             // we are using ajax : 
             return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
         }catch(\Exception $e){
@@ -419,7 +439,8 @@ class ProductNewController extends Controller
     }
 
 
-    public function storeProductAttributeValue($productAttributes,$product){
+    public function storeProductAttributeValue($productAttributes,$product):void
+    {
         foreach ($productAttributes as $attributeData) {
 
             $attribute_id = $attributeData['attribute_id'];
