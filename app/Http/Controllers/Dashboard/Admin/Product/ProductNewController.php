@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Dashboard\Admin\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Attribute;
+use App\Models\AttributeTranslation;
 use App\Models\AttributeValue;
 use App\Models\Product;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -22,13 +26,10 @@ class ProductNewController extends Controller
     const FOLDER_NAME_BARCODE = 'barcodes';
 
 
-    public function index(){
-        try{
-            // Get Attributes:
-            // $attributes = Attribute::with('translations','values')
-            //     ->orderBy('id','desc')
-            //     ->get();
+    public function get_attributes(){
 
+        try{
+            /* Get Attributes: (Attributes With Values) **/
 
             $attributes = Attribute::with([
                 'translations',
@@ -39,62 +40,80 @@ class ProductNewController extends Controller
             ->orderBy('id','asc')
             ->get();
 
+            return $this->success($attributes,'All Attributes with Values',SUCCESS_CODE,'attributes');
             
+        }catch(\Exception $ex){ 
+            return $this->error($ex->getMessage(),ERROR_CODE);  
+        }    
+    }
 
 
-            // Get Attribute Values:
-            // $attribute_values = AttributeValue::orderBy('id','desc')
-            //     ->get();
+    public function index(){
+        try{
 
-            // $attribute_values = AttributeValue::orderBy('id','desc')
-            //     ->get(['id','name','display_name','color_code']);
-
-
-            // Get All Products:
-            $products = Product::with(['translations','categories','brand','productType',
-                'attributes',
-                'attributeValues',
-                // 'categories' => function($q){
-                //     $q->select('categories.id');    
+            /* Get All Products: **/
+            $products = Product::with([
+                'translations',
+                'category',
+                'brand',
+                'productType',
+                'productAttributeValues.attributeValue.attribute',
+                // 'attributeValues'=>function($q){
+                //     $q->select('attribute_values.id','attribute_values.attribute_id','name','display_name','color_code');
+                // }  ,
+                // 'category' => function($q){
+                //     $q->select('category.id');    
                 // },
                 // 'gallery'
                 ])
-                ->orderBy('id','DESC')
-                ->paginate(20);
-
-            
-
-            $productsPagination = [
-                'pagination'=> [
-                    'currentPage' => $products->currentPage(),
-                    'totalPage' => $products->total(),
-                    'perPage' => $products->perPage(),
-                    'lastPage' => $products->lastPage(),
-                    'hasNext' => $products->hasMorePages(),
-                    'hasPrevious' => $products->currentPage() > 1,
-                ],
-                "products" => $products->items(),
-            ];
+            ->orderBy('id','ASC')
+            ->paginate(20);
 
 
 
-            return $this->success([
-                'attributes' =>$attributes,
-                // 'attribute_values' => $attribute_values,
-                'products' => $productsPagination
-            ],'You get everything you need (attributes , products) successfully!',SUCCESS_CODE);
+            $customProducts = $products->getCollection()
+                ->map(function ($product) {
+                    $productArray = $product->toArray();
+                    $attributes = [];
+        
+                    foreach ($product->productAttributeValues as $productAttributeValue) {
+                        $attributeValue = $productAttributeValue->attributeValue;
+                        $attribute = $attributeValue->attribute;
+        
+                        if (!isset($attributes[$attribute->id])) {
+                            $attributes[$attribute->id] = [
+                                'id' => $attribute->id,
+                                'name' => $attribute->name,
+                                'translations' => $attribute->translations,
+                                'values' => []
+                            ];
+                        }
+        
+                        $attributes[$attribute->id]['values'][] = [
+                            'id' => $attributeValue->id,
+                            'name' => $attributeValue->name,
+                            'display_name' => $attributeValue->display_name,
+                            'color_code' => $attributeValue->color_code,
+                        ];
+                    }
+        
+                    $productArray['attributes'] = array_values($attributes);
+                    unset($productArray['product_attribute_values']);
+        
+                    return $productArray;
+                })
+            ->all();
+
+
+            return $this->paginationResponse($products,'products','All Products',SUCCESS_CODE,$customProducts);
             
         }catch(\Exception $ex){ 
-            
-            return $this->error($ex->getMessage(),ERROR_CODE);
-          
+            return $this->error($ex->getMessage(),ERROR_CODE);  
         }
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(ProductRequest $request): JsonResponse
     {
         // return $request->all();
@@ -121,7 +140,7 @@ class ProductNewController extends Controller
             ]);
 
         
-            $product->categories()->syncWithoutDetaching($request->category_id);
+            $product->category()->syncWithoutDetaching($request->category_id);
         
             /** Store translations for each locale */
             foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
@@ -134,7 +153,6 @@ class ProductNewController extends Controller
             
 
             // save product attributes values : 
-
                 // Expected request format:
                     // attributes : [
                     //     {
@@ -150,12 +168,11 @@ class ProductNewController extends Controller
                     //     }
                     // ]
                 
-            
             $this->storeProductAttributeValue($request->productAttributes,$product);
 
             // $product->load([
-            //     'categories'=>function($query){
-            //         $query->select('categories.id');
+            //     'category'=>function($query){
+            //         $query->select('category.id');
             //     },'brand'=>function($query){
             //         $query->select('brand.id');
             //     },'productType'=>function($query){
@@ -166,16 +183,48 @@ class ProductNewController extends Controller
             //         $query->select('attribute_values.id','name','display_name','color_code');
             //     }
             // ]);
+
+
             $product->load([
-                'categories',
+                'translations',
+                'category',
                 'brand',
                 'productType',
-                'attributes',
-                'attributeValues'
+                'productAttributeValues.attributeValue.attribute',
             ]);
 
+
+
+            $customProduct = $product->toArray();
+            $attributes = [];
+            
+            foreach ($product->productAttributeValues as $productAttributeValue) {
+                $attributeValue = $productAttributeValue->attributeValue;
+                $attribute = $attributeValue->attribute;
+            
+                if (!isset($attributes[$attribute->id])) {
+                    $attributes[$attribute->id] = [
+                        'id' => $attribute->id,
+                        'name' => $attribute->name,
+                        'translations' => $attribute->translations,
+                        'values' => []
+                    ];
+                }
+            
+                $attributes[$attribute->id]['values'][] = [
+                    'id' => $attributeValue->id,
+                    'name' => $attributeValue->name,
+                    'display_name' => $attributeValue->display_name,
+                    'color_code' => $attributeValue->color_code,
+                ];
+            }
+            
+            $customProduct['attributes'] = array_values($attributes);
+            unset($customProduct['product_attribute_values']);
+            
+            
             DB::commit();
-            return $this->success($product,'Created Successfully!',SUCCESS_STORE_CODE,'product');
+            return $this->success($customProduct,'Created Successfully!',SUCCESS_STORE_CODE,'product');
         }catch (ValidationException $ex) {
             DB::rollBack();  
             return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
@@ -220,7 +269,7 @@ class ProductNewController extends Controller
             
             if($request->has('category_id')){
                 // sync() method doing dettach and after attach to data but if user send empty array it will delete all data
-                $product->categories()->sync($request->category_id);
+                $product->category()->sync($request->category_id);
             }
             
 
@@ -249,33 +298,49 @@ class ProductNewController extends Controller
             //         ]);
 
 
-
-            // $product->load([
-            //     'categories',
-            //     'brand',
-            //     'productType',
-            //     'attributes',
-            //     'attributeValues'
-            // ]);
-
-            
+            // to get the relations : 
             $product->load([
-                'categories'=>function($query){
-                    $query->select('categories.id');
-                },'brand'=>function($query){
-                    $query->select('brand.id');
-                },'productType'=>function($query){
-                    $query->select('product_types.id');
-                },'attributes'=>function($query){
-                    $query->select('attributes.id');
-                },'attributeValues'=>function($query){
-                    $query->select('attribute_values.id');
-                }
+                'translations',
+                'category',
+                'brand',
+                'productType',
+                'productAttributeValues.attributeValue.attribute',
             ]);
 
 
+
+            $customProduct = $product->toArray();
+            $attributes = [];
+            
+            foreach ($product->productAttributeValues as $productAttributeValue) {
+                $attributeValue = $productAttributeValue->attributeValue;
+                $attribute = $attributeValue->attribute;
+            
+                if (!isset($attributes[$attribute->id])) {
+                    $attributes[$attribute->id] = [
+                        'id' => $attribute->id,
+                        'name' => $attribute->name,
+                        'translations' => $attribute->translations,
+                        'values' => []
+                    ];
+                }
+            
+                $attributes[$attribute->id]['values'][] = [
+                    'id' => $attributeValue->id,
+                    'name' => $attributeValue->name,
+                    'display_name' => $attributeValue->display_name,
+                    'color_code' => $attributeValue->color_code,
+                ];
+            }
+            
+            $customProduct['attributes'] = array_values($attributes);
+            unset($customProduct['product_attribute_values']);
+            
+
+
             DB::commit();
-            return $this->success($product,'Updated Successfully!',SUCCESS_STORE_CODE,'product');
+            return $this->success($customProduct,'Updated Successfully!',SUCCESS_CODE,'product');
+            
         }catch (ValidationException $ex) {
             DB::rollBack();  
             return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
@@ -286,10 +351,6 @@ class ProductNewController extends Controller
     }
 
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id):JsonResponse
     {
         try{ 
@@ -304,8 +365,8 @@ class ProductNewController extends Controller
             // return $this->error('This Product Have Order(s) You Can'\t Delete it !',CONFLICT_ERROR_CODE);
             // }
 
-            // Detach categories 
-            // $product->categories()->detach(); 
+            // Detach category 
+            // $product->category()->detach(); 
             // DB::table('product_attribute_values')->where('product_id', $product->id)->delete();
 
 
@@ -331,14 +392,14 @@ class ProductNewController extends Controller
   
             ##M2: 
             // if (isset($product->attributes) && count($product->attributes) > 0) {
-            //     foreach ($product->variants as $variant) {
-            //         if (isset($variant->items) && count($variant->items) > 0) {
-            //             foreach ($variant->items as $item) {
+            //     foreach ($product->attributes as $attribute) {
+            //         if (isset($attribute->items) && count($attribute->items) > 0) {
+            //             foreach ($attribute->items as $item) {
             //                 $item->delete();
             //             }
-            //             $variant->delete();
+            //             $attribute->delete();
             //         } else {
-            //             $variant->delete();
+            //             $attribute->delete();
             //         }
             //     }
             // }
@@ -356,7 +417,6 @@ class ProductNewController extends Controller
             return $this->error($e->getMessage(),ERROR_CODE);
         }
     }
-
 
 
     public function storeProductAttributeValue($productAttributes,$product){

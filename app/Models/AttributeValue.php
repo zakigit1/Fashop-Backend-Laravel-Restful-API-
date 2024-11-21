@@ -17,7 +17,7 @@ class AttributeValue extends Model
 
     protected $hidden = [
         'pivot',
-        'attribute_id',
+        // 'attribute_id',
         'created_at',
         'updated_at'
     ];

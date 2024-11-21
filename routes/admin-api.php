@@ -89,6 +89,9 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
 
     // Product Routes (New) :
+
+    Route::get('/get-attributes',[ProductNewController::class,'get_attributes']);
+
     Route::prefix('products')->group(function () {
         Route::get('/', [ProductNewController::class, 'index']);
         Route::post('/', [ProductNewController::class, 'store']);
@@ -110,29 +113,30 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     
     // Product Attribute Routes :
-    Route::prefix('attributes')->group(function () {
-        Route::get('',[AttributeController::class,'index']);
-        Route::get('/{id}', [AttributeController::class, 'show'])->middleware('setLang');
-        Route::post('',[AttributeController::class,'store']);
-        Route::post('{id}/update',[AttributeController::class,'update']);
-        // Route::put('{id}',[AttributeController::class,'update']);
-        Route::DELETE('{id}/delete',[AttributeController::class,'destroy']);
-        // Route::DELETE('{id}',[AttributeController::class,'destroy']);
-    });
+    // Route::prefix('attributes')->group(function () {
+    //     Route::get('',[AttributeController::class,'index']);
+    //     Route::get('/{id}', [AttributeController::class, 'show'])->middleware('setLang');
+    //     Route::post('',[AttributeController::class,'store']);
+    //     Route::post('{id}/update',[AttributeController::class,'update']);
+    //     // Route::put('{id}',[AttributeController::class,'update']);
+    //     Route::DELETE('{id}/delete',[AttributeController::class,'destroy']);
+    //     // Route::DELETE('{id}',[AttributeController::class,'destroy']);
+    // });
 
 
     // Product Attribute Value Routes :
-    Route::prefix('attribute-values')->group(function () {
-        Route::get('',[AttributeValueController::class,'index']);
-        Route::get('/{id}', [AttributeValueController::class, 'show'])->middleware('setLang');
-        Route::post('',[AttributeValueController::class,'store']);
-        Route::post('{id}/update',[AttributeValueController::class,'update']);
-        // Route::put('{id}',[AttributeValueController::class,'update']);
-        Route::DELETE('{id}/delete',[AttributeValueController::class,'destroy']);
-        // Route::DELETE('{id}',[AttributeValueController::class,'destroy']);
-    });
+    // Route::prefix('attribute-values')->group(function () {
+    //     Route::get('',[AttributeValueController::class,'index']);
+    //     Route::get('/{id}', [AttributeValueController::class, 'show'])->middleware('setLang');
+    //     Route::post('',[AttributeValueController::class,'store']);
+    //     Route::post('{id}/update',[AttributeValueController::class,'update']);
+    //     // Route::put('{id}',[AttributeValueController::class,'update']);
+    //     Route::DELETE('{id}/delete',[AttributeValueController::class,'destroy']);
+    //     // Route::DELETE('{id}',[AttributeValueController::class,'destroy']);
+    // });
 
 
+    
     //Product Type Routes :
     Route::prefix('product-types')->group(function () {
         Route::get('/',[ProductTypeController::class,'index']);

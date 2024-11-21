@@ -16,10 +16,10 @@ class ProductType extends Model implements TranslatableContract
 
     protected $fillable = ['status'];
 
-    // protected $hidden = [
-    //     'created_at',
-    //     'updated_at'
-    // ];
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 
     /**
      * The attributes that should be cast.

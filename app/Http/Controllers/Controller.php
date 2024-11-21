@@ -64,7 +64,7 @@ class Controller extends BaseController
     }
 
 
-    public function paginationResponse($data, $data_name, string $message, int $statusCode = 200){
+    public function paginationResponse($data, $data_name, string $message, int $statusCode = 200, $custumData = null){
 
         return response()->json([
             'status'=>'success',
@@ -78,7 +78,8 @@ class Controller extends BaseController
                 'hasNext' => $data->hasMorePages(),
                 'hasPrevious' => $data->currentPage() > 1,
             ],
-            "$data_name" => $data->items(),
+            // "$data_name" => $data->items(),
+            "$data_name" => $custumData,
         ]);
 
     }

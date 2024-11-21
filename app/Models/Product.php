@@ -81,7 +81,7 @@ class Product extends Model implements TranslatableContract
 
     /*                                                  Begin Relation                                  */
 
-    public function categories(){//i change it to category because we are storing just one category in product (categories )
+    public function category(){//i change it to category because we are storing just one category in product (categories )
         return $this->belongsToMany(
             Category::class,
             'product_categories',
@@ -137,6 +137,9 @@ class Product extends Model implements TranslatableContract
     }
 
 
+    public function productAttributeValues(){
+        return $this->hasMany(ProductAttributeValue::class,'product_id','id');
+    }
 
     // public function reviews(){
     //     return $this->hasMany(ProductReview::class,'product_id','id');

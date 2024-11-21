@@ -29,9 +29,8 @@ class ProductTypeSeeder extends Seeder
 
     public function productTypes()
     {
-
-
         $productTypes = [
+
             [
                 'id' => 1,            
                 'status' => 1 ,
@@ -56,6 +55,22 @@ class ProductTypeSeeder extends Seeder
                 'id' => 6,
                 'status' => 1 ,
             ],
+            [
+                'id' => 7,
+                'status' => 1 ,
+            ],
+            [
+                'id' => 8,
+                'status' => 1 ,
+            ],
+            [
+                'id' => 9,
+                'status' => 1 ,
+            ],
+            [
+                'id' => 10,
+                'status' => 1,
+            ],
 
         ];
 
@@ -73,56 +88,93 @@ class ProductTypeSeeder extends Seeder
             [
                 'product_type_id' => 1,
                 'translations' => [
-                    'en' => 'Size',
-                    'ar' => 'الحجم',
-                    'fr' => 'Taille',
+                    'en' => 'Best Sellers',
+                    'ar' => 'الأكثر مبيعاً',
+                    'fr' => 'Meilleures ventes',
                 ],
             ],
             [
                 'product_type_id' => 2,
                 'translations' => [
-                    'en' => 'Color',
-                    'ar' => 'اللون',
-                    'fr' => 'Couleur',
+                    'en' => 'Featured Products',
+                    'ar' => 'منتجات مميزة',
+                    'fr' => 'Produits special',
                 ],
             ],
             [
                 'product_type_id' => 3,
                 'translations' => [
-                    'en' => 'Material',
-                    'ar' => 'المواد',
-                    'fr' => 'Matériau',
+                    'en' => 'New Arrivals',
+                    'ar' => 'وصل حديثاً',
+                    'fr' => 'Nouveautés',
                 ],
             ],
             [
                 'product_type_id' => 4,
                 'translations' => [
-                    'en' => 'Fit Type',
-                    'ar' => 'نوع الملاءمة',
-                    'fr' => 'Type d\'ajustement',
+                    'en' => 'On Sale',
+                    'ar' => 'تخفيضات',
+                    'fr' => 'En Solde',
                 ],
             ],
             [
                 'product_type_id' => 5,
                 'translations' => [
-                    'en' => 'Pattern',
-                    'ar' => 'النمط',
-                    'fr' => 'Modèle',
+                    'en' => 'Tendance',
+                    'ar' => 'رائج',
+                    'fr' => 'Trending',
                 ],
             ],
 
             [
                 'product_type_id' => 6,
                 'translations' => [
-                    'en' => 'Numeric Size',
-                    'ar' => 'الحجم الرقمي',
-                    'fr' => 'Taille numérique',
+                    'en' => 'Limited Edition',
+                    'ar' => 'إصدار محدود',
+                    'fr' => 'Édition limitée',
+                ],
+            ],
+            [
+                'product_type_id' => 7,
+                'translations' => [
+                    'en' => 'Seasonal',
+                    'ar' => 'موسمي',
+                    'fr' => 'Saisonnier',
+                ],
+            ],
+            [
+                'product_type_id' => 8,
+                'translations' => [
+                    'en' => 'Top Rated',
+                    'ar' => 'الأعلى تقييماً',
+                    'fr' => 'Les mieux notés',
+                ],
+            ],
+            [
+                'product_type_id' => 9,
+                'translations' => [
+                    'en' => 'Clearance',
+                    'ar' => 'تصفية',
+                    'fr' => 'Liquidation',
                 ],
             ],
 
-            
-            
+
+            [
+                'product_type_id' => 10,
+                'translations' => [ 
+                    'en' => 'Recommended', 
+                    'ar' => 'موصى', 
+                    'fr' => 'Recommandé', 
+                ],
+
+            ],
+
         ];
+            
+
+             
+
 
         $result = [];
         foreach ($productTypeTranslations as $productTypeTranslation) {
@@ -138,3 +190,21 @@ class ProductTypeSeeder extends Seeder
         return $result;
     }
 }
+// Best Sellers: These are the most popular items based on sales.
+
+// Featured Products: Highlighted items that are promoted on the main page.
+
+// New Arrivals: Recently added products to the store.
+
+// On Sale: Items that are currently discounted.
+
+// Trending: Products that are currently popular or in high demand.
+
+// Limited Edition: Exclusive items available for a short period.
+
+// Seasonal: Products that are relevant to the current season (e.g., summer, winter).
+
+// Top Rated: Items with the highest customer ratings.
+
+// Clearance: Products that are being sold at a reduced price to clear out inventory.
+

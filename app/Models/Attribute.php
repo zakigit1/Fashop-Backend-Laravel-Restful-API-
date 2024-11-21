@@ -55,10 +55,4 @@ class Attribute extends Model implements TranslatableContract
                     ->withPivot('attribute_value_id')
                     ->withTimestamps();
     }
-
-
-
-
-
-    
 }

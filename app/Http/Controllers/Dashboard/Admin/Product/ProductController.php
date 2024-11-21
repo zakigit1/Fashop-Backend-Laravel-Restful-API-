@@ -335,7 +335,59 @@ class ProductController extends Controller
     }
 
 
+    // public function indexNew()
+    // {
+    //     $productsQuery = Product::with([
+    //         'translations',
+    //         'categories',
+    //         'brand',
+    //         'productType',
+    //         'productAttributeValues.attributeValue.attribute'
+    //     ])
+    //     ->orderBy('id', 'ASC');
 
+
+    //     $paginator = $productsQuery->paginate(20);
+
+    //    return  $transformedProducts = $paginator->getCollection()
+    //     ->map(function ($product) {
+    //         $productArray = $product->toArray();
+    //         $attributes = [];
+
+    //         foreach ($product->productAttributeValues as $productAttributeValue) {
+    //             $attributeValue = $productAttributeValue->attributeValue;
+    //             $attribute = $attributeValue->attribute;
+
+    //             if (!isset($attributes[$attribute->id])) {
+    //                 $attributes[$attribute->id] = [
+    //                     'id' => $attribute->id,
+    //                     'name' => $attribute->name,
+    //                     'values' => []
+    //                 ];
+    //             }
+
+    //             $attributes[$attribute->id]['values'][] = [
+    //                 'id' => $attributeValue->id,
+    //                 'name' => $attributeValue->name
+    //             ];
+    //         }
+
+    //         $productArray['attributes'] = array_values($attributes);
+    //         unset($productArray['product_attribute_values']);
+
+    //         return $productArray;
+    //     })->all();
+
+    //     $newPaginator = new LengthAwarePaginator(
+    //         $transformedProducts,
+    //         $paginator->total(),
+    //         $paginator->perPage(),
+    //         $paginator->currentPage(),
+    //         ['path' => Paginator::resolveCurrentPath()]
+    //     );
+
+    //     return response()->json($newPaginator);
+    // }
 
 
 

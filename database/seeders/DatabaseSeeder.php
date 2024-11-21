@@ -42,6 +42,15 @@ class DatabaseSeeder extends Seeder
                 ]);
             }   
         }
+
+        if(Schema::hasTable('product_types') && Schema::hasTable('product_type_translations')){
+            if (DB::table('product_types')->count() === 0 && DB::table('product_type_translations')->count() === 0) {
+                $this->call([
+                    ProductTypeSeeder::class,
+                ]);
+            }   
+        }
+
         
         // $this->call([
         //     AttributeValueSeeder::class,
