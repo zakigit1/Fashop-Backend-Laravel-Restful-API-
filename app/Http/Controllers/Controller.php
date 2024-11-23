@@ -66,21 +66,41 @@ class Controller extends BaseController
 
     public function paginationResponse($data, $data_name, string $message, int $statusCode = 200, $custumData = null){
 
-        return response()->json([
-            'status'=>'success',
-            'statusCode'=>$statusCode,
-            'message'=>$message,
-            'pagination'=> [
-                'currentPage' => $data->currentPage(),
-                'totalPage' => $data->total(),
-                'perPage' => $data->perPage(),
-                'lastPage' => $data->lastPage(),
-                'hasNext' => $data->hasMorePages(),
-                'hasPrevious' => $data->currentPage() > 1,
-            ],
-            // "$data_name" => $data->items(),
-            "$data_name" => $custumData,
-        ]);
+        if($custumData == null){
+
+            return response()->json([
+                'status'=>'success',
+                'statusCode'=>$statusCode,
+                'message'=>$message,
+                'pagination'=> [
+                    'currentPage' => $data->currentPage(),
+                    'totalPage' => $data->total(),
+                    'perPage' => $data->perPage(),
+                    'lastPage' => $data->lastPage(),
+                    'hasNext' => $data->hasMorePages(),
+                    'hasPrevious' => $data->currentPage() > 1,
+                ],
+                "$data_name" => $data->items(),
+   
+            ]);
+
+        }else{
+            return response()->json([
+                'status'=>'success',
+                'statusCode'=>$statusCode,
+                'message'=>$message,
+                'pagination'=> [
+                    'currentPage' => $data->currentPage(),
+                    'totalPage' => $data->total(),
+                    'perPage' => $data->perPage(),
+                    'lastPage' => $data->lastPage(),
+                    'hasNext' => $data->hasMorePages(),
+                    'hasPrevious' => $data->currentPage() > 1,
+                ],
+                // "$data_name" => $data->items(),
+                "$data_name" => $custumData,
+            ]);
+        }
 
     }
 
