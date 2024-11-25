@@ -23,6 +23,8 @@ return new class extends Migration
         
 
             $table->unique(['product_id', 'locale']);
+
+            $table->timestamps();
         });
     }
 

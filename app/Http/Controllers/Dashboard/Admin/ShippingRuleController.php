@@ -15,8 +15,9 @@ class ShippingRuleController extends Controller
     public function index()
     {
         try{
-            $shippingRules = ShippingRule::orderBy('id','asc')
-                        ->paginate(20);
+            $shippingRules = ShippingRule::with('translations')
+                    ->orderBy('id','asc')
+                    ->paginate(20);
 
             return $this->paginationResponse($shippingRules,'shippingRules','All Shipping Rules',SUCCESS_CODE);
 

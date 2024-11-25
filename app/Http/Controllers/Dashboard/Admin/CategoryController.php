@@ -28,6 +28,7 @@ class CategoryController extends Controller
         try{
 
             $categories = Category::with([
+                'translations',
                 'children',
                 '_parent'
                 ])
@@ -66,7 +67,7 @@ class CategoryController extends Controller
                 return $this->error('Category Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
 
-            // $category->load('translations');// if you want to get all the tranlation
+            // $category->load('translations','children','_parent');// if you want to get all the tranlation
             // dd($category);
             
             return $this->success($category,'Category Details',SUCCESS_CODE,'category');
@@ -109,6 +110,8 @@ class CategoryController extends Controller
 
 
             $category->save();
+
+            // $category->load('translations','children','_parent');// if you want to get all the tranlation
 
             DB::commit();
             return $this->success($category,'Created Successfully!',SUCCESS_STORE_CODE,'category');
@@ -159,6 +162,7 @@ class CategoryController extends Controller
 
             $category->save();
 
+            // $category->load('translations','children','_parent');// if you want to get all the tranlation
             DB::commit();
             return $this->success( $category,'Updated Successfully!',SUCCESS_CODE,'category');
             

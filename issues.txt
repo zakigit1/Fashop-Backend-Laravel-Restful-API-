@@ -1,0 +1,3 @@
+// make all json format the same for index , store , update .
+
+we are do it for product we need now to do it in brand , category (i all ready do it i need to tell ramy to do the changes )

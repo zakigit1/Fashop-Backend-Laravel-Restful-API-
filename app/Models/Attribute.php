@@ -55,4 +55,12 @@ class Attribute extends Model implements TranslatableContract
                     ->withPivot('attribute_value_id')
                     ->withTimestamps();
     }
+
+
+    public function productVariantAttributeValues()
+    {
+        return $this->hasMany(ProductVariantAttributeValue::class, 'attribute_id');
+    }
+
+
 }

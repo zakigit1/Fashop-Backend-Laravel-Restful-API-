@@ -16,8 +16,9 @@ class CouponController extends Controller
     public function index()
     {
         try{
-            $coupons = Coupon::orderBy('id','asc')
-                        ->paginate(20);
+            $coupons = Coupon::with('translations')
+                ->orderBy('id','asc')
+                ->paginate(20);
 
             return $this->paginationResponse($coupons,'coupons','All Coupons',SUCCESS_CODE);
 

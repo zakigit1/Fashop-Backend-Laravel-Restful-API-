@@ -13,13 +13,21 @@ return new class extends Migration
     {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
-
-            $table->decimal('extra_price',5,2);
-            $table->string('sku')->unique();
-            $table->string('barcode')->unique();
-            $table->unsignedInteger('quantity');
-            $table->boolean('in_stock')->default(0);
+            $table->unsignedBigInteger('product_id');
+            $table->decimal('extra_price', 10, 2)->default(0.00);
+            $table->decimal('final_price', 10, 2); // Calculated: product base price + extra_price
+            $table->integer('quantity')->unsigned()->default(0);
+            $table->string('sku', 50)->unique()->nullable();  // Added length constraint
+            $table->string('barcode', 255)->nullable(); // you can add UPC and EAN (search about it)
+            $table->boolean('in_stock')->default(true);
+            $table->string('variant_hash')->unique(); 
             $table->timestamps();
+
+            $table->foreign('product_id')
+            ->references('id')
+                    ->on('products')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade'); 
         });
     }
 

@@ -141,6 +141,19 @@ class Product extends Model implements TranslatableContract
         return $this->hasMany(ProductAttributeValue::class,'product_id','id');
     }
 
+    // Add to your Product model
+
+
+    public function variants()
+{
+    return $this->hasManyThrough(ProductVariant::class, ProductVariantAttributeValue::class, 'product_id', 'id');
+}
+
+    public function productVariantAttributeValues()
+    {
+        return $this->hasMany(ProductVariantAttributeValue::class, 'product_id');
+    }
+
     // public function reviews(){
     //     return $this->hasMany(ProductReview::class,'product_id','id');
     // }

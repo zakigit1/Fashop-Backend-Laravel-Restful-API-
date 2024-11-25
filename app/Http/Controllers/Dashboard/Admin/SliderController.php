@@ -23,7 +23,8 @@ class SliderController extends Controller
     public function index()
     {
         try{
-            $sliders = Slider::orderBy('id','asc')
+            $sliders = Slider::with('translations')
+                ->orderBy('id','asc')
                 ->paginate(20);
 
                 return $this->paginationResponse($sliders,'sliders','All Sliders',SUCCESS_CODE);

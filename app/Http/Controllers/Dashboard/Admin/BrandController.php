@@ -28,7 +28,8 @@ class BrandController extends Controller
             //             $query->where('locale',config('translatable.locale'));// this is work 100%
             //             //  $query->where('locale',config('app.locale'));
             //         }])
-            $brands = Brand::orderBy('id','asc')
+            $brands = Brand::with('translations')
+                ->orderBy('id','asc')
                 ->paginate(20);
 
             // return response()->json([
@@ -66,7 +67,7 @@ class BrandController extends Controller
                 return $this->error('Brand Is Not Found!',NOT_FOUND_ERROR_CODE);
             }
             
-            // $brand->load('translations');
+            $brand->load('translations');// if you want to get all the tranlation
 
             // dd($brand);
             return $this->success($brand,'Brand Details',SUCCESS_CODE,'brand');
@@ -109,6 +110,8 @@ class BrandController extends Controller
             }
 
             $brand->save() ;
+
+            $brand->load('translations');// if you want to get all the tranlation
 
             DB::commit();
             return $this->success($brand,'Created Successfully!',SUCCESS_STORE_CODE,'brand');
@@ -162,6 +165,8 @@ class BrandController extends Controller
             }
     
             $brand->save();
+
+            $brand->load('translations');// if you want to get all the tranlation
 
             DB::commit();
             return $this->success($brand,'Updated Successfully!',SUCCESS_CODE,'brand');

@@ -10,6 +10,7 @@ use App\Models\AttributeTranslation;
 use App\Models\AttributeValue;
 use App\Models\Product;
 use App\Models\ProductType;
+use App\Models\ProductVariant;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,6 +49,8 @@ class ProductNewController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);  
         }    
     }
+
+
     public function get_product_types():JsonResponse
     {
 
@@ -85,22 +88,117 @@ class ProductNewController extends Controller
                 // 'category' => function($q){
                 //     $q->select('category.id');    
                 // },
-                // 'gallery'
+                // 'variants'=>function($q){
+                //     $q->with('attributeValues');
+                // },
+                'productVariantAttributeValues.variant', // eager load the variant relationship
+                'productVariantAttributeValues.attributeValue.productVariants',
+                // 'gallery',
                 ])
             ->orderBy('id','ASC')
             ->paginate(20);
 
 
+            // /** For custom attributes with values for product  */
+            // $customProducts = $products->getCollection()
+            //     ->map(function ($product) {
+            //         $productArray = $product->toArray();
+            //         $attributes = [];
+        
+            //         foreach ($product->productAttributeValues as $productAttributeValue) {
+            //             $attributeValue = $productAttributeValue->attributeValue;
+            //             $attribute = $attributeValue->attribute;
+        
+            //             if (!isset($attributes[$attribute->id])) {
+            //                 $attributes[$attribute->id] = [
+            //                     'id' => $attribute->id,
+            //                     'name' => $attribute->name,
+            //                     'translations' => $attribute->translations,
+            //                     'values' => []
+            //                 ];
+            //             }
+        
+            //             $attributes[$attribute->id]['values'][] = [
+            //                 'id' => $attributeValue->id,
+            //                 'name' => $attributeValue->name,
+            //                 'display_name' => $attributeValue->display_name,
+            //                 'color_code' => $attributeValue->color_code,
+            //             ];
+            //         }
+        
+            //         $productArray['attributes'] = array_values($attributes);
+            //         unset($productArray['product_attribute_values']);
+        
+            //         return $productArray;
+            //     })
+            // ->all();
 
+
+            // /** For custom the attributes with values inside relation variants   */
+            // $customProducts = $products->getCollection()
+            // ->map(function ($product) {
+            //     $productArray = $product->toArray();
+            //     $variants = [];
+            //     $attributes = [];
+
+            //     foreach ($product->productVariantAttributeValues as $productVariantAttributeValue) {
+            //         $attributeValue = $productVariantAttributeValue->attributeValue;
+            //         $attribute = $attributeValue->attribute;
+            //         $variant = $productVariantAttributeValue->variant;
+
+            //         if (!isset($variants[$variant->id])) {
+            //             $variants[$variant->id] = [
+            //                 'id' => $variant->id,
+            //                 'extra_price' => $variant->extra_price,
+            //                 'final_price' => $variant->final_price,
+            //                 'quantity' => $variant->quantity,
+            //                 'sku' => $variant->sku,
+            //                 'barcode' => $variant->barcode,
+            //                 'variant_hash' => $variant->variant_hash,
+            //                 'attributes' => []
+            //             ];
+            //         }
+
+            //         if (!isset($variants[$variant->id]['attributes'][$attribute->id])) {
+            //             $attributes[$attribute->id] = [
+            //                 'id' => $attribute->id,
+            //                 'name' => $attribute->name,
+            //                 'translations' => $attribute->translations,
+            //                 'value' => [
+            //                     'id' => $attributeValue->id,
+            //                     'name' => $attributeValue->name,
+            //                     'display_name' => $attributeValue->display_name,
+            //                     'color_code' => $attributeValue->color_code,
+            //                 ],
+            //             ];
+            //             $variants[$variant->id]['attributes'][$attribute->id] = $attributes[$attribute->id];
+            //         }
+            //     }
+
+            //     // Reset the array keys for the "attributes" array
+            //     foreach ($variants as &$variant) {
+            //         $variant['attributes'] = array_values($variant['attributes']);
+            //     }
+
+            //     $productArray['variants'] = array_values($variants);
+            //     unset($productArray['product_variant_attribute_values']);
+
+            //     return $productArray;
+            // })
+            // ->all();
+
+            /** Fusion of two previous code i commented  */
             $customProducts = $products->getCollection()
                 ->map(function ($product) {
                     $productArray = $product->toArray();
                     $attributes = [];
-        
+                    $variants = [];
+
+                    // First transformation: custom attributes with values for product
                     foreach ($product->productAttributeValues as $productAttributeValue) {
                         $attributeValue = $productAttributeValue->attributeValue;
                         $attribute = $attributeValue->attribute;
-        
+
                         if (!isset($attributes[$attribute->id])) {
                             $attributes[$attribute->id] = [
                                 'id' => $attribute->id,
@@ -109,7 +207,7 @@ class ProductNewController extends Controller
                                 'values' => []
                             ];
                         }
-        
+
                         $attributes[$attribute->id]['values'][] = [
                             'id' => $attributeValue->id,
                             'name' => $attributeValue->name,
@@ -117,12 +215,53 @@ class ProductNewController extends Controller
                             'color_code' => $attributeValue->color_code,
                         ];
                     }
-        
+
+                    // Second transformation: custom attributes with values inside relation variants
+                    foreach ($product->productVariantAttributeValues as $productVariantAttributeValue) {
+                        $attributeValue = $productVariantAttributeValue->attributeValue;
+                        $attribute = $attributeValue->attribute;
+                        $variant = $productVariantAttributeValue->variant;
+
+                        if (!isset($variants[$variant->id])) {
+                            $variants[$variant->id] = [
+                                'id' => $variant->id,
+                                'extra_price' => $variant->extra_price,
+                                'final_price' => $variant->final_price,
+                                'quantity' => $variant->quantity,
+                                'sku' => $variant->sku,
+                                'barcode' => $variant->barcode,
+                                'variant_hash' => $variant->variant_hash,
+                                'attributes' => []
+                            ];
+                        }
+
+                        if (!isset($variants[$variant->id]['attributes'][$attribute->id])) {
+                            $variants[$variant->id]['attributes'][$attribute->id] = [
+                                'id' => $attribute->id,
+                                'name' => $attribute->name,
+                                'translations' => $attribute->translations,
+                                'value' => [
+                                    'id' => $attributeValue->id,
+                                    'name' => $attributeValue->name,
+                                    'display_name' => $attributeValue->display_name,
+                                    'color_code' => $attributeValue->color_code,
+                                ],
+                            ];
+                        }
+                    }
+
+                    // Reset the array keys for the "attributes" array
+                    foreach ($variants as &$variant) {
+                        $variant['attributes'] = array_values($variant['attributes']);
+                    }
+
                     $productArray['attributes'] = array_values($attributes);
+                    $productArray['variants'] = array_values($variants);
                     unset($productArray['product_attribute_values']);
-        
+                    unset($productArray['product_variant_attribute_values']);
+
                     return $productArray;
-                })
+            })
             ->all();
 
 
@@ -212,6 +351,8 @@ class ProductNewController extends Controller
                 'brand',
                 'productType',
                 'productAttributeValues.attributeValue.attribute',
+                // 'variants',
+                // 'gallery',
             ]);
 
 
@@ -327,6 +468,8 @@ class ProductNewController extends Controller
                 'brand',
                 'productType',
                 'productAttributeValues.attributeValue.attribute',
+                // 'variants',
+                // 'gallery',
             ]);
 
 
@@ -455,5 +598,112 @@ class ProductNewController extends Controller
             }
         }
     }
+
+
+
+
+
+    public function storeProductVariants(Request $request , int $id){
+
+        try {
+            $product = Product::find($id);
+            if (!$product) {
+                return $this->error('Product Is Not Found',ERROR_CODE);
+            }
+    
+            // return $product->price;
+            // Creating a variant
+            $variant = ProductVariant::create([
+                'product_id' => $product->id,
+                'extra_price' => 9.99,
+                'final_price' => $product->price + 9.99,
+                'quantity' => 10,
+                'sku' => 'PROD-A-RED-8',
+                'variant_hash' => ProductVariant::generateVariantHash([8, 1]), // attribute value IDs for red and S
+            ]);
+
+            if($request->hasFile('barcode')){
+                $barcode_image_name = $this->uploadImage_Trait($request,'barcode',ProductNewController::FOLDER_PATH,ProductNewController::FOLDER_NAME_BARCODE);
+                $variant->update(['barcode' => $barcode_image_name]);
+            }
+
+            // return $variant;
+            // Attach attribute values
+            // $variant->attributeValues()->attach([8, 1]);
+
+
+            // foreach ($request->attributeValue_ids as $attributeValueId) {
+            foreach ([8,1] as $attributeValueId) {
+                $variant->attributeValues()->attach(
+                    $attributeValueId,
+                    [
+                        'product_id' => $id,
+                    ]
+                );
+            }
+
+
+            $variant->load('productVariantAttributeValues');
+
+            $customVariant = $variant->toArray();
+            $attributes = [];
+            
+            foreach ($variant->productVariantAttributeValues as $productVariantAttributeValue) {
+                $attributeValue = $productVariantAttributeValue->attributeValue;
+                $attribute = $attributeValue->attribute;
+            
+                if (!isset($attributes[$attribute->id])) {
+                    $attributes[$attribute->id] = [
+                        'id' => $attribute->id,
+                        'name' => $attribute->name,
+                        'translations' => $attribute->translations,
+                        'value' => [
+                            'id' => $attributeValue->id,
+                            'name' => $attributeValue->name,
+                            'display_name' => $attributeValue->display_name,
+                            'color_code' => $attributeValue->color_code,
+                        ],
+                    ];
+                }
+            }
+            
+            $customVariant['attributes'] = array_values($attributes);
+            unset($customVariant['product_variant_attribute_values']);
+
+            
+
+            return $this->success($customVariant,'Variant Created Successfully!',SUCCESS_STORE_CODE,'productVariants');
+
+        } catch (\Exception $e) {
+            // Handle the exception, for example:
+            return $this->error($e->getMessage(), ERROR_CODE);
+        }
+
+        // IDs for red and S
+    }
+
+    // public function getVariantPrice(Request $request)
+    public function getVariantPrice(Request $request,int $id)
+    {
+        $attributeValueIds = $request->input('attribute_value_ids');
+        $variantHash = ProductVariant::generateVariantHash([8,1]);
+        // $variantHash = ProductVariant::generateVariantHash($attributeValueIds);
+        
+        // $variant = ProductVariant::where('product_id', $request->product_id)
+        $variant = ProductVariant::where('product_id', $id)
+            ->where('variant_hash', $variantHash)
+            ->select('final_price', 'in_stock', 'quantity')
+            ->first();
+            
+
+        return $this->success($variant,'Get Variant Price',SUCCESS_CODE,'getVariantPrice');
+        // return response()->json([
+        //     'price' => $variant->final_price,
+        //     'in_stock' => $variant->in_stock,
+        //     'quantity' => $variant->quantity
+        // ]);
+    }
+
+
 
 }

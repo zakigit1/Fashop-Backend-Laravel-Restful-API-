@@ -90,6 +90,9 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     // Product Routes (New) :
 
+    Route::post('products/{id}/product-variants',[ProductNewController::class,'storeProductVariants']);
+    Route::get('products/{id}/product-variants',[ProductNewController::class,'getVariantPrice']);
+
     Route::get('/get-attributes',[ProductNewController::class,'get_attributes']);
     Route::get('/get-product-types',[ProductNewController::class,'get_product_types']);
 

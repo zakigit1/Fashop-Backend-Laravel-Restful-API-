@@ -52,4 +52,19 @@ class AttributeValue extends Model
     }
     
 
+    public function productAttributeValues()
+    {
+        return $this->hasMany(ProductAttributeValue::class, 'attribute_value_id');
+    }
+
+    public function productVariantAttributeValues()
+    {
+        return $this->hasMany(ProductVariantAttributeValue::class, 'attribute_value_id');
+    }
+
+    public function productVariants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'product_variant_attribute_values', 'attribute_value_id', 'product_variant_id');
+    }
+
 }
