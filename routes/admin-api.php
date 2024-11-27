@@ -15,6 +15,7 @@ use App\Http\Controllers\Dashboard\Admin\Product\ProductController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductGalleryController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductNewController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductTypeController;
+use App\Http\Controllers\Dashboard\Admin\Product\ProductVariantController;
 use App\Http\Controllers\Dashboard\Admin\ShippingRuleController;
 use App\Http\Controllers\Dashboard\Admin\SliderController;
 
@@ -102,6 +103,14 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::post('/{id}/update', [ProductNewController::class, 'update']);
         // Route::put('/{id}', [ProductNewController::class, 'update']);
         Route::delete('/{id}', [ProductNewController::class, 'destroy']);
+
+        // Product Variants Routes:
+        Route::get('/{id}/product-variants',[ProductVariantController::class,'getProductVariants']);
+        Route::post('/{id}/product-variants',[ProductVariantController::class,'storeProductVariant']);
+        Route::post('/{id}/product-variants/{variantId}/update',[ProductVariantController::class,'updateProductVariant']);
+        Route::delete('/{id}/product-variants/{variantId}',[ProductVariantController::class,'deleteProductVariant']);
+
+        Route::get('/{id}/product-variant-price',[ProductVariantController::class,'getVariantPrice']);
     });
 
 

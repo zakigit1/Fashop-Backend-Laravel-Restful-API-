@@ -25,7 +25,6 @@ class ProductNewController extends Controller
 
     const FOLDER_PATH = '/uploads/images/products/';
     const FOLDER_NAME_THUMB_IMAGE = 'thumb-images';
-    const FOLDER_NAME_BARCODE = 'barcodes';
 
 
     public function get_attributes():JsonResponse
@@ -252,14 +251,16 @@ class ProductNewController extends Controller
 
                     // Reset the array keys for the "attributes" array
                     foreach ($variants as &$variant) {
+                        ksort($variant['attributes']); // Sort the attributes array in ascending order
                         $variant['attributes'] = array_values($variant['attributes']);
                     }
 
+                    
                     $productArray['attributes'] = array_values($attributes);
                     $productArray['variants'] = array_values($variants);
                     unset($productArray['product_attribute_values']);
                     unset($productArray['product_variant_attribute_values']);
-
+    
                     return $productArray;
             })
             ->all();
@@ -603,106 +604,106 @@ class ProductNewController extends Controller
 
 
 
-    public function storeProductVariants(Request $request , int $id){
+    // public function storeProductVariants(Request $request , int $id){
 
-        try {
-            $product = Product::find($id);
-            if (!$product) {
-                return $this->error('Product Is Not Found',ERROR_CODE);
-            }
+    //     try {
+    //         $product = Product::find($id);
+    //         if (!$product) {
+    //             return $this->error('Product Is Not Found',ERROR_CODE);
+    //         }
     
-            // return $product->price;
-            // Creating a variant
-            $variant = ProductVariant::create([
-                'product_id' => $product->id,
-                'extra_price' => 9.99,
-                'final_price' => $product->price + 9.99,
-                'quantity' => 10,
-                'sku' => 'PROD-A-RED-8',
-                'variant_hash' => ProductVariant::generateVariantHash([8, 1]), // attribute value IDs for red and S
-            ]);
+    //         // return $product->price;
+    //         // Creating a variant
+    //         $variant = ProductVariant::create([
+    //             'product_id' => $product->id,
+    //             'extra_price' => 9.99,
+    //             'final_price' => $product->price + 9.99,
+    //             'quantity' => 10,
+    //             'sku' => 'PROD-A-RED-8',
+    //             'variant_hash' => ProductVariant::generateVariantHash([8, 1]), // attribute value IDs for red and S
+    //         ]);
 
-            if($request->hasFile('barcode')){
-                $barcode_image_name = $this->uploadImage_Trait($request,'barcode',ProductNewController::FOLDER_PATH,ProductNewController::FOLDER_NAME_BARCODE);
-                $variant->update(['barcode' => $barcode_image_name]);
-            }
+    //         if($request->hasFile('barcode')){
+    //             $barcode_image_name = $this->uploadImage_Trait($request,'barcode',ProductNewController::FOLDER_PATH,ProductNewController::FOLDER_NAME_BARCODE);
+    //             $variant->update(['barcode' => $barcode_image_name]);
+    //         }
 
-            // return $variant;
-            // Attach attribute values
-            // $variant->attributeValues()->attach([8, 1]);
-
-
-            // foreach ($request->attributeValue_ids as $attributeValueId) {
-            foreach ([8,1] as $attributeValueId) {
-                $variant->attributeValues()->attach(
-                    $attributeValueId,
-                    [
-                        'product_id' => $id,
-                    ]
-                );
-            }
+    //         // return $variant;
+    //         // Attach attribute values
+    //         // $variant->attributeValues()->attach([8, 1]);
 
 
-            $variant->load('productVariantAttributeValues');
+    //         // foreach ($request->attributeValue_ids as $attributeValueId) {
+    //         foreach ([8,1] as $attributeValueId) {
+    //             $variant->attributeValues()->attach(
+    //                 $attributeValueId,
+    //                 [
+    //                     'product_id' => $id,
+    //                 ]
+    //             );
+    //         }
 
-            $customVariant = $variant->toArray();
-            $attributes = [];
+
+    //         $variant->load('productVariantAttributeValues');
+
+    //         $customVariant = $variant->toArray();
+    //         $attributes = [];
             
-            foreach ($variant->productVariantAttributeValues as $productVariantAttributeValue) {
-                $attributeValue = $productVariantAttributeValue->attributeValue;
-                $attribute = $attributeValue->attribute;
+    //         foreach ($variant->productVariantAttributeValues as $productVariantAttributeValue) {
+    //             $attributeValue = $productVariantAttributeValue->attributeValue;
+    //             $attribute = $attributeValue->attribute;
             
-                if (!isset($attributes[$attribute->id])) {
-                    $attributes[$attribute->id] = [
-                        'id' => $attribute->id,
-                        'name' => $attribute->name,
-                        'translations' => $attribute->translations,
-                        'value' => [
-                            'id' => $attributeValue->id,
-                            'name' => $attributeValue->name,
-                            'display_name' => $attributeValue->display_name,
-                            'color_code' => $attributeValue->color_code,
-                        ],
-                    ];
-                }
-            }
+    //             if (!isset($attributes[$attribute->id])) {
+    //                 $attributes[$attribute->id] = [
+    //                     'id' => $attribute->id,
+    //                     'name' => $attribute->name,
+    //                     'translations' => $attribute->translations,
+    //                     'value' => [
+    //                         'id' => $attributeValue->id,
+    //                         'name' => $attributeValue->name,
+    //                         'display_name' => $attributeValue->display_name,
+    //                         'color_code' => $attributeValue->color_code,
+    //                     ],
+    //                 ];
+    //             }
+    //         }
             
-            $customVariant['attributes'] = array_values($attributes);
-            unset($customVariant['product_variant_attribute_values']);
+    //         $customVariant['attributes'] = array_values($attributes);
+    //         unset($customVariant['product_variant_attribute_values']);
 
             
 
-            return $this->success($customVariant,'Variant Created Successfully!',SUCCESS_STORE_CODE,'productVariants');
+    //         return $this->success($customVariant,'Variant Created Successfully!',SUCCESS_STORE_CODE,'productVariants');
 
-        } catch (\Exception $e) {
-            // Handle the exception, for example:
-            return $this->error($e->getMessage(), ERROR_CODE);
-        }
+    //     } catch (\Exception $e) {
+    //         // Handle the exception, for example:
+    //         return $this->error($e->getMessage(), ERROR_CODE);
+    //     }
 
-        // IDs for red and S
-    }
+    //     // IDs for red and S
+    // }
 
-    // public function getVariantPrice(Request $request)
-    public function getVariantPrice(Request $request,int $id)
-    {
-        $attributeValueIds = $request->input('attribute_value_ids');
-        $variantHash = ProductVariant::generateVariantHash([8,1]);
-        // $variantHash = ProductVariant::generateVariantHash($attributeValueIds);
+    // // public function getVariantPrice(Request $request)
+    // public function getVariantPrice(Request $request,int $id)
+    // {
+    //     $attributeValueIds = $request->input('attribute_value_ids');
+    //     $variantHash = ProductVariant::generateVariantHash([8,1]);
+    //     // $variantHash = ProductVariant::generateVariantHash($attributeValueIds);
         
-        // $variant = ProductVariant::where('product_id', $request->product_id)
-        $variant = ProductVariant::where('product_id', $id)
-            ->where('variant_hash', $variantHash)
-            ->select('final_price', 'in_stock', 'quantity')
-            ->first();
+    //     // $variant = ProductVariant::where('product_id', $request->product_id)
+    //     $variant = ProductVariant::where('product_id', $id)
+    //         ->where('variant_hash', $variantHash)
+    //         ->select('final_price', 'in_stock', 'quantity')
+    //         ->first();
             
 
-        return $this->success($variant,'Get Variant Price',SUCCESS_CODE,'getVariantPrice');
-        // return response()->json([
-        //     'price' => $variant->final_price,
-        //     'in_stock' => $variant->in_stock,
-        //     'quantity' => $variant->quantity
-        // ]);
-    }
+    //     return $this->success($variant,'Get Variant Price',SUCCESS_CODE,'getVariantPrice');
+    //     // return response()->json([
+    //     //     'price' => $variant->final_price,
+    //     //     'in_stock' => $variant->in_stock,
+    //     //     'quantity' => $variant->quantity
+    //     // ]);
+    // }
 
 
 

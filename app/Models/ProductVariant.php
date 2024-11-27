@@ -16,18 +16,20 @@ class ProductVariant extends Model
         'final_price',
         'quantity',
         'sku',
+        'barcode',
         'in_stock',
         'variant_hash'
     ];
 
     protected $casts = [
-        'extra_price' => 'decimal:2',
-        'final_price' => 'decimal:2',
+        'product_id' => 'integer',
+        'extra_price' => 'float',
+        'final_price' => 'float',
         'quantity' => 'integer',
-        'in_stock' => 'boolean'
+        'in_stock' => 'integer',
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     /**
      * Get the product that owns the variant
