@@ -4,18 +4,11 @@ namespace App\Http\Controllers\Dashboard\Admin\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
-use App\Http\Resources\ProductResource;
 use App\Models\Attribute;
-use App\Models\AttributeTranslation;
-use App\Models\AttributeValue;
 use App\Models\Product;
 use App\Models\ProductType;
-use App\Models\ProductVariant;
 use App\Traits\imageUploadTrait;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -187,13 +180,22 @@ class ProductNewController extends Controller
             // ->all();
 
             /** Fusion of two previous code i commented  */
+           
             $customProducts = $products->getCollection()
                 ->map(function ($product) {
                     $productArray = $product->toArray();
+
+                    // Remove product_id from gallery items
+                    if (isset($productArray['gallery'])) {
+                        $productArray['gallery'] = collect($productArray['gallery'])->map(function ($galleryItem) {
+                            unset($galleryItem['product_id']);
+                            return $galleryItem;
+                        })->toArray();
+                    }
+
                     $attributes = [];
                     $variants = [];
-                    // $gallery = [];
-
+               
                     // First transformation: custom attributes with values for product
                     foreach ($product->productAttributeValues as $productAttributeValue) {
                         $attributeValue = $productAttributeValue->attributeValue;
@@ -257,26 +259,15 @@ class ProductNewController extends Controller
                     }
 
                     
-                    // foreach($product->gallery as $image){
 
-                    //     // dd( $image->id) ;
-                    //     if (!isset($gallery[$image->id])) {
-                    //         $gallery[$image->id] = [
-                    //             'id' => $image->id,
-                    //             'image' => $image->image
-                    //         ];
-                    //     }
-                    // }
 
 
                     $productArray['attributes'] = array_values($attributes);
                     $productArray['variants'] = array_values($variants);
-                    // $productArray['gallery'] = array_values($gallery);
-
+                  
                     unset($productArray['product_attribute_values']);
                     unset($productArray['product_variant_attribute_values']);
-                    // unset($productArray['gallery']);
-    
+                    
                     return $productArray;
             })
             ->all();
