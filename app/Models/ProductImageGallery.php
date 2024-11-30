@@ -24,6 +24,10 @@ class ProductImageGallery extends Model
         'updated_at'
     ];
 
+    protected $casts = [
+        'product_id' => 'integer',
+    ];
+
 
     // public $timestamps = false;
 ##################################################################################################################

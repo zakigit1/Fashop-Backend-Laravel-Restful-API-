@@ -91,8 +91,8 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     // Product Routes (New) :
 
-    Route::post('products/{id}/product-variants',[ProductNewController::class,'storeProductVariants']);
-    Route::get('products/{id}/product-variants',[ProductNewController::class,'getVariantPrice']);
+    // Route::post('products/{id}/product-variants',[ProductNewController::class,'storeProductVariants']);
+    // Route::get('products/{id}/product-variants',[ProductNewController::class,'getVariantPrice']);
 
     Route::get('/get-attributes',[ProductNewController::class,'get_attributes']);
     Route::get('/get-product-types',[ProductNewController::class,'get_product_types']);
@@ -119,7 +119,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     Route::prefix('product-image-galleries')->group(function () {
         Route::get('',[ProductGalleryController::class,'index']);
         Route::post('',[ProductGalleryController::class,'store']);
-        Route::DELETE('{id}/destroy',[ProductGalleryController::class,'destroy']);
+        Route::DELETE('{id}/delete',[ProductGalleryController::class,'destroy']);
         // Route::DELETE('{id}',[ProductGalleryController::class,'destroy']);
         // Route::DELETE('{id}/destroyAll',[ProductGalleryController::class,'destroyAllImages']);
     });

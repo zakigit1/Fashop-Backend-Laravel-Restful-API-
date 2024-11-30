@@ -21,6 +21,9 @@ class ProductVariant extends Model
         'variant_hash'
     ];
 
+    protected $hidden = [
+        'variant_hash',
+    ];
     protected $casts = [
         'product_id' => 'integer',
         'extra_price' => 'float',

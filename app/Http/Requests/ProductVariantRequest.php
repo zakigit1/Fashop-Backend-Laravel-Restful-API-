@@ -4,16 +4,19 @@ namespace App\Http\Requests;
 
 use App\Models\AttributeValue;
 use App\Models\Product;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
+use App\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\JsonResponse;
+
 use Illuminate\Validation\Rule;
 
 
 class ProductVariantRequest extends FormRequest
 {
+
+    use ValidationTrait;
+    
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -44,16 +47,21 @@ class ProductVariantRequest extends FormRequest
                 'nullable',
                 'image',
                 'max:' . $maxFileSize,
-                'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
+                'mimes:jpeg,png,jpg,webp,svg', // Add supported 
+                function ($image, $value, $fail)  {
+                    if (is_array($value)) {
+                        $fail('Only a single image can be uploaded.');
+                    }
+                },
             ],
 
 
              // Product ID validation
-            'product_id' => [
-                $id ? 'nullable' : 'required',
-                'integer',
-                'exists:products,id',
-            ],
+            // 'product_id' => [
+            //     $id ? 'nullable' : 'required',
+            //     'integer',
+            //     'exists:products,id',
+            // ],
 
 
             // Extra price validation
@@ -104,38 +112,138 @@ class ProductVariantRequest extends FormRequest
                 'array',
                 'min:1',
                 /** this method more optimazable and more professional :*/
-                function ($attribute, $values, $fail) use ($productId, $id) {
-                    $id = $id ?? null; 
+                // function ($attribute, $values, $fail) use ($productId, $id) {
+                //     $id = $id ?? null; 
 
-                    $attributeValues = AttributeValue::whereIn('id', $values)
-                        ->select('id', 'attribute_id')
+                //     $attributeValues = AttributeValue::whereIn('id', $values)
+                //         ->select('id', 'attribute_id')
+                //         ->get()
+                //         ->pluck('attribute_id')
+                //         ->toArray();
+                
+                //     if (count(array_unique($values)) !== count($values)) {
+                //         $fail('Duplicate attribute values are not allowed. Please enter a unique value for each attribute.');
+                //     }
+                
+                //     if (count(array_unique($attributeValues)) !== count($attributeValues)) {
+                //         $fail('Duplicate attributes are not allowed. Please enter a unique attribute.');
+                //     }
+
+
+                
+                //     $variantHash = ProductVariant::generateVariantHash($values);
+                
+                //     $variantExists = ProductVariant::where('product_id', $productId)
+                //         ->where('variant_hash', $variantHash)
+                //         ->where(function ($query) use ($id) {
+                //             if ($id) {
+                //                 $query->where('id', '!=', $id);
+                //             }
+                //         })
+                //         ->exists();
+                
+                //     if ($variantExists) {
+                //         $fail('Product variant attribute values are already exists for this product');
+                //     }
+                // },
+
+
+                // function ($attribute_value, $values, $fail) use ($productId, $id) {
+                //     $id = $id ?? null;
+            
+                //     // Check if attribute values exist and are valid
+                //     $productAttributeValues = ProductAttributeValue::where('product_id', $productId)
+                //         ->whereIn('attribute_value_id', $values)
+                //         ->pluck('attribute_value_id')
+                //         ->toArray();
+
+                //     $productAttribute = ProductAttributeValue::where('product_id', $productId)
+                //         ->whereIn('attribute_value_id', $values)
+                //         ->pluck('attribute_id')
+                //         ->toArray();
+                            
+
+                
+                //     if (count(array_unique($productAttribute)) !== count($productAttribute)) {
+                //         $fail('Duplicate attributes are not allowed. Please enter a unique attribute.');
+                //     }
+
+                   
+                //     if (count(array_unique($values)) !== count($values)) {
+                //         $fail('Duplicate attribute values are not allowed. Please enter a unique value for each attribute.');
+                //     }
+
+                //     // Check if attribute values are specific to this product
+                //     if (count($productAttributeValues) !== count($values)) {
+                //         if (array_diff($values, $productAttributeValues)) {
+                //             $fail('Attribute values are not specific to this product. Please select valid attributes.');
+                //         }
+                //     }
+            
+                    
+
+                //     // Generate variant hash and check if variant exists
+                //     $variantHash = ProductVariant::generateVariantHash($values);
+            
+                //     $variantExists = ProductVariant::where('product_id', $productId)
+                //         ->where('variant_hash', $variantHash)
+                //         ->where(function ($query) use ($id) {
+                //             if ($id) {
+                //                 $query->where('id', '!=', $id);
+                //             }
+                //         })
+                //         ->exists();
+            
+                //     if ($variantExists) {
+                //         $fail('Product variant attribute values are already exists for this product');
+                //     }
+                // },
+            
+
+
+                function ($attribute_value, $values, $fail) use ($productId, $id) {
+                    $id = $id ?? null;
+                
+                    // Retrieve product attribute values and attributes in a single query
+                    $productAttributeValues = ProductAttributeValue::where('product_id', $productId)
+                        ->whereIn('attribute_value_id', $values)
+                        ->select('attribute_value_id', 'attribute_id')
                         ->get()
-                        ->pluck('attribute_id')
                         ->toArray();
+                
+                    // Check for duplicates in attribute values and attributes
+                    $attributeValues = array_column($productAttributeValues, 'attribute_value_id');
+                    $attributes = array_column($productAttributeValues, 'attribute_id');
+                
+                    if (count(array_unique($attributes)) !== count($attributes)) {
+                        $fail('Duplicate attributes are not allowed. Please enter a unique attribute.');
+                    }
                 
                     if (count(array_unique($values)) !== count($values)) {
                         $fail('Duplicate attribute values are not allowed. Please enter a unique value for each attribute.');
                     }
                 
-                    if (count(array_unique($attributeValues)) !== count($attributeValues)) {
-                        $fail('Duplicate attributes are not allowed. Please enter a unique attribute.');
+                    // Check if attribute values are specific to this product
+                    if (count($attributeValues) !== count($values)) {
+                        if (array_diff($values, $attributeValues)) {
+                            $fail('Attribute values are not specific to this product. Please select valid attributes.');
+                        }
                     }
                 
+                    // Generate variant hash and check if variant exists
                     $variantHash = ProductVariant::generateVariantHash($values);
                 
                     $variantExists = ProductVariant::where('product_id', $productId)
                         ->where('variant_hash', $variantHash)
-                        ->where(function ($query) use ($id) {
-                            if ($id) {
-                                $query->where('id', '!=', $id);
-                            }
+                        ->when($id, function ($query) use ($id) {
+                            $query->where('id', '!=', $id);
                         })
                         ->exists();
                 
                     if ($variantExists) {
                         $fail('Product variant attribute values are already exists for this product');
                     }
-                },
+                }
 
 
                 /** this method more optimazable */
@@ -173,7 +281,8 @@ class ProductVariantRequest extends FormRequest
                 // },
             ],
 
-            'attribute_values.*' => 'required|numeric|integer|exists:product_attribute_values,id|gt:0', 
+            'attribute_values.*' => 'required|numeric|integer|exists:product_attribute_values,attribute_value_id|gt:0', 
+            // 'attribute_values.*' => ['required', 'numeric', 'integer', Rule::exists('product_attribute_values', 'attribute_value_id')->where('attribute_value_id', '>', 0)],
         ];
 
         return $rules;
@@ -200,20 +309,5 @@ class ProductVariantRequest extends FormRequest
 
 
 
-    /**
-     * Summary of failedValidation : this function for return error validation in the response 
-     * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
-     * @return never
-     */
-    protected function failedValidation(Validator $validator):JsonResponse
-    {
-        throw new HttpResponseException(            
-            response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
-    }
+
 }

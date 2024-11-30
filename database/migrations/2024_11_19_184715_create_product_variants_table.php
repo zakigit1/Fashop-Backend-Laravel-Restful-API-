@@ -20,14 +20,17 @@ return new class extends Migration
             $table->string('sku', 50)->unique()->nullable();  // Added length constraint
             $table->string('barcode', 255)->nullable(); // you can add UPC and EAN (search about it)
             $table->boolean('in_stock')->default(true);
-            $table->string('variant_hash')->unique(); 
+            $table->string('variant_hash');
+            
             $table->timestamps();
-
+            
             $table->foreign('product_id')
-            ->references('id')
-                    ->on('products')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade'); 
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            
+            $table->unique(['product_id', 'variant_hash'], 'product_variant_hash_unique');
         });
     }
 

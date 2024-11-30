@@ -74,12 +74,31 @@ class Controller extends BaseController
                 'message'=>$message,
                 'pagination'=> [
                     'currentPage' => $data->currentPage(),
-                    'totalPage' => $data->total(),
-                    'perPage' => $data->perPage(),
                     'lastPage' => $data->lastPage(),
+                    'totalPages' => $data->lastPage(),// we add 's'  
+                    'perPage' => $data->perPage(),
                     'hasNext' => $data->hasMorePages(),
                     'hasPrevious' => $data->currentPage() > 1,
                 ],
+
+                // 'pagination2' => [
+                //     'currentPage' => $data->currentPage(),
+                //     'totalPages' => $data->lastPage(),
+                //     'perPage' => $data->perPage(),
+                //     'totalData' => $data->total(),
+                //     'DataOnPage' => [
+                //         'from' => $data->firstItem(),
+                //         'to' => $data->lastItem(),
+                //     ],
+                //     'navigation' => [
+                //         'hasNextPage' => $data->hasMorePages(),
+                //         'hasPreviousPage' => $data->previousPageUrl() !== null,
+                //         'nextPageUrl' => $data->nextPageUrl(),
+                //         'previousPagePrl' => $data->previousPageUrl(),
+                //     ],
+                // ],
+
+
                 "$data_name" => $data->items(),
    
             ]);
@@ -91,7 +110,7 @@ class Controller extends BaseController
                 'message'=>$message,
                 'pagination'=> [
                     'currentPage' => $data->currentPage(),
-                    'totalPage' => $data->total(),
+                    'totalPage' => $data->lastPage(),
                     'perPage' => $data->perPage(),
                     'lastPage' => $data->lastPage(),
                     'hasNext' => $data->hasMorePages(),

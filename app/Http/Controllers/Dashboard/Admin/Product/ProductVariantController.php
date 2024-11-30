@@ -208,6 +208,8 @@ class ProductVariantController extends Controller
                 return $this->error('This Product Variant Is Not Found',ERROR_CODE);
             }
 
+            $variantHashOld = $variant->variant_hash;
+            
             $attributeValueIds = $request->input('attribute_values');
             $variantHash = ProductVariant::generateVariantHash($attributeValueIds);
             
@@ -219,6 +221,8 @@ class ProductVariantController extends Controller
                     'sku' => $request->sku,
                     "extra_price" =>(float) $request->extra_price,
                     "final_price" => (float) ($product->price + $request->extra_price),
+                    "in_stock" => ($request->quantity == 0) ? (int) 0 : (int) 1,
+                    'variant_hash' => $variantHash,
                 ]);
             }else{
                 $variant->update([
@@ -227,6 +231,8 @@ class ProductVariantController extends Controller
                     "extra_price" => (float) 0.00,
                     "final_price" => (float) ($product->price + 0.00 ),
                     // "final_price" => (float) ($product->price - $variant->extra_price ),
+                    "in_stock" => ($request->quantity == 0) ? (int) 0 : (int) 1,
+                    'variant_hash' => $variantHash,
                 ]);
             }
 
@@ -237,6 +243,7 @@ class ProductVariantController extends Controller
                 $variant->update(['barcode' => $barcode_image_name]);
             }
 
+
             // update the variant quantity of product: 
             $product->update([
                 'variant_quantity' => ($product->variant_quantity + $variant->quantity) - $request->quantity,
@@ -244,9 +251,8 @@ class ProductVariantController extends Controller
 
 
             // store new values 
-
-            if($variant->variant_hash != $variantHash){
-                return 'not equal ';
+            if($variantHashOld  != $variantHash){
+               
                 $variant->attributeValues()->detach();// delete the product attribute values 
             
                 foreach ($request->attribute_values as $attributeValueId) {
@@ -295,20 +301,19 @@ class ProductVariantController extends Controller
             // Handle the exception, for example:
             return $this->error($e->getMessage(), ERROR_CODE);
         }
-
-        // IDs for red and S
     }
 
 
-    public function deleteProductVariant(int $id){
+    public function deleteProductVariant(int $productId ,int $id){
         try {
-
-            $variant = ProductVariant::find($id);
+            
+            $variant = ProductVariant::where('product_id',$productId)->find($id);
 
             if (!$variant) {
                 return $this->error('Variant is not found', NOT_FOUND_ERROR_CODE);
             }
 
+            
             $product = Product::where('id',$variant->product_id)->select('id','variant_quantity')->first();
 
 

@@ -92,7 +92,7 @@ class ProductNewController extends Controller
                 // },
                 'productVariantAttributeValues.variant', // eager load the variant relationship
                 'productVariantAttributeValues.attributeValue.productVariants',
-                // 'gallery',
+                'gallery',
                 ])
             ->orderBy('id','ASC')
             ->paginate(20);
@@ -192,6 +192,7 @@ class ProductNewController extends Controller
                     $productArray = $product->toArray();
                     $attributes = [];
                     $variants = [];
+                    // $gallery = [];
 
                     // First transformation: custom attributes with values for product
                     foreach ($product->productAttributeValues as $productAttributeValue) {
@@ -229,7 +230,7 @@ class ProductNewController extends Controller
                                 'quantity' => $variant->quantity,
                                 'sku' => $variant->sku,
                                 'barcode' => $variant->barcode,
-                                'variant_hash' => $variant->variant_hash,
+                                // 'variant_hash' => $variant->variant_hash,
                                 'attributes' => []
                             ];
                         }
@@ -256,10 +257,25 @@ class ProductNewController extends Controller
                     }
 
                     
+                    // foreach($product->gallery as $image){
+
+                    //     // dd( $image->id) ;
+                    //     if (!isset($gallery[$image->id])) {
+                    //         $gallery[$image->id] = [
+                    //             'id' => $image->id,
+                    //             'image' => $image->image
+                    //         ];
+                    //     }
+                    // }
+
+
                     $productArray['attributes'] = array_values($attributes);
                     $productArray['variants'] = array_values($variants);
+                    // $productArray['gallery'] = array_values($gallery);
+
                     unset($productArray['product_attribute_values']);
                     unset($productArray['product_variant_attribute_values']);
+                    // unset($productArray['gallery']);
     
                     return $productArray;
             })
