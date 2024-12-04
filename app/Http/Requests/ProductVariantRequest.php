@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\AttributeValue;
+
 use App\Models\Product;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;

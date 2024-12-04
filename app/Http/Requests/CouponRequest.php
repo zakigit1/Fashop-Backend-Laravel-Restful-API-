@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class CouponRequest extends FormRequest
 {
+    use ValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -32,7 +34,7 @@ class CouponRequest extends FormRequest
                 'required',
                 'string',
                 'max:200',
-                Rule::unique('coupons', 'name')->ignore($id),
+                // Rule::unique('coupons', 'name')->ignore($id),
             ],
 
             'code' => [

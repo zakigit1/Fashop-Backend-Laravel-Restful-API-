@@ -18,10 +18,23 @@ class FlashSaleController extends Controller
 
 
             // Get all products:
-            $products = Product::with('translations')
+            $products = Product::select('id')->with(['translations' => function ($query) {
+                $query->select('product_id', 'name', 'locale');
+            }])
                 ->active()
-                ->orderBy('id','asc')
-                ->get();
+                ->orderBy('id','ASC')
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'translations' => $product->translations->map(function ($translation) {
+                            return [
+                                'name' => $translation->name,
+                                'locale' => $translation->locale
+                            ];
+                        })
+                    ];
+                });
 
             // Get flash sale end date:
             $flash_end_date = FlashSale::first();
@@ -168,8 +181,6 @@ class FlashSaleController extends Controller
 
        
     // }
-
-
 
 
 }

@@ -10,15 +10,21 @@ use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
 {
+
+
+    private const ITEMS_PER_PAGE = 20;
+
+
     /**
      * Display a listing of the resource.
      */
+
+
     public function index()
     {
         try{
-            $coupons = Coupon::with('translations')
-                ->orderBy('id','asc')
-                ->paginate(20);
+            $coupons = Coupon::orderBy('id','asc')
+                ->paginate(perPage: self::ITEMS_PER_PAGE);
 
             return $this->paginationResponse($coupons,'coupons','All Coupons',SUCCESS_CODE);
 
@@ -112,9 +118,7 @@ class CouponController extends Controller
                 return $this->error('Coupon Is Not Found!', NOT_FOUND_ERROR_CODE);
             }
 
-            //! check if the coupon is not use it in order
-
-            // $coupon->delete();
+            $coupon->delete();
 
             return $this->success(null,'Deleted Successfully!',SUCCESS_DELETE_CODE);
         }catch(\Exception $ex){

@@ -2,13 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
 
 class CategoryRequest extends FormRequest
 {
+    use ValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -75,14 +74,14 @@ class CategoryRequest extends FormRequest
     }
 
 
-    protected function failedValidation(Validator $validator):JsonResponse
-    {
-        throw new HttpResponseException(            
-            response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
-    }
+    // protected function failedValidation(Validator $validator):JsonResponse
+    // {
+    //     throw new HttpResponseException(            
+    //         response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Validation failed',
+    //             'errors' => $validator->errors()
+    //         ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+    //     );
+    // }
 }

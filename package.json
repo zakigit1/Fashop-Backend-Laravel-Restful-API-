@@ -1,0 +1,11 @@
+{
+  "name": "fashop-api-docs",
+  "version": "1.0.0",
+  "description": "FaShop API Documentation",
+  "scripts": {
+    "generate-docs": "markdown-pdf API_DOCUMENTATION.md -o API_DOCUMENTATION.pdf -s github"
+  },
+  "dependencies": {
+    "markdown-pdf": "^11.0.0"
+  }
+}

@@ -3,11 +3,13 @@
 namespace App\Http\Requests;
 
 use App\Models\ProductAttributeValue;
+use App\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class ProductAttributeValueRequest extends FormRequest
 {
+    use ValidationTrait;
     /**
      * Determine if the user is authorized to make this request.
      */

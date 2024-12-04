@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class EmailSettingRequest extends FormRequest
 {
     use ValidationTrait;
     /**
@@ -24,9 +24,19 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required',
-            'password' => 'required'
+            'name'=>'required|string|max:100',
+            'email'=>'required|email|max:200',
+            'host'=>'required|max:200',
+            'username'=>'required|max:200',
+            'password'=>'required|max:200',
+            'port'=>'required|max:200',
+            'encryption'=>'required|in:tls,ssl',
         ];
     }
 
+    public function messages(){
+        return [
+            'encryption.in'=>'Please select the encryption between tls and ssl',
+        ];
+    }
 }

@@ -110,7 +110,7 @@ class Controller extends BaseController
                 'message'=>$message,
                 'pagination'=> [
                     'currentPage' => $data->currentPage(),
-                    'totalPage' => $data->lastPage(),
+                    'totalPages' => $data->lastPage(),
                     'perPage' => $data->perPage(),
                     'lastPage' => $data->lastPage(),
                     'hasNext' => $data->hasMorePages(),

@@ -39,13 +39,14 @@ Route::group(['prefix'=>'user'],function(){
 
     // Profile routes :
 
-    Route::post('profile/update', [ProfileController::class, 'update_profile'])->name('profile.update');
-    Route::post('profile/update/password', [ProfileController::class, 'update_profile_password'])->name('profile.update.password');
-
-
+    
+    
     Route::group(['middleware'=>'auth:sanctum'],function(){
         Route::post('/loginWithToken',[AuthController::class,'loginWithToken']);
         Route::post('/logout',[AuthController::class,'logout']);
+
+        Route::post('profile/update', [ProfileController::class, 'update_profile'])->name('profile.update');
+        Route::post('profile/update/password', [ProfileController::class, 'update_profile_password'])->name('profile.update.password');
     });
 
     /** ----------------------------------------------------------------------------------------------------------------------- */

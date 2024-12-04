@@ -1,17 +1,18 @@
 <?php
 
+use App\Http\Controllers\Dashboard\Admin\SettingController;
 use App\Http\Controllers\Dashboard\Admin\AdminProfileController;
 use App\Http\Controllers\Dashboard\Admin\BrandController;
 use App\Http\Controllers\Dashboard\Admin\CategoryController;
-use App\Http\Controllers\Dashboard\Admin\AttributeController;
-use App\Http\Controllers\Dashboard\Admin\AttributeValueController;
+// use App\Http\Controllers\Dashboard\Admin\AttributeController;
+// use App\Http\Controllers\Dashboard\Admin\AttributeValueController;
 use App\Http\Controllers\Dashboard\Admin\CouponController;
 use App\Http\Controllers\Dashboard\Admin\FlashSaleController;
 use App\Http\Controllers\Dashboard\Admin\Payment\Gatways\CODSettingController;
 use App\Http\Controllers\Dashboard\Admin\Payment\Gatways\PaypalSettingController;
 use App\Http\Controllers\Dashboard\Admin\Payment\Gatways\StripeSettingController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductAttributeValueController;
-use App\Http\Controllers\Dashboard\Admin\Product\ProductController;
+// use App\Http\Controllers\Dashboard\Admin\Product\ProductController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductGalleryController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductNewController;
 use App\Http\Controllers\Dashboard\Admin\Product\ProductTypeController;
@@ -70,35 +71,17 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     });
 
 
-    // Product Routes (V2) :
-    // Route::prefix('products')->group(function () {
-    //     Route::get('/', [ProductController::class, 'index']);
-    //     Route::get('/{id}', [ProductController::class, 'show'])->middleware('setLang');
-    //     Route::post('/', [ProductController::class, 'store']);
-        
-    //     Route::post('/{id}/update', [ProductController::class, 'update']);
-    //     // Route::put('/{id}', [ProductController::class, 'update']);
-        
-    //     Route::delete('/{id}/delete', [ProductController::class, 'destroy']);
-    //     // Route::delete('/{id}', [ProductController::class, 'destroy']);
 
-    //     //! you need to add other route about soft deletes (restore , forceDelete)
-
-    //     // Route::post('/{id}/product-attribute-values/add', [ProductController::class,'save_product_attribute_value']);
-    //     // Route::post('/{id}/product-attribute-values/{attributeValueId}/update', [ProductController::class,'update_product_attribute_value']);
-    // });
 
 
     // Product Routes (New) :
-
-    // Route::post('products/{id}/product-variants',[ProductNewController::class,'storeProductVariants']);
-    // Route::get('products/{id}/product-variants',[ProductNewController::class,'getVariantPrice']);
 
     Route::get('/get-attributes',[ProductNewController::class,'get_attributes']);
     Route::get('/get-product-types',[ProductNewController::class,'get_product_types']);
 
     Route::prefix('products')->group(function () {
         Route::get('/', [ProductNewController::class, 'index']);
+        Route::get('/{id}', [ProductNewController::class, 'show']);
         Route::post('/', [ProductNewController::class, 'store']);
         Route::post('/{id}/update', [ProductNewController::class, 'update']);
         // Route::put('/{id}', [ProductNewController::class, 'update']);
@@ -118,7 +101,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // Product Gallery Routes :
     Route::prefix('product-image-galleries')->group(function () {
         Route::get('',[ProductGalleryController::class,'index']);
-        Route::post('',[ProductGalleryController::class,'store']);
+        Route::post('/{productId}',[ProductGalleryController::class,'store']);
         Route::DELETE('{id}/delete',[ProductGalleryController::class,'destroy']);
         // Route::DELETE('{id}',[ProductGalleryController::class,'destroy']);
         // Route::DELETE('{id}/destroyAll',[ProductGalleryController::class,'destroyAllImages']);
@@ -206,6 +189,32 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // Shipping Rule Routes :
     Route::apiResource('shipping-rules', ShippingRuleController::class);
 
+
+    //Settings  Start  
+
+    Route::prefix('settings')->group(function(){
+
+
+        Route::get('general-settings',[SettingController::class , 'getGeneralSetting']);
+        
+        /** Update Or Create general Settings :( if general settings is not created yet we created else we update general settings)  */
+        // Route::put('/general-settings/update',[SettingController::class , 'UpdateSettingsGeneral']);
+        Route::post('/general-settings/update',[SettingController::class , 'UpdateSettingsGeneral']);
+        
+        /** Update Or Create Email configuration Settings :( if general settings is not created yet we created else we update email configuration settings)  */
+        Route::get('/email-settings',[SettingController::class , 'getEmailSetting']);
+        // Route::put('/email-settings/update',[SettingController::class , 'UpdateEmailConfiguration']);
+        Route::post('/email-settings/update',[SettingController::class , 'UpdateEmailConfiguration']);
+        
+        /** Update Or Create Logo & Favicon Settings :( if general settings is not created yet we created else we update logo & favicon settings)  */
+        // Route::put('/logo-settings/update',[SettingController::class , 'UpdateLogaAndFavicon']);
+        
+        /** Update Or Create Pusher configuration Settings :( if general settings is not created yet we created else we update pusher configuration settings)  */
+        // Route::put('/pusher-settings/update',[SettingController::class , 'UpdatePusherConfiguration']);
+
+    });
+
+     
 
     /** Payment Gatways Settings Routes :  */
 
