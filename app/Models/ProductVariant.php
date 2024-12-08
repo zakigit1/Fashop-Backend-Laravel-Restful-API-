@@ -30,6 +30,8 @@ class ProductVariant extends Model
         'final_price' => 'float',
         'quantity' => 'integer',
         'in_stock' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     // public $timestamps = false;

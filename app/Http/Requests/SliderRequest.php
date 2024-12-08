@@ -26,7 +26,7 @@ class SliderRequest extends FormRequest
     {
         $id = $this->id;
         $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes (programmer common use)
-        $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
+        // $lang_number = count(config('translatable.locales.'.config('translatable.locale')));
 
 
 
@@ -39,68 +39,75 @@ class SliderRequest extends FormRequest
                 'mimes:jpeg,png,jpg,webp,svg', // Add supported formats
             ],
 
-            'image_url' => [
-                'nullable',
-                'url',
-                'max:255',
-            ],
+            // 'background_color' => [
+            //     'string',
+            //     'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', // Hex color regex like #FF0000
+            // ],
+            // 'title_color' => [
+            //     'string',
+            //     'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', // Hex color regex like #FF0000
+            // ],
+            // 'description_color' => [
+            //     'string',
+            //     'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', // Hex color regex like #FF0000
+            // ],
 
             'button_link' => [
                 'nullable',
-                'url',
+                // 'url',
                 'max:255',
             ],
 
             'status' => 'required|boolean',
 
-            'order' => 'required|integer|min:1|max:100|gt:0|unique:sliders,order,'.$id,
+            'order' => 'integer|min:1|max:100|gt:0|unique:sliders,order,'.$id,
 
 
             // Translation arrays
 
-            'title' => [
-                'required',
-                'array',
-                'min:'.$lang_number,
-                'max:'.$lang_number,
-            ],
-            'description' => [
-                'required',
-                'array',
-                'min:'.$lang_number,
-                'max:'.$lang_number,
-            ],
+            // 'title' => [
+            //     'required',
+            //     'array',
+            //     'min:'.$lang_number,
+            //     'max:'.$lang_number,
+            // ],
+            // 'description' => [
+            //     'required',
+            //     'array',
+            //     'min:'.$lang_number,
+            //     'max:'.$lang_number,
+            // ],
         ];
 
 
 
         // Add translation rules for each locale
-        if($lang_number > 0){ 
-            foreach (config('translatable.locales.' . config('translatable.locale')) as $keyLang => $lang) {
-                $rules["title.$keyLang"] = [
-                    'required',
-                    'string',
-                    'min:2',
-                    'max:200',
-                    Rule::unique('slider_translations', 'title')
-                        ->ignore($id, 'slider_id')
-                        ->where(function ($query) use ($keyLang) {
-                            return $query->where('locale', $keyLang);
-                        })
-                ];
+        // if($lang_number > 0){ 
+        //     foreach (config('translatable.locales.' . config('translatable.locale')) as $keyLang => $lang) {
+        //         $rules["title.$keyLang"] = [
+        //             'required',
+        //             'string',
+        //             'min:2',
+        //             'max:200',
+        //             Rule::unique('slider_translations', 'title')
+        //                 ->ignore($id, 'slider_id')
+        //                 ->where(function ($query) use ($keyLang) {
+        //                     return $query->where('locale', $keyLang);
+        //                 })
+        //         ];
 
-                $rules["description.$keyLang"] = [
-                    'required',
-                    'string',
-                    // Rule::unique('slider_translations', 'description')
-                    //     ->ignore($id, 'slider_id')
-                    //     ->where(function ($query) use ($keyLang) {
-                    //         return $query->where('locale', $keyLang);
-                    //     })
-                ];
+        //         $rules["description.$keyLang"] = [
+        //             'required',
+        //             'string',
+        //             // Rule::unique('slider_translations', 'description')
+        //             //     ->ignore($id, 'slider_id')
+        //             //     ->where(function ($query) use ($keyLang) {
+        //             //         return $query->where('locale', $keyLang);
+        //             //     })
+        //         ];
 
-            }
-        }
+        //     }
+        // }
 
         return $rules;
     }

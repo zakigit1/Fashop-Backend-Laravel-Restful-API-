@@ -19,13 +19,15 @@ class ProductImageGallery extends Model
         'product_id',
         ];
 
-    protected $hidden =[
-        'created_at',
-        'updated_at'
-    ];
+    // protected $hidden =[
+    //     'created_at',
+    //     'updated_at'
+    // ];
 
     protected $casts = [
         'product_id' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
 

@@ -10,12 +10,9 @@ trait imageUploadTrait{
 
     function uploadImage_Trait(Request $request ,$inputName, $folderPath, $folderName){
 
-        // $Folder_name='sliders';
-
         $folder= $folderPath.$folderName;
         
         // store the image in storage folder (Storage/public/path..)
-
         $imageStore =  $request->$inputName->store($folder);
 
         //name of the image : 
@@ -27,6 +24,8 @@ trait imageUploadTrait{
         
         return $imageName;
     }
+
+
 
     function deleteImage_Trait($old_image,$folderPath,$folderName):void
     {
@@ -100,5 +99,44 @@ trait imageUploadTrait{
         return $imagesNames;
     }
     
+
+
+
+
+
+
+
+    /** Using in slider controller */
+    function uploadImage_Trait2(Request $request ,$inputName, $folderPath, $folderName){
+
+        $folder= $folderPath.$folderName;
+        
+        // Get the original file name and extension
+        $originalName = $request->file($inputName)->getClientOriginalName();
+
+        // dd($originalName);
+
+        // Define the path where the file should be stored
+        $destinationPath = public_path('storage/'.$folder);
+
+        // Move the file to the destination path with the original name
+        $request->file($inputName)->move($destinationPath, $originalName);
+
+        // Return the stored file path
+        // return $folder . '/' . $originalName;
+
+        // Return the stored file name
+        return $originalName;
+    }
+
+
+    function updateImage_Trait2(Request $request ,$inputName, $folderPath, $folderName, $old_image = null){
+
+        $this->deleteImage_Trait($old_image,$folderPath,$folderName);
+            
+        $imageName = $this->uploadImage_Trait2($request ,$inputName, $folderPath, $folderName);
+        return $imageName;
+    }
+
     
 }

@@ -36,6 +36,26 @@ class FlashSaleController extends Controller
                     ];
                 });
 
+                // ida khrjlk error the currentPage
+                // ->through(function ($product) {
+                //     return [
+                //         'id' => $product->id,
+                //         'translations' => $product->translations->map(function ($translation) {
+                //             return [
+                //                 'name' => $translation->name,
+                //                 'locale' => $translation->locale
+                //             ];
+                //         })
+                //     ];
+                // });
+
+
+
+
+
+
+
+
             // Get flash sale end date:
             $flash_end_date = FlashSale::first();
 

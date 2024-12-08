@@ -33,6 +33,8 @@ class Attribute extends Model implements TranslatableContract
         'is_filterable'=> 'integer',
         'sort_order'=> 'integer',
         'status'=> 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
 

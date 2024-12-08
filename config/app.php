@@ -71,8 +71,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
-    // 'timezone' => 'Africa/Algiers',
+    // 'timezone' => 'UTC',
+    'timezone' => 'Africa/Algiers',
     // 'date_format' => 'Y-m-d H:i:s',
 
     /*

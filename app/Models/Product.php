@@ -53,10 +53,12 @@ class Product extends Model implements TranslatableContract
         'product_type_id' => 'integer',
         'price' => 'float',
         'offer_price' => 'float',
-        // 'offer_start_date' => 'datetime',
-        // 'offer_end_date' => 'datetime',
+        // 'offer_start_date' => 'datetime:Y-m-d H:i:s',
+        // 'offer_end_date' => 'datetime:Y-m-d H:i:s',
         'qty' => 'integer',
         'status' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     public $translatedAttributes = ['name','slug','description'];

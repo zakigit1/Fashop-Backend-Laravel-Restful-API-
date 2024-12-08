@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SliderRequest;
 use App\Models\Slider;
 use App\Traits\imageUploadTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -15,17 +16,17 @@ class SliderController extends Controller
 
     use imageUploadTrait;
 
-    const FOLDER_PATH = '/uploads/images/';
-    const FOLDER_NAME = 'sliders';
+    private const FOLDER_PATH = '/uploads/images/';
+    private const FOLDER_NAME = 'sliders';
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try{
-            $sliders = Slider::with('translations')
-                ->orderBy('id','asc')
-                ->paginate(20);
+            $sliders = Slider::orderBy('id', 'ASC')
+            ->paginate(20);
 
                 return $this->paginationResponse($sliders,'sliders','All Sliders',SUCCESS_CODE);
            
@@ -37,52 +38,73 @@ class SliderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(SliderRequest $request)
+    public function store(SliderRequest $request): JsonResponse
     {
         // return $request->all();
         try{
-            DB::beginTransaction();
-     
+            // DB::beginTransaction();
+            
+            if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
+                return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
+            }
+        
             /** Save image  */
-            $image_name= $this->uploadImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+ 
+            $image_name= $this->uploadImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+          
+
+            /**  Get the maximum order value and increment it by 1 */
+            $maxOrder = Slider::max('order') ?? 0;
+            $newOrder = $maxOrder + 1;
 
         
+             /**  Store the slider */
             $slider = Slider::create([
                 "image" => $image_name,
-                "image_url" => $request->image_url,
-                "button_link" => $request->button_link,
-                "order" => (int) $request->order,
+                "order" => (int) $newOrder,
                 "status" =>(int) $request->status,
+                "button_link" => $request->button_link,
             ]);
+            
+            // if ($request->has('background_color')) {
+            //     $slider->update([
+            //         'background_color' => $request->background_color,
+            //     ]);
+            // }
+            // if ($request->has('title_color')) {
+            //     $slider->update([
+            //         'title_color' => $request->title_color,
+            //     ]);
+            // }
+            // if ($request->has('description_color')) {
+            //     $slider->update([
+            //         'description_color' => $request->description_color,
+            //     ]);
+            // }
+
+
 
             /** Store translations for each locale */
-            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
-                $slider->translateOrNew($keyLang)->title = $request->input("title.$keyLang");
-                $slider->translateOrNew($keyLang)->description = str_replace(' ', '-', $request->input("description.$keyLang"));
-            }
+            // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
+            //     $slider->translateOrNew($keyLang)->title = $request->input("title.$keyLang");
+            //     $slider->translateOrNew($keyLang)->description = str_replace(' ', '-', $request->input("description.$keyLang"));
+            // }
 
-            $slider->save() ;
+            // $slider->save() ;
 
-            DB::commit();
+            // DB::commit();
             return $this->success($slider,'Created Successfully!',SUCCESS_STORE_CODE,'slider');
 
         }catch (ValidationException $ex) {
-            DB::rollBack();     
+            // DB::rollBack();     
             return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();  
+            // DB::rollBack();  
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
 
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -100,28 +122,28 @@ class SliderController extends Controller
 
 
             if($request->hasFile('image')){
+                if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
+                    return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
+                }
     
                 $old_image = $slider->image;
-                $image_name = $this->updateImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME,$old_image);
+                $image_name = $this->updateImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME,$old_image);
                 $slider->update(['image'=>$image_name]);
             }
 
-
-            
             $slider->update([
-                "image_url" => $request->image_url,
                 "button_link" => $request->button_link,
                 "order" => (int) $request->order,
                 "status" =>(int) $request->status
             ]);
 
-            foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
+            // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
 
-                $slider->translateOrNew($keyLang)->title = $request->input("title.$keyLang");
-                $slider->translateOrNew($keyLang)->description = str_replace(' ', '-', $request->input(key: "description.$keyLang"));
-            }
+            //     $slider->translateOrNew($keyLang)->title = $request->input("title.$keyLang");
+            //     $slider->translateOrNew($keyLang)->description = str_replace(' ', '-', $request->input(key: "description.$keyLang"));
+            // }
     
-            $slider->save();
+            // $slider->save();
 
             DB::commit();
             return $this->success($slider,'Updated Successfully!',SUCCESS_CODE,'slider');

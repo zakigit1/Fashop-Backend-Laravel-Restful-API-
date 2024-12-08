@@ -15,8 +15,14 @@ class FlashSale extends Model
         'end_date',
     ];
 
-    protected $hidden =[
+    protected $hidden = [
         'created_at',
         'updated_at'
+    ];
+    
+    protected $casts = [
+        // 'end_date' => 'datetime:Y-m-d H:i:s',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 }

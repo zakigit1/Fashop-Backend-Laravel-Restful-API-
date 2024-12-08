@@ -14,5 +14,7 @@ class CODSetting extends Model
 
     protected $casts = [
         'status' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 }

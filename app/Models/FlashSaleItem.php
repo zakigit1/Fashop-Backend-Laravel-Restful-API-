@@ -27,7 +27,9 @@ class FlashSaleItem extends Model
         // 'flash_sale_id' => 'integer',
         'product_id'=>'integer',
         'show_at_home' => 'integer',
-        'status' => 'integer'
+        'status' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
 

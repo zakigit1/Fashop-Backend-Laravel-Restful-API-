@@ -30,6 +30,8 @@ class Brand extends Model implements TranslatableContract
      */
     protected $casts = [
         'status' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
 

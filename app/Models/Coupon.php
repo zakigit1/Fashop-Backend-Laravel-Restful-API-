@@ -37,6 +37,8 @@ class Coupon extends Model
         'discount' => 'float',
         'status'=> 'integer',
         'total_used' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
     
     // public $timestamps = false;

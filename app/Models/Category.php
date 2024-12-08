@@ -29,6 +29,8 @@ class Category extends Model implements TranslatableContract
     protected $casts = [
         // 'parent_id'=> 'integer',
         'status'=> 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
 

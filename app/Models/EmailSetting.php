@@ -22,4 +22,10 @@ class EmailSetting extends Model
         'created_at',
         'updated_at'
     ];
+
+    protected $casts = [
+        'port' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
 }
