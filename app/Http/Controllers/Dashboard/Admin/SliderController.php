@@ -44,17 +44,19 @@ class SliderController extends Controller
         try{
             // DB::beginTransaction();
             
-            if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
-                return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
-            }
-        
+            // if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
+            //     return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
+            // }
             /** Save image  */
- 
-            $image_name= $this->uploadImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+            // $image_name= $this->uploadImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
+            
+
+            /** Save image  */
+            $image_name= $this->uploadImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME);
           
 
             /**  Get the maximum order value and increment it by 1 */
-            $maxOrder = Slider::max('order') ?? 0;
+            $maxOrder = Slider::max('order') ?? 1;
             $newOrder = $maxOrder + 1;
 
         
@@ -122,20 +124,24 @@ class SliderController extends Controller
 
 
             if($request->hasFile('image')){
-                if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
-                    return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
-                }
+                // if (Slider::where('image', $request->file('image')->getClientOriginalName())->exists()) {
+                //     return $this->error('This image already exists.', VALIDATION_ERROR_CODE);
+                // }
+                // $image_name = $this->updateImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME,$old_image);
     
                 $old_image = $slider->image;
-                $image_name = $this->updateImage_Trait2($request,'image',self::FOLDER_PATH,self::FOLDER_NAME,$old_image);
+                $image_name = $this->updateImage_Trait($request,'image',self::FOLDER_PATH,self::FOLDER_NAME,$old_image);
                 $slider->update(['image'=>$image_name]);
             }
 
+
             $slider->update([
                 "button_link" => $request->button_link,
-                "order" => (int) $request->order,
+                // "order" => (int) $request->order,
                 "status" =>(int) $request->status
             ]);
+
+ 
 
             // foreach (config('translatable.locales.'.config('translatable.locale')) as $keyLang => $lang) { // keyLang = en ,$lang = english
 
@@ -160,7 +166,7 @@ class SliderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try{
             $slider = Slider::find($id);
@@ -178,4 +184,114 @@ class SliderController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
+
+
+
+    /**
+     * Update the order of sliders
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+    */
+
+
+    public function updateOrder(Request $request)
+    {
+        try{
+            $request->validate([
+                'id' => 'required|integer|exists:sliders,id',
+                'order' => 'required|integer|min:1|max:100|gt:0|exists:sliders,order',
+            ]);
+            // return $request->all();
+
+            DB::beginTransaction();
+
+            $slider = Slider::find($request->id);
+    
+            if(!$slider){
+                return $this->error('Slider Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+    
+            if($slider->order == $request->order){
+                return $this->error('Slider Can Not Switch With Itself!',ERROR_CODE);
+            }
+
+            $currentSliderOrder = (int) $slider->order; 
+
+    
+            /** slider lrani baghi nswitchi m3aha order */
+            $switchedSlider = Slider::where('order',$request->order)->first(['id','order']);
+    
+            $sliderOrderSwitched = $switchedSlider->order;
+         
+
+            $switchedSlider->order = 0;
+            $switchedSlider->save();
+            
+            $slider->order = (int) $sliderOrderSwitched;
+            $slider->save();
+    
+            $switchedSlider->order = (int) $currentSliderOrder;
+            $switchedSlider->save();
+
+            DB::commit();
+            return $this->success(null,'Order Switched Successfully!',SUCCESS_CODE,'slider');
+
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){
+            DB::rollBack();  
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+
+    }
+
+    /**
+     * Update the status of slider
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+    */
+
+
+    public function updateStatus(Request $request)
+    {
+
+        try{
+
+            $request->validate([
+                'id' => 'integer|exists:sliders,id',
+                'status' => 'required|boolean',
+            ]);
+    
+    
+            $slider = Slider::find($request->id);
+        
+            if(!$slider){
+                return $this->error('Slider Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+    
+    
+            $slider->status = $request->status == 1 ? 1 : 0;
+    
+            $slider->save();
+
+            return $this->success(['slider' => $slider],'Status Updated Successfully!',SUCCESS_CODE,'slider');
+
+        }catch (ValidationException $ex) {
+            DB::rollBack();  
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){
+            DB::rollBack();  
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+
+    }
+
+
+
+
+
+
 }

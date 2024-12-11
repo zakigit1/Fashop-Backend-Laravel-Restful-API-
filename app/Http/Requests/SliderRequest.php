@@ -60,7 +60,7 @@ class SliderRequest extends FormRequest
 
             'status' => 'required|boolean',
 
-            'order' => 'integer|min:1|max:100|gt:0|unique:sliders,order,'.$id,
+            // 'order' => 'integer|min:1|max:100|gt:0|unique:sliders,order,'.$id,
 
 
             // Translation arrays

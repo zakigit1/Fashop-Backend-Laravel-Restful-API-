@@ -170,6 +170,10 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         // Route::put('{id}',[SliderController::class,'update']);
         Route::DELETE('{id}/delete',[SliderController::class,'destroy']);
         // Route::DELETE('{id}',[SliderController::class,'destroy']);
+
+
+        Route::put('change-orders',[SliderController::class,'updateOrder']);
+        Route::put('change-status',[SliderController::class,'updateStatus']);
     });
 
     // Flash Sale Routes :
