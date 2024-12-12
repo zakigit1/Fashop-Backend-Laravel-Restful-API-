@@ -53,7 +53,6 @@ class SliderRequest extends FormRequest
             // ],
 
             'button_link' => [
-                'nullable',
                 // 'url',
                 'max:255',
             ],

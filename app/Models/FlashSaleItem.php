@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FlashSaleItem extends Model
 {
@@ -44,13 +45,15 @@ class FlashSaleItem extends Model
 
 
 /*                                                  Begin Relation                                  */
-    public function products(){
+    public function product(): BelongsTo   
+    {
         return $this->belongsTo(Product::class,'product_id','id','id');
     }
     
 
 
-    public function flashSale(){
+    public function flashSale(): BelongsTo
+    {
         return $this->belongsTo(FlashSale::class,'flash_sale_id','id','id');
     }
 /*                                                  End Relation                                  */

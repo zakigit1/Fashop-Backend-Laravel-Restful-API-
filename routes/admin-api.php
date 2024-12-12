@@ -178,7 +178,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     // Flash Sale Routes :
     Route::prefix('flash-sales')->group(function () {
-    
+        Route::get('getAvailableProduct',[FlashSaleController::class,'getAvailableProducts']);
         Route::get('/',[FlashSaleController::class,'index']);
         Route::post('/end-date',[FlashSaleController::class,'end_date']);
         // Route::put('/end-date',[FlashSaleController::class,'end_date']);

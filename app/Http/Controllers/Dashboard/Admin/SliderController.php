@@ -18,15 +18,25 @@ class SliderController extends Controller
 
     private const FOLDER_PATH = '/uploads/images/';
     private const FOLDER_NAME = 'sliders';
+    private const ITEMS_PER_PAGE = 20;
 
     /**
      * Display a listing of the resource.
      */
+    // public function index(request $request): JsonResponse
     public function index(): JsonResponse
     {
         try{
-            $sliders = Slider::orderBy('id', 'ASC')
-            ->paginate(20);
+
+            // $sortDirection = $request->query('sort_direction', 'asc'); // Default to ascending
+            // $sortDirection = strtolower($sortDirection) === 'asc' ? 'ASC' : 'DESC';
+
+            // $sliders = Slider::orderBy('order', $sortDirection);
+
+
+
+            $sliders = Slider::orderBy('order', 'ASC')
+            ->paginate(self::ITEMS_PER_PAGE);
 
                 return $this->paginationResponse($sliders,'sliders','All Sliders',SUCCESS_CODE);
            
@@ -37,7 +47,7 @@ class SliderController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */
+    */
     public function store(SliderRequest $request): JsonResponse
     {
         // return $request->all();
@@ -107,6 +117,7 @@ class SliderController extends Controller
 
     }
 
+    
 
     /**
      * Update the specified resource in storage.
@@ -134,12 +145,17 @@ class SliderController extends Controller
                 $slider->update(['image'=>$image_name]);
             }
 
+            if($request->has('button_link')){
+                $slider->update([   
+                    "button_link" => $request->button_link,
+                ]);
+            }
 
-            $slider->update([
-                "button_link" => $request->button_link,
-                // "order" => (int) $request->order,
-                "status" =>(int) $request->status
-            ]);
+            if($request->has('status')){
+                $slider->update([   
+                    "status" =>(int) $request->status
+                ]);
+            }
 
  
 

@@ -41,8 +41,7 @@ class Product extends Model implements TranslatableContract
     //     'updated_at'
     ];
 
-
-    
+   
     /**
      * The attributes that should be cast.
      *
