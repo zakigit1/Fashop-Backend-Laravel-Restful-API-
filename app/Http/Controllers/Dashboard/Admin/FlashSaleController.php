@@ -10,6 +10,7 @@ use App\Models\FlashSaleItem;
 use App\Models\FlashSaleProductView;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class FlashSaleController extends Controller
 {   
@@ -32,25 +33,18 @@ class FlashSaleController extends Controller
         }
     }
 
+
     public function index(Request $request): JsonResponse
     {
+        // dd($request->query());// request->query() you get it from url not body
         try{
             // Get all products with pagination:
             $products = FlashSaleProductView::orderBy('product_id', 'ASC')
                 ->paginate(self::ITEMS_PER_PAGE, ['*'], 'product_page', $request->query('product_page', 1));
     
-            $productsPagination = [
-                'pagination'=> [
-                    'currentPage' => $products->currentPage(),
-                    'totalPage' => $products->total(),
-                    'perPage' => $products->perPage(),
-                    'lastPage' => $products->lastPage(),
-                    'hasNext' => $products->hasMorePages(),
-                    'hasPrevious' => $products->currentPage() > 1,
-                ],
-                "products" => $products->items(),
-            ];
-    
+
+            $productsPagination = $this->paginationFunction($products,'products');
+
             // Get flash sale end date:
             $flash_end_date = FlashSale::first();
     
@@ -84,23 +78,16 @@ class FlashSaleController extends Controller
                     ]
                 ];
             });
-            $flashSaleItemsPagination = [
-                'pagination'=> [
-                    'currentPage' => $flashSaleItems->currentPage(),
-                    'totalPage' => $flashSaleItems->total(),
-                    'perPage' => $flashSaleItems->perPage(),
-                    'lastPage' => $flashSaleItems->lastPage(),
-                    'hasNext' => $flashSaleItems->hasMorePages(),
-                    'hasPrevious' => $flashSaleItems->currentPage() > 1,
-                ],
-                "flashSaleItems" => $flashSaleItems->items(),
-            ];
-    
+
+            
+            $flashSaleItemsPagination = $this->paginationFunction($flashSaleItems,'flashSaleItems');
+
+
             return $this->success([
                 'flashSaleEndDate' => $flash_end_date,
                 'productData' => $productsPagination,
                 'flashSaleItemData' => $flashSaleItemsPagination
-            ],'You get everything you need (products , flash sale end date , flash sale items) successfully!',SUCCESS_CODE,'flashsaleData');
+            ],'You get flash sale end date, products and flash sale items successfully!',SUCCESS_CODE,'flashsaleData');
             
         }catch(\Exception $ex){ 
             return $this->error($ex->getMessage(),ERROR_CODE);
@@ -193,9 +180,11 @@ class FlashSaleController extends Controller
 
     public function end_date(FlashSaleEndDateRequest $request): JsonResponse
     {
-
         // return $request->all();
         try{
+
+            $checkFlashSale = FlashSale::first();  
+
             $flashSaleEndDate = FlashSale::updateOrCreate(
                 ['id'=>'1'],// ?  this is the condition of update Or create ( if the id =1 the data with update if the id doesn't equal 1 they will create new row with id 1 )
                 ['end_date'=>$request->end_date]
@@ -211,17 +200,22 @@ class FlashSaleController extends Controller
                 }
             }
 
-            return $this->success($flashSaleEndDate,'Updated Successfully!',SUCCESS_STORE_CODE,'flashSaleEndDate');
+            // return $this->success($flashSaleEndDate,'Updated Successfully!',SUCCESS_STORE_CODE,'flashSaleEndDate');
+
+            if($checkFlashSale){
+                return $this->success($flashSaleEndDate,'Flash Sale End Date Has Been Updated Successfully !',SUCCESS_CODE,'flashSaleEndDate');
+            }else{
+                return $this->success($flashSaleEndDate,'Flash Sale End Date Has Been Created Successfully !',SUCCESS_STORE_CODE,'flashSaleEndDate');
+            }
 
         }catch(\Exception $ex){
-            
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
 
 
 
-    public function add_product(FlashSaleAddProductRequest $request): JsonResponse
+    public function add_product(FlashSaleAddProductRequest $request)//: JsonResponse
     {
         // return $request->all();
         try{
@@ -229,15 +223,32 @@ class FlashSaleController extends Controller
             $flash_end_date = FlashSale::first();
             // return empty($flash_end_date) ? 'yes':'no';
 
-            $flashSaleItem = new FlashSaleItem();
-            // $flashSaleItem->flash_sale_id = (is_null($flash_end_date) ? (int) 1 : (int) $flash_end_date->id) ;
-            $flashSaleItem->flash_sale_id = optional($flash_end_date)->id;
-            $flashSaleItem->product_id = $request->product_id;
-            $flashSaleItem->show_at_home = $request->show_at_home;
-            $flashSaleItem->status = $request->status;
-            $flashSaleItem->save();
+            /** this operation to save just one product every storing data */
+            // $flashSaleItem = new FlashSaleItem();
+            // // $flashSaleItem->flash_sale_id = (is_null($flash_end_date) ? (int) 1 : (int) $flash_end_date->id) ;
+            // $flashSaleItem->flash_sale_id = optional($flash_end_date)->id;
+            // $flashSaleItem->product_id = $request->product_id;
+            // $flashSaleItem->show_at_home = $request->show_at_home;
+            // $flashSaleItem->status = $request->status;
+            // $flashSaleItem->save();
 
-            return $this->success($flashSaleItem,'The product was successfully added to the flash sale',SUCCESS_STORE_CODE,'flashSaleItem');
+            /** this operation to save just one products every storing data */
+            $flashSaleItems = [];
+            
+            foreach ($request->products as $product_id) 
+            {
+
+                $flashSaleItem = new FlashSaleItem();
+                $flashSaleItem->flash_sale_id = optional($flash_end_date)->id;
+                $flashSaleItem->product_id = (int) $product_id;
+                $flashSaleItem->show_at_home = (int) $request->show_at_home;
+                $flashSaleItem->status = (int) $request->status;
+                $flashSaleItem->save();
+                
+                $flashSaleItems[] = $flashSaleItem;
+            }
+
+            return $this->success($flashSaleItems,'The products were successfully added to the flash sale',SUCCESS_STORE_CODE,'flashSaleItems');
 
         }catch(\Exception $ex){
             
@@ -268,31 +279,87 @@ class FlashSaleController extends Controller
 
 
 
-    // public function change_at_home_status(Request $request)
-    // {
-    //     $flash_item =FlashSaleItem::find($request->id);
+    public function changeStatus(Request $request)
+    {
 
+        try{
 
-    //     if(!$flash_item){
-           
-    //         // toastr()->error( 'Item is not found!');
-    //         return to_route('admin.flash-sale.index');
-    //         // return redirect()->back();
-    //     }
-
-    //     $product_name =$flash_item->product->name;
-
+            $request->validate([
+                'id' => 'integer|exists:flash_sale_items,id',
+                'status' => 'required|boolean',
+            ]);
+    
+    
+            $flash_item = FlashSaleItem::find($request->id);
         
-    //     $flash_item->show_at_home = $request->show_at_home_status == 'true' ? 1 : 0;
-         
-    //     $flash_item->save();
+            if(!$flash_item){
+                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+    
+    
+            $flash_item->status = $request->status == 1 ? 1 : 0;
+    
+            $flash_item->save();
 
-    //     $status =($flash_item->show_at_home == 1) ? 'show it' : 'don\'t show it ';
+            return $this->success(null,'Status Updated Successfully!',SUCCESS_CODE,'flash_item');
 
-    //     return response(['status'=>'success','message'=>"The $product_name has been $status at the flash sale in the home page"]);
-
+        }catch (ValidationException $ex) {
+    
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){
        
-    // }
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+
+    }
 
 
+    public function changeShowAtHome(Request $request)
+    {
+
+        try{
+
+            $request->validate([
+                'id' => 'integer|exists:flash_sale_items,id',
+                'show_at_home' => 'required|boolean',
+            ]);
+    
+    
+            $flash_item = FlashSaleItem::find($request->id);
+        
+            if(!$flash_item){
+                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
+            }
+    
+    
+            $flash_item->show_at_home = $request->show_at_home == 1 ? 1 : 0;
+    
+            $flash_item->save();
+
+            return $this->success(null,'Show At Home Updated Successfully!',SUCCESS_CODE,'flash_item');
+
+        }catch (ValidationException $ex) {
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        }catch(\Exception $ex){
+            return $this->error($ex->getMessage(),ERROR_CODE);
+        }
+
+    }
+
+
+
+    public function paginationFunction($data,$dataName)
+    {
+        return [
+            'pagination'=> [
+            'currentPage' => $data->currentPage(),
+            'lastPage' => $data->lastPage(),
+            'totalPages' => $data->lastPage(),
+            'perPage' => $data->perPage(),
+            'hasNext' => $data->hasMorePages(),
+            'hasPrevious' => $data->currentPage() > 1,
+            ],
+            $dataName => $data->items(),
+        ];
+    }
 }

@@ -171,10 +171,10 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::DELETE('{id}/delete',[SliderController::class,'destroy']);
         // Route::DELETE('{id}',[SliderController::class,'destroy']);
 
-
-        Route::put('change-orders',[SliderController::class,'updateOrder']);
-        Route::put('change-status',[SliderController::class,'updateStatus']);
+        Route::put('change-orders',[SliderController::class,'changeOrder']);
+        Route::put('change-status',[SliderController::class,'changeStatus']);
     });
+
 
     // Flash Sale Routes :
     Route::prefix('flash-sales')->group(function () {
@@ -185,6 +185,9 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::post('/add-product',[FlashSaleController::class,'add_product']);
         Route::DELETE('{id}/delete',[FlashSaleController::class,'destroy']);
         // Route::DELETE('{id}',[FlashSaleController::class,'destroy']);
+
+        Route::put('change-status',[FlashSaleController::class,'changeStatus']);
+        Route::put('change-show-at-home',[FlashSaleController::class,'changeShowAtHome']);
     });
 
     // Coupon Routes :

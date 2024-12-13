@@ -24,6 +24,7 @@ class SliderController extends Controller
      * Display a listing of the resource.
      */
     // public function index(request $request): JsonResponse
+    
     public function index(): JsonResponse
     {
         try{
@@ -211,7 +212,7 @@ class SliderController extends Controller
     */
 
 
-    public function updateOrder(Request $request)
+    public function changeOrder(Request $request)
     {
         try{
             $request->validate([
@@ -271,7 +272,7 @@ class SliderController extends Controller
     */
 
 
-    public function updateStatus(Request $request)
+    public function changeStatus(Request $request)
     {
 
         try{
@@ -293,13 +294,13 @@ class SliderController extends Controller
     
             $slider->save();
 
-            return $this->success(['slider' => $slider],'Status Updated Successfully!',SUCCESS_CODE,'slider');
+            return $this->success(null,'Status Updated Successfully!',SUCCESS_CODE,'slider');
 
         }catch (ValidationException $ex) {
-            DB::rollBack();  
+           
             return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
         }catch(\Exception $ex){
-            DB::rollBack();  
+           
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
 

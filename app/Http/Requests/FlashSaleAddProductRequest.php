@@ -24,9 +24,11 @@ class FlashSaleAddProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => [
-                'required',
-                'exists:products,id',
+
+            'products' => 'required|array|min:1', //[]
+
+            'products.*' => [
+                'exists:flash_sale_products_view,product_id',
                 'numeric',
                 'integer',
                 'unique:flash_sale_items,product_id',
@@ -40,8 +42,8 @@ class FlashSaleAddProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'product_id.exists' => 'The selected product is not found.',
-            'product_id.unique' => 'Product is already added to the flash sale.',
+            'products.*.exists' => 'The selected product is not found.',
+            'products.*.unique' => 'Product is already added to the flash sale.',
         ];
     }
 }
