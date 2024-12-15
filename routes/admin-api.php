@@ -182,7 +182,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::get('/',[FlashSaleController::class,'index']);
         Route::post('/end-date',[FlashSaleController::class,'end_date']);
         // Route::put('/end-date',[FlashSaleController::class,'end_date']);
-        Route::post('/add-product',[FlashSaleController::class,'add_product']);
+        Route::post('/add-products',[FlashSaleController::class,'add_products']);
         Route::DELETE('{id}/delete',[FlashSaleController::class,'destroy']);
         // Route::DELETE('{id}',[FlashSaleController::class,'destroy']);
 

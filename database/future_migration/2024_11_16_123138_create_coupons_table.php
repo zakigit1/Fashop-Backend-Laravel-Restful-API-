@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->integer('quantity')->unsigned();
-            $table->integer('max_use')->unsigned();;
+            $table->integer('max_use')->unsigned();
             $table->date('start_date');
             $table->date('end_date');
 
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('status');
             $table->integer('total_used')->unsigned();
             $table->timestamps();
+            
         });
     }
 

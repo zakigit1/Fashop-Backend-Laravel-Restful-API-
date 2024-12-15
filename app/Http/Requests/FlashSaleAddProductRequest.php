@@ -42,7 +42,7 @@ class FlashSaleAddProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'products.*.exists' => 'The selected product is not found.',
+            'products.*.exists' => 'The selected product was not found or is on flash sale.',
             'products.*.unique' => 'Product is already added to the flash sale.',
         ];
     }

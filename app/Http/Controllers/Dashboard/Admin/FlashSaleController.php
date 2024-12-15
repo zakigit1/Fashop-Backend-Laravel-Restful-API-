@@ -215,7 +215,7 @@ class FlashSaleController extends Controller
 
 
 
-    public function add_product(FlashSaleAddProductRequest $request)//: JsonResponse
+    public function add_products(FlashSaleAddProductRequest $request)//: JsonResponse
     {
         // return $request->all();
         try{
@@ -245,7 +245,28 @@ class FlashSaleController extends Controller
                 $flashSaleItem->status = (int) $request->status;
                 $flashSaleItem->save();
                 
-                $flashSaleItems[] = $flashSaleItem;
+
+                // Load the product with translations
+                $flashSaleItem->load(['product' => function($query) {
+                    $query->select('id')->with(['translations' => function($q) {
+                        $q->select('product_id', 'name', 'locale');
+                    }]);
+                }]);
+    
+                $flashSaleItems[] = [
+                    'id' => $flashSaleItem->id,
+                    'show_at_home' => $flashSaleItem->show_at_home,
+                    'status' => $flashSaleItem->status,
+                    'product' => [
+                        'id' => $flashSaleItem->product->id,
+                        'translations' => $flashSaleItem->product->translations->map(function($translation) {
+                            return [
+                                'name' => $translation->name,
+                                'locale' => $translation->locale
+                            ];
+                        })
+                    ]
+                ];
             }
 
             return $this->success($flashSaleItems,'The products were successfully added to the flash sale',SUCCESS_STORE_CODE,'flashSaleItems');
@@ -255,6 +276,8 @@ class FlashSaleController extends Controller
             return $this->error($ex->getMessage(),ERROR_CODE);
         }
     }
+
+
 
 
     public function destroy(string $id)
@@ -281,12 +304,13 @@ class FlashSaleController extends Controller
 
     public function changeStatus(Request $request)
     {
-
         try{
 
             $request->validate([
                 'id' => 'integer|exists:flash_sale_items,id',
                 'status' => 'required|boolean',
+            ],[
+                'id.exists' => 'Flash Sale Item Not Found!',
             ]);
     
     
