@@ -11,16 +11,28 @@ use App\Models\FlashSaleProductView;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
 
 class FlashSaleController extends Controller
 {   
-    private const ITEMS_PER_PAGE = 20;
+
+    private const ITEMS_PER_PAGE_DEFAULT = 20;
+    private $Flash_Sale_ITEMS_PER_PAGE ;
+    private $Products_ITEMS_PER_PAGE ;
+
+    public function __construct() {
+        $this->Flash_Sale_ITEMS_PER_PAGE = Cache::get('flash_sale_per_page', self::ITEMS_PER_PAGE_DEFAULT);
+        $this->Products_ITEMS_PER_PAGE = Cache::get('products_per_page', self::ITEMS_PER_PAGE_DEFAULT);
+    }
+
+
+    /** --Start-- This three function is Separate each return response in a specific function (not yet use it need the front-end developer fix design after he can use it ) */
 
     public function getAvailableProducts(Request $request): JsonResponse
     {
         try {
             $products = FlashSaleProductView::orderBy('product_id', 'ASC')
-                ->paginate(20, ['*'], 'product_page', $request->query('product_page', 1));
+                ->paginate($this->Products_ITEMS_PER_PAGE, ['*'], 'product_page', $request->query('product_page', 1));
 
             return $this->paginationResponse(
                 $products,
@@ -34,13 +46,57 @@ class FlashSaleController extends Controller
     }
 
 
+    public function getFlashSaleItems(Request $request): JsonResponse
+    {
+        $flashSaleItems = FlashSaleItem::select('id','product_id','show_at_home','status')
+        ->with([
+            'product' => function($query) {
+                $query->select('id')->with(['translations' => function($q) {
+                    $q->select('product_id', 'name', 'locale');
+                }]);
+            },
+        ])
+        ->orderBy('id','asc')
+        ->paginate($this->Flash_Sale_ITEMS_PER_PAGE , ['*'], 'flash_sale_page', $request->query('flash_sale_page', 1))
+        ->through(function($item) {
+            return [
+                'id' => $item->id,
+                'show_at_home' => $item->show_at_home,
+                'status' => $item->status,
+                'product' => [
+                    'id' => $item->product->id,
+                    'translations' => $item->product->translations->map(function($translation) {
+                        return [
+                            'name' => $translation->name,
+                            'locale' => $translation->locale
+                        ];
+                        // return [
+                        //     'product_'.$translation->locale => $translation->name,
+                        // ];
+                    })
+                ]
+            ];
+        });
+
+        return $this->paginationResponse($flashSaleItems,'flashSaleItems','All Flash Sale Items',SUCCESS_CODE);
+    }
+
+
+    public function getFlashSaleEndDate(): JsonResponse
+    {
+        $flash_end_date = FlashSale::first();
+        return $this->success($flash_end_date,'Flash Sale End Date retrieved successfully!', SUCCESS_CODE,'flashSaleEndDate');
+    }
+
+    /** --End-- This three function is Separate each return response in a specific function */
+
     public function index(Request $request): JsonResponse
     {
         // dd($request->query());// request->query() you get it from url not body
         try{
             // Get all products with pagination:
             $products = FlashSaleProductView::orderBy('product_id', 'ASC')
-                ->paginate(self::ITEMS_PER_PAGE, ['*'], 'product_page', $request->query('product_page', 1));
+                ->paginate($this->Products_ITEMS_PER_PAGE , ['*'], 'product_page', $request->query('product_page', 1));
     
 
             $productsPagination = $this->paginationFunction($products,'products');
@@ -58,7 +114,7 @@ class FlashSaleController extends Controller
                 },
             ])
             ->orderBy('id','asc')
-            ->paginate(self::ITEMS_PER_PAGE, ['*'], 'flash_sale_page', $request->query('flash_sale_page', 1))
+            ->paginate($this->Flash_Sale_ITEMS_PER_PAGE, ['*'], 'flash_sale_page', $request->query('flash_sale_page', 1))
             ->through(function($item) {
                 return [
                     'id' => $item->id,
@@ -215,7 +271,7 @@ class FlashSaleController extends Controller
 
 
 
-    public function add_products(FlashSaleAddProductRequest $request)//: JsonResponse
+    public function add_products(FlashSaleAddProductRequest $request): JsonResponse
     {
         // return $request->all();
         try{
@@ -280,15 +336,12 @@ class FlashSaleController extends Controller
 
 
 
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try{ 
 
-            $flash_item = FlashSaleItem::find($id);
 
-            if(!$flash_item){
-                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
+            $flash_item = $this->findFlashSaleOrFail($id);
    
             $flash_item->delete();
 
@@ -302,7 +355,7 @@ class FlashSaleController extends Controller
 
 
 
-    public function changeStatus(Request $request)
+    public function changeStatus(Request $request): JsonResponse
     {
         try{
 
@@ -314,11 +367,7 @@ class FlashSaleController extends Controller
             ]);
     
     
-            $flash_item = FlashSaleItem::find($request->id);
-        
-            if(!$flash_item){
-                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
+            $flash_item = $this->findFlashSaleOrFail($request->id);
     
     
             $flash_item->status = $request->status == 1 ? 1 : 0;
@@ -338,7 +387,7 @@ class FlashSaleController extends Controller
     }
 
 
-    public function changeShowAtHome(Request $request)
+    public function changeShowAtHome(Request $request): JsonResponse
     {
 
         try{
@@ -346,14 +395,12 @@ class FlashSaleController extends Controller
             $request->validate([
                 'id' => 'integer|exists:flash_sale_items,id',
                 'show_at_home' => 'required|boolean',
+            ],[
+                'id.exists' => 'Flash Sale Item Not Found!',
             ]);
     
     
-            $flash_item = FlashSaleItem::find($request->id);
-        
-            if(!$flash_item){
-                return $this->error('Flash Sale Item Is Not Found!',NOT_FOUND_ERROR_CODE);
-            }
+            $flash_item = $this->findFlashSaleOrFail($request->id);
     
     
             $flash_item->show_at_home = $request->show_at_home == 1 ? 1 : 0;
@@ -371,8 +418,49 @@ class FlashSaleController extends Controller
     }
 
 
+    public function dataPerPage(Request $request): JsonResponse
+    {
+        try{
+            
+            // return  $this->Products_ITEMS_PER_PAGE;
+            // return  $this->Flash_Sale_ITEMS_PER_PAGE ;
 
-    public function paginationFunction($data,$dataName)
+            $request->validate([
+                'data_per_pages' => 'required|array|min:1',
+                'data_per_pages.*' => 'integer|max:100|gt:0'
+            ]);
+
+            //  return $request->all();
+
+            $data_per_pages = $request->data_per_pages;
+
+            foreach($data_per_pages as $key => $value){
+                // return $key .'-----------------'. $value ;
+
+                Cache::forget($key);
+
+                // /** Store the coupon per page in cache */
+                // M1 : 
+                Cache::put($key, $value);
+
+                // M2 :
+                // Cache::rememberForever($key, function () use ($value) {
+                //     return $value;
+                // });
+            
+            }
+
+            return $this->success(null,'Data Per Page Has Been Updated Successfully!',SUCCESS_CODE);
+
+        } catch (ValidationException $ex) {
+            return $this->error($ex->getMessage(), VALIDATION_ERROR_CODE);
+        } catch (\Exception $ex) {
+            return $this->error($ex->getMessage(), ERROR_CODE);
+        }
+
+    }
+
+    public function paginationFunction($data,$dataName): array
     {
         return [
             'pagination'=> [
@@ -385,5 +473,16 @@ class FlashSaleController extends Controller
             ],
             $dataName => $data->items(),
         ];
+    }
+
+    private function findFlashSaleOrFail(string $id)
+    {
+        $flash_item = FlashSaleItem::find($id);
+
+        if(!$flash_item){
+            throw new \Exception('Flash Sale Item Is Not Found!', NOT_FOUND_ERROR_CODE);
+        }
+
+        return $flash_item;
     }
 }

@@ -164,7 +164,7 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
     // Slider Routes :
     Route::prefix('sliders')->group(function () {
         Route::get('',[SliderController::class,'index']);
-        Route::get('/{id}', [SliderController::class, 'show'])->middleware('setLang');
+        Route::get('/{id}', [SliderController::class, 'show']);
         Route::post('',[SliderController::class,'store']);
         Route::post('{id}/update',[SliderController::class,'update']);
         // Route::put('{id}',[SliderController::class,'update']);
@@ -178,19 +178,30 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
 
     // Flash Sale Routes :
     Route::prefix('flash-sales')->group(function () {
-        Route::get('getAvailableProduct',[FlashSaleController::class,'getAvailableProducts']);
         Route::get('/',[FlashSaleController::class,'index']);
         Route::post('/end-date',[FlashSaleController::class,'end_date']);
         // Route::put('/end-date',[FlashSaleController::class,'end_date']);
         Route::post('/add-products',[FlashSaleController::class,'add_products']);
         Route::DELETE('{id}/delete',[FlashSaleController::class,'destroy']);
         // Route::DELETE('{id}',[FlashSaleController::class,'destroy']);
+        
+
+        Route::get('get-available-products',[FlashSaleController::class,'getAvailableProducts']);
+        Route::get('get-items',[FlashSaleController::class,'getFlashSaleItems']);
+        Route::get('get-end-date',[FlashSaleController::class,'getFlashSaleEndDate']);
+
 
         Route::put('change-status',[FlashSaleController::class,'changeStatus']);
         Route::put('change-show-at-home',[FlashSaleController::class,'changeShowAtHome']);
+
+        Route::post('per-page',[FlashSaleController::class,'couponPerPage']);
     });
 
+
     // Coupon Routes :
+    Route::get('coupons/{id}/get-users',[CouponController::class,'get_coupon_users']);
+    Route::put('coupons/change-status',[CouponController::class,'changeStatus']);
+    Route::post('coupons/per-page',[CouponController::class,'couponPerPage']);
     Route::apiResource('coupons', CouponController::class);
 
     // Shipping Rule Routes :

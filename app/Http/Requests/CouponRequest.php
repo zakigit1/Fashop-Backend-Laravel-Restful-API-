@@ -26,6 +26,7 @@ class CouponRequest extends FormRequest
     {
         $id = $this->coupon;
         $maxQty = 10000;
+        $maxExtraPrice = 1000000; // 100 million
 
         
         return [
@@ -57,6 +58,13 @@ class CouponRequest extends FormRequest
             'discount' => 'required|numeric' ,
 
             'status' => 'required|boolean' ,
+
+            'min_purchase_amount' => [
+                'numeric',
+                'min:0',
+                'max:' . $maxExtraPrice,
+                'regex:/^\d+(\.\d{1,2})?$/', // Ensures exactly 2 decimal places
+            ],
         ];
     }
 }
