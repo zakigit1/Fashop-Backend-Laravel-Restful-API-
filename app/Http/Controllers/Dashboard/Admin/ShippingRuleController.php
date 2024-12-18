@@ -6,18 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ShippingRuleRequest;
 use App\Models\ShippingRule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 
 class ShippingRuleController extends Controller
 {
+    private const ITEMS_PER_PAGE_DEFAULT = 20;
+    private $ITEMS_PER_PAGE ;
+
+    
+    public function __construct() {
+        $this->ITEMS_PER_PAGE = Cache::get('shipping_rules_per_page', self::ITEMS_PER_PAGE_DEFAULT);
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try{
-            $shippingRules = ShippingRule::with('translations')
-                    ->orderBy('id','asc')
-                    ->paginate(20);
+            $shippingRules = ShippingRule::orderBy('id','asc')
+            ->paginate($this->ITEMS_PER_PAGE, ['*'], 'page', $request->query('page', 1));
 
             return $this->paginationResponse($shippingRules,'shippingRules','All Shipping Rules',SUCCESS_CODE);
 
@@ -42,7 +51,7 @@ class ShippingRuleController extends Controller
             $shippingRule->min_cost = (is_null($request->min_cost)) ? $request->min_cost :(float) $request->min_cost;
             $shippingRule->max_cost = (is_null($request->max_cost)) ? $request->max_cost :(float) $request->max_cost;
             $shippingRule->cost = (float) $request->cost ;
-            $shippingRule->weight_limit = (is_null($request->weight_limit)) ? $request->weight_limit :(float) $request->weight_limit ;
+            $shippingRule->weight_limit = (is_null($request->weight_limit)) ? $request->weight_limit :(float) $request->weight_limit;
             $shippingRule->description = $request->description ;
             $shippingRule->region = $request->region ;
             $shippingRule->carrier = $request->carrier ;

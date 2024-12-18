@@ -194,17 +194,19 @@ Route::group(['middleware'=>['admin-api:api'],],function () {
         Route::put('change-status',[FlashSaleController::class,'changeStatus']);
         Route::put('change-show-at-home',[FlashSaleController::class,'changeShowAtHome']);
 
-        Route::post('per-page',[FlashSaleController::class,'couponPerPage']);
+        Route::post('per-page',[FlashSaleController::class,'dataPerPage']);
     });
 
 
     // Coupon Routes :
     Route::get('coupons/{id}/get-users',[CouponController::class,'get_coupon_users']);
     Route::put('coupons/change-status',[CouponController::class,'changeStatus']);
-    Route::post('coupons/per-page',[CouponController::class,'couponPerPage']);
+    Route::post('coupons/per-page',[CouponController::class,'dataPerPage']);
     Route::apiResource('coupons', CouponController::class);
 
     // Shipping Rule Routes :
+    Route::put('shipping-rules/change-status',[ShippingRuleController::class,'changeStatus']);
+    Route::post('shipping-rules/per-page',[ShippingRuleController::class,'dataPerPage']);
     Route::apiResource('shipping-rules', ShippingRuleController::class);
 
 

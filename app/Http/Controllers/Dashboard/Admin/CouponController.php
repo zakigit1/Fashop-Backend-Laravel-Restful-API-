@@ -73,7 +73,7 @@ class CouponController extends Controller
             $coupon->end_date = $request->end_date ;
             $coupon->discount_type = $request->discount_type ;
             $coupon->discount = (float) $request->discount ;
-            $coupon->total_used = 0 ;
+            $coupon->total_used =(int) 0 ;
             $coupon->status = (int) $request->status ;
             $coupon->min_purchase_amount = ($request->has('min_purchase_amount')) ? (float) $request->min_purchase_amount : (float) 0.00;
             $coupon->save();
@@ -100,6 +100,8 @@ class CouponController extends Controller
 
             $coupon = $this->findCouponOrFail($id);
 
+            $totalUsed = $coupon->total_used;
+
             $coupon->name = $request->name ;
             $coupon->code = $request->code ;
             $coupon->quantity = (int) $request->quantity ;
@@ -110,7 +112,9 @@ class CouponController extends Controller
             $coupon->discount = (float) $request->discount ;
             $coupon->min_purchase_amount = (float) $request->min_purchase_amount ;
             $coupon->status = (int) $request->status ;
+            $coupon->total_used =(int) $totalUsed ;
             $coupon->save();
+            
 
             return $this->success( $coupon,'Updated Successfully!',SUCCESS_CODE,'coupon');
             
@@ -139,7 +143,9 @@ class CouponController extends Controller
         }
     }
 
-
+    /**
+     * Get Coupon Users :
+     */
     // public function get_coupon_users(string $id){
 
     //     try{
@@ -161,6 +167,9 @@ class CouponController extends Controller
 
 
 
+    /**
+     * Get Coupon Users (custom method):
+     */
     public function get_coupon_users(string $id): JsonResponse
     {
         try {
@@ -217,7 +226,7 @@ class CouponController extends Controller
     }
 
 
-    public function couponPerPage(Request $request): JsonResponse
+    public function dataPerPage(Request $request): JsonResponse
     {
         try{
 

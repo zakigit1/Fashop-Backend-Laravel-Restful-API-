@@ -38,11 +38,11 @@ return new class extends Migration
 
         // min_cost: Minimum order value for the rule to apply (relevant for min_cost type).
 
-        // max_cost: Maximum order value for the rule to apply (useful for tiered shipping).
+        //++ max_cost: Maximum order value for the rule to apply (useful for tiered shipping).
 
         // cost: Shipping cost associated with the rule.
 
-        // weight_limit: Maximum weight for the rule to apply (useful for weight-based shipping).
+        //++ weight_limit: Maximum weight for the rule to apply (useful for weight-based shipping).
 
         // status: Indicates if the rule is active or inactive.
 
@@ -50,13 +50,13 @@ return new class extends Migration
 
         // updated_at: Timestamp for when the rule was last updated.
 
-        // description: A brief description of the shipping rule.
+        //++ description: A brief description of the shipping rule.
 
-        // region: The geographical region where the shipping rule applies.
+        //++ region: The geographical region where the shipping rule applies.
 
-        // carrier: The shipping carrier associated with the rule.
+        //++ carrier: The shipping carrier associated with the rule.
 
-        // delivery_time: Estimated delivery time for the shipping option.
+        //++ delivery_time: Estimated delivery time for the shipping option.
     }
 
     /**
